@@ -12,6 +12,10 @@ namespace mst
 		tv3(T _x, T _y, T _z) :x{ _x }, y{ _y }, z{ _z }{}
 		tv3(const tv2<T>& v) :x{ v.x }, y{ v.y }, z{ 0 }{}
 		tv3(const tv3<T>& v) :x{ v.x }, y{ v.y }, z{ v.z }{}
+		template<class U>
+		tv3(const tv2<U>& v) : x{ (T)v.x }, y{ (T)v.y }, z{ 0 }{}
+		template<class U>
+		tv3(U _x, U _y, U _z) : x{ (T)_x }, y{ (T)_y }, z{(T)_z}{}
 		struct { T x, y, z; };
 		struct { T r, g, b; };
 		struct { T w, h, d; };

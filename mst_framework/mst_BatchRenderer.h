@@ -18,8 +18,8 @@ namespace mst
         void Init(unsigned int BatchCount);
 
         // adds a rect where pos = lower left and size = top right
-        void AddRect(const v2f& pos, const v2f& size);
-        void AddCenteredQuad(const v2f& pos, const v2f& size);
+        void AddRect(const v2f& pos, const v2f& size, const Color& c = Color(255,255,255));
+        void AddCenteredQuad(const v2f& pos, const v2f& size, const Color& c = Color(255,255,255));
 
         void StartRender();
         void EndRender();

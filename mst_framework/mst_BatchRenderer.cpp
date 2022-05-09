@@ -52,14 +52,13 @@ namespace mst
         glEnableVertexAttribArray(1);
     }
 
-    void QuadRenderer::AddRect(const v2f& pos, const v2f& size)
+    void QuadRenderer::AddRect(const v2f& pos, const v2f& size, const Color& c)
     {
         if (vertexCount + 4 > maxVertices)
         {
             EndRender();
         }
 
-        Color c(255,255,255);
         std::array<VertexData, 4> vertices;
 
         vertices[0].pos.x = pos.x;
@@ -88,28 +87,29 @@ namespace mst
         vertexCount+=4;
     }
 
-    void QuadRenderer::AddCenteredQuad(const v2f& pos, const v2f& size)
+    void QuadRenderer::AddCenteredQuad(const v2f& pos, const v2f& size, const Color& c)
     {
         if (vertexCount + 4 > maxVertices)
         {
             EndRender();
         }
 
-        Color c(255, 255, 255);
+        v2f hsize(size*0.5f);
+
         std::array<VertexData, 4> vertices;
 
-        vertices[0].pos = pos - size;
+        vertices[0].pos = pos - hsize;
         vertices[0].color = c;
 
-        vertices[1].pos.x = pos.x + size.x;
-        vertices[1].pos.y = pos.y - size.y;
+        vertices[1].pos.x = pos.x + hsize.x;
+        vertices[1].pos.y = pos.y - hsize.y;
         vertices[1].color = c;
 
-        vertices[2].pos = pos + size;
+        vertices[2].pos = pos + hsize;
         vertices[2].color = c;
 
-        vertices[3].pos.x = pos.x - size.y;
-        vertices[3].pos.y = pos.y + size.y;
+        vertices[3].pos.x = pos.x - hsize.y;
+        vertices[3].pos.y = pos.y + hsize.y;
         vertices[3].color = c;
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -161,16 +161,20 @@ namespace mst
     void InitColourShader(unsigned int& Program)
     {
         const char* vertexShaderSource = 
-            "#version 330 core                                \n"
-            "layout (location = 0) in vec2 aPos;              \n"
-            "layout (location = 1) in vec3 aColour;           \n"
-            "uniform vec2 u_WorldSize;                        \n"
-            "out vec4 oColour;                                \n"
-            "void main()                                      \n"
-            "{                                                \n"
-            "   oColour = vec4(aColour, 1.0);                 \n"
-            "   gl_Position = vec4(aPos.xy, 0.0, 1.0);        \n"
-            "}                                                \0";
+            "#version 330 core                                            \n"
+            "layout (location = 0) in vec2 aPos;                          \n"
+            "layout (location = 1) in vec3 aColour;                       \n"
+            "uniform vec2 u_WorldSize;                                    \n"
+            "out vec4 oColour;                                            \n"
+            "void main()                                                  \n"
+            "{                                                            \n"
+            "   oColour = vec4(aColour, 1.0);                             \n"
+            "   vec2 pos = aPos;                                          \n"
+            "   vec2 halfWorld = u_WorldSize * 0.5;                       \n"
+            "   pos -= halfWorld;                                         \n"
+            "   pos /= halfWorld;                                         \n"
+            "   gl_Position = vec4(pos, 0.0, 1.0);                        \n"
+            "}                                                            \0";
 
         const char* fragmentShaderSource = 
             "#version 330 core                                \n"

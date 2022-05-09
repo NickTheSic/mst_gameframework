@@ -25,6 +25,12 @@ namespace mst
 		#endif
 	};
 
+	struct Camera
+	{
+		v2f Position;
+		v2f ScreenSpace;
+	};
+
 	struct ButtonState
 	{
 		bool Held      : 1;
@@ -39,8 +45,19 @@ namespace mst
 	public:
 		virtual ~Engine() = default;
 
+		virtual bool UserStartup() {return true;};
+		virtual void UserUpdate(){};
+		virtual void UserResize(){};
+
+		bool Construct(int width, int height)
+		{
+			bool success = CreateGLWindow(width, height) & UserStartup();
+			return success;
+		}
+
 		bool CreateGLWindow(int width, int height);
-		bool CoreUpdate();
+		bool PollEvents();
+		void CoreUpdate();
 		void SwapBuffers();
 		void SetWindowTitle(std::string title);
 
@@ -62,7 +79,7 @@ namespace mst
 
 		v2f MouseToScreen();
 
-	//protected:
+	protected:
 	#if defined _WIN64
 		HWND  Window;
 		HDC   Device;

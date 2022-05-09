@@ -36,29 +36,13 @@ namespace mst
 	v2f Engine::MouseToScreen()
 	{
 		v2f mousePos(CurrMousePos);
-
-		v2i halfScreen = (ScreenSize * 0.5f);
-
-		mousePos /= halfScreen;
-
-		mousePos.x -= 1;
-		mousePos.y -= 1;
 		return std::move(mousePos);
 	}
 	
 	void Engine::HandleKey(Key key, bool Down)
 	{
 		//dbglog(key << " Is " << Down);
-
 		KeyStates[(unsigned int)key].DownState = Down;
-
-		switch (key)
-		{
-			case Key::ESCAPE:
-			{
-				PostQuitMessage(0);
-			} break;
-		}
 	}
 
 	bool Engine::IsKeyDown(Key key)
@@ -125,7 +109,7 @@ namespace mst
 	#endif
 	}
 	
-	bool Engine::CoreUpdate()
+	bool Engine::PollEvents()
 	{
 		MSG Message;
 		while (PeekMessage(&Message, nullptr, 0, 0, PM_REMOVE))
@@ -140,7 +124,11 @@ namespace mst
 				return false;
 			}
 		}
+		return true;
+	}
 
+	void Engine::CoreUpdate()
+	{
 		for (int i = 0; i < MouseStates.size(); i++)
 		{
 			MouseStates[i].Pressed = false;
@@ -184,10 +172,9 @@ namespace mst
 		}
 
 		timer.Update();
-
 		SetWindowTitle("Delta Time: " + std::to_string(timer.delta));
 
-		return true;
+		UserUpdate();
 	}
 	
 	bool Engine::CreateGLWindow(int width, int height)
@@ -298,6 +285,13 @@ namespace mst
 		{
 			return false;
 		}
+
+		// Get the name of the video card.
+		{
+			char* rendererString;
+			rendererString = (char*)glGetString(GL_RENDERER);
+			if (rendererString) dbglog(rendererString);
+		}
 	
 		ShowWindow(Window, SW_SHOW);
 		SetForegroundWindow(Window);
@@ -370,13 +364,7 @@ namespace mst
 			UserEngine->ScreenSize.w = _width;
 			UserEngine->ScreenSize.h = _height;
 
-			RECT rect;
-			GetWindowRect(window, &rect);
-
-			dbgval(UserEngine->ScreenSize);
-			dbgval(rect.right - rect.left)
-			dbgval(rect.bottom - rect.top);
-
+			UserEngine->UserResize();
 		} break;
 	
 		case WM_DESTROY:

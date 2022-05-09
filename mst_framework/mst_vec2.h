@@ -11,6 +11,8 @@ namespace mst
 		tv2(const tv2<T>& v) :x{ v.x }, y{ v.y }{}
 		template<class U>
 		tv2(const tv2<U>&v) : x{ (T)v.x }, y{ (T)v.y }{}
+		template<class U>
+		tv2(U _x, U _y) : x{ (T)_x }, y{ (T)_y }{}
 		struct { T x, y; };
 		struct { T u, v; };
 		struct { T w, h; };
