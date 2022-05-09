@@ -13,6 +13,8 @@ namespace mst
 		tv2(const tv2<U>&v) : x{ (T)v.x }, y{ (T)v.y }{}
 		template<class U>
 		tv2(U _x, U _y) : x{ (T)_x }, y{ (T)_y }{}
+		template<class U>
+		tv2(U _s) : x{ (T)_s }, y{ (T)_s }{}
 		struct { T x, y; };
 		struct { T u, v; };
 		struct { T w, h; };
@@ -71,6 +73,12 @@ namespace mst
 		{
 			return (v.x != x) && (v.y != y);
 		}
+		inline tv2<T> operator-()
+		{
+			x=-x;
+			y=-y;
+			return (*this);
+		}
 	private:
 		T dat[2];
 	};
@@ -100,8 +108,18 @@ namespace mst
 	{
 		return (tv2<T>(v.x - v2.x, v.y - v2.y));
 	}
+	template<class T, class U>
+	inline tv2<T> operator -(const tv2<T>& v, const tv2<U>& v2)
+	{
+		return (tv2<T>(v.x - v2.x, v.y - v2.y));
+	}
 	template<class T>
 	inline tv2<T> operator +(const tv2<T>& v, const tv2<T>& v2)
+	{
+		return (tv2<T>(v.x + v2.x, v.y + v2.y));
+	}
+	template<class T, class U>
+	inline tv2<T> operator +(const tv2<T>& v, const tv2<U>& v2)
 	{
 		return (tv2<T>(v.x + v2.x, v.y + v2.y));
 	}

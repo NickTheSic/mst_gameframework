@@ -35,9 +35,7 @@ namespace mst
         unsigned int DrawsPerFrame = 0;
     };
 
-    void InitShaderCode(unsigned int& program,
-            const char* vertexShaderSource,
-            const char* fragmentShaderSource);
+    void InitShaderCode(unsigned int& program, const char* vertexShaderSource, const char* fragmentShaderSource);
     void InitColourShader(unsigned int& Program);
     void CompileShader(unsigned int& shader, unsigned int type, const char* shaderSource);
 }

@@ -20,19 +20,32 @@ public:
 
 	virtual bool UserStartup() 
 	{ 
-		QuadRenderer = new mst::QuadRenderer(1000);
+		MainCamera.Position = ScreenSize/2;
+
+		QuadRenderer = new mst::QuadRenderer(4000);
 		mst::InitColourShader(QuadRenderer->shaderProgram);
 
-		for (int x = 0; x < ScreenSize.x; x+=10)
+		GLint cameraPosLoc = glGetUniformLocation(QuadRenderer->shaderProgram, "u_CameraPos");
+		if (cameraPosLoc != -1)
 		{
-			for (int y = 0; y < ScreenSize.y; y += 10)
+			glUniform2fv(cameraPosLoc, 1, &MainCamera.Position[0]);
+		}
+		GLint cameraZoomLoc = glGetUniformLocation(QuadRenderer->shaderProgram, "u_CameraZoom");
+		if (cameraZoomLoc != -1)
+		{
+			glUniform1f(cameraZoomLoc, MainCamera.CurrentZoom);
+		}
+
+		for (int x = 0; x < ScreenSize.x; x+= SquareSizes)
+		{
+			for (int y = 0; y < ScreenSize.y; y += SquareSizes)
 			{
 				GridRectPositions.push_back({ x, y });
 			}
 		}
 
 		srand(timer.startoffset);
-		for (int i = 0; i < ScreenSize.x * ScreenSize.y; i++)
+		for (int i = 0; i < (ScreenSize.x- SquareSizes) * (ScreenSize.y- SquareSizes); i++)
 		{
 			RandomColours.push_back({rand(), rand(), rand()});
 		}
@@ -65,12 +78,33 @@ public:
 			Tick -= 3.0f;
 		}
 
-		if (IsMouseButtonPressed(0))
-			MousePositions.push_back(MouseToScreen());
+		//MousePositions.push_back(GetMouseToScreen());
 
 		if (IsKeyPressed(mst::Key::ESCAPE))
 		{
 			PostQuitMessage(0);
+		}
+
+		mst::v2f cameraMove(0);
+		if (IsMouseButtonDown(0))
+		{
+			cameraMove = -GetMouseMoveDelta();
+		}
+		if (MainCamera.MoveCamera(cameraMove))
+		{
+			GLint cameraPosLoc = glGetUniformLocation(QuadRenderer->shaderProgram, "u_CameraPos");
+			if (cameraPosLoc != -1)
+			{
+				glUniform2fv(cameraPosLoc, 1, &MainCamera.Position[0]);
+			}
+		}
+		if (MainCamera.Zoom(MouseScroll*GetDeltaTime()))
+		{
+			GLint cameraZoomLoc = glGetUniformLocation(QuadRenderer->shaderProgram, "u_CameraZoom");
+			if (cameraZoomLoc != -1)
+			{
+				glUniform1f(cameraZoomLoc, MainCamera.CurrentZoom);
+			}
 		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -80,23 +114,23 @@ public:
 		int idx = 0;
 		for (auto& pos : GridRectPositions)
 		{
-			QuadRenderer->AddRect(pos, { 10.f, 10.f }, RandomColours[idx]);
+			QuadRenderer->AddRect(pos, { SquareSizes }, RandomColours[idx]);
 			idx++;
 		}
 
 		for (auto& pos : MousePositions)
 		{
-			QuadRenderer->AddCenteredQuad(pos, { 10.f, 10.f }, {0,0,0});
+			QuadRenderer->AddCenteredQuad(pos, { SquareSizes*SquareSizes }, mst::Color{0,0,0});
 		}
 
 		QuadRenderer->EndRender();
 	};
 
+	int SquareSizes = 5;
 	float Tick = 0.0f;
 	mst::QuadRenderer* QuadRenderer = nullptr;
 	std::vector<mst::v2f> MousePositions;
 	std::vector<mst::v2f> GridRectPositions;
-
 	std::vector<mst::Color> RandomColours;
 };
 

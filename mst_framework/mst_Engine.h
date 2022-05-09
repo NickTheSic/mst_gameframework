@@ -27,8 +27,31 @@ namespace mst
 
 	struct Camera
 	{
-		v2f Position;
-		v2f ScreenSpace;
+		v2f Position = {};
+		float CurrentZoom = 1.f;
+
+		bool Zoom(float Val)
+		{
+			if (Val == 0.0f)
+			{
+				return false;
+			}
+
+			CurrentZoom += Val;
+			return true;
+		}
+
+		bool MoveCamera(const v2f& dir)
+		{
+			if (dir == v2f{ 0 })
+			{
+				return false;
+			}
+
+			Position += dir;
+
+			return true;
+		}
 	};
 
 	struct ButtonState
@@ -64,6 +87,7 @@ namespace mst
 		void HandleKey(Key key, bool Down);
 		void HandleMouseButton(int button, bool Down);
 		void HandleMouseMove(int x, int y);
+		void HandleMouseScroll(int scroll);
 
 		bool IsKeyDown(Key key);
 		bool IsKeyPressed(Key key);
@@ -77,7 +101,8 @@ namespace mst
 			return timer.delta;
 		}
 
-		v2f MouseToScreen();
+		v2f GetMouseMoveDelta();
+		v2f GetMouseToScreen();
 
 	protected:
 	#if defined _WIN64
@@ -89,10 +114,16 @@ namespace mst
 
 		v2i PrevMousePos      = {};
 		v2i CurrMousePos      = {};
+		v2f MouseDelta        = {};
 		v2i ScreenSize        = {};
+		v2i ScreenCenter      = {};
 		v2i InitialScreenSize = {};
+		Camera MainCamera;
 
 		Timer timer;
+
+		int MouseScroll;
+		int PrevMouseScroll;
 
 		std::array<ButtonState, 256> KeyStates;
 		std::array<ButtonState, 3> MouseStates;

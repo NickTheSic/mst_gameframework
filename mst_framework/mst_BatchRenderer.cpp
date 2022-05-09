@@ -165,15 +165,16 @@ namespace mst
             "layout (location = 0) in vec2 aPos;                          \n"
             "layout (location = 1) in vec3 aColour;                       \n"
             "uniform vec2 u_WorldSize;                                    \n"
+            "uniform vec2 u_CameraPos;                                    \n"
+            "uniform float u_CameraZoom;                                  \n"
             "out vec4 oColour;                                            \n"
             "void main()                                                  \n"
             "{                                                            \n"
-            "   oColour = vec4(aColour, 1.0);                             \n"
+            "   oColour = vec4(aColour, u_CameraZoom);                             \n"
             "   vec2 pos = aPos;                                          \n"
-            "   vec2 halfWorld = u_WorldSize * 0.5;                       \n"
-            "   pos -= halfWorld;                                         \n"
-            "   pos /= halfWorld;                                         \n"
-            "   gl_Position = vec4(pos, 0.0, 1.0);                        \n"
+            "   pos -= u_CameraPos;                                       \n"
+            "   pos /= u_WorldSize * 0.5;                                 \n"
+            "   gl_Position = vec4(pos, 0, 1.0);             \n"
             "}                                                            \0";
 
         const char* fragmentShaderSource = 

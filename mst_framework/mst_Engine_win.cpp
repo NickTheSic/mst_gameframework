@@ -33,10 +33,17 @@ namespace mst
 		::SwapBuffers(Device);
 	}
 
-	v2f Engine::MouseToScreen()
+	v2f Engine::GetMouseToScreen()
 	{
 		v2f mousePos(CurrMousePos);
+		mousePos -= ScreenCenter - MainCamera.Position;
 		return std::move(mousePos);
+	}
+
+	v2f Engine::GetMouseMoveDelta()
+	{
+		dbgval(MouseDelta);
+		return MouseDelta;
 	}
 	
 	void Engine::HandleKey(Key key, bool Down)
@@ -82,11 +89,13 @@ namespace mst
 
 	void Engine::HandleMouseMove(int x, int y)
 	{
-		PrevMousePos = CurrMousePos;
 		CurrMousePos.x = x;
 		CurrMousePos.y = y;
+	}
 
-		//dbgval(CurrMousePos - PrevMousePos);
+	void Engine::HandleMouseScroll(int scroll)
+	{	
+		MouseScroll = scroll;
 	}
 
 	void Engine::SetWindowTitle(std::string title)
@@ -170,6 +179,15 @@ namespace mst
 
 			KeyStates[i].PrevState = KeyStates[i].DownState;
 		}
+
+		if (MouseScroll == PrevMouseScroll)
+		{
+			PrevMouseScroll = MouseScroll = 0;
+		}
+		PrevMouseScroll = MouseScroll;
+
+		MouseDelta = CurrMousePos - PrevMousePos;
+		PrevMousePos = CurrMousePos;
 
 		timer.Update();
 		SetWindowTitle("Delta Time: " + std::to_string(timer.delta));
@@ -360,12 +378,21 @@ namespace mst
 			UserEngine->HandleMouseButton(1, false);
 		} break;
 	
+		case WM_MOUSEWHEEL:
+		{
+			int scroll = GET_WHEEL_DELTA_WPARAM(wParam);
+			UserEngine->HandleMouseScroll(scroll);
+		} break;
+
 		case WM_SIZE:
 		{
 			glViewport(0, 0, _width, _height);
 
 			UserEngine->ScreenSize.w = _width;
 			UserEngine->ScreenSize.h = _height;
+
+			UserEngine->ScreenCenter.w = _width*0.5f;
+			UserEngine->ScreenCenter.h = _height*0.5f;
 
 			UserEngine->UserResize();
 		} break;
