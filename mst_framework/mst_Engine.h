@@ -87,9 +87,10 @@ namespace mst
 		static LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
 	#endif
 
-		v2i PrevMousePos = {};
-		v2i CurrMousePos = {};
-		v2i ScreenSize   = {};
+		v2i PrevMousePos      = {};
+		v2i CurrMousePos      = {};
+		v2i ScreenSize        = {};
+		v2i InitialScreenSize = {};
 
 		Timer timer;
 

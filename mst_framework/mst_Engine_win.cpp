@@ -182,6 +182,9 @@ namespace mst
 		ScreenSize.w = width;
 		ScreenSize.h = height;
 
+		InitialScreenSize.w = width;
+		InitialScreenSize.h = height;
+
 		DWORD dwExStyle;
 		DWORD dwStyle;
 

@@ -20,7 +20,7 @@ public:
 
 	virtual bool UserStartup() 
 	{ 
-		QuadRenderer = new mst::QuadRenderer(500);
+		QuadRenderer = new mst::QuadRenderer(1000);
 		mst::InitColourShader(QuadRenderer->shaderProgram);
 
 		for (int x = 0; x < ScreenSize.x; x+=10)
@@ -32,7 +32,7 @@ public:
 		}
 
 		srand(timer.startoffset);
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < ScreenSize.x * ScreenSize.y; i++)
 		{
 			RandomColours.push_back({rand(), rand(), rand()});
 		}
@@ -77,9 +77,11 @@ public:
 
 		QuadRenderer->StartRender();
 
+		int idx = 0;
 		for (auto& pos : GridRectPositions)
 		{
-			QuadRenderer->AddRect(pos, { 10.f, 10.f }, RandomColours[rand() % RandomColours.size()]);
+			QuadRenderer->AddRect(pos, { 10.f, 10.f }, RandomColours[idx]);
+			idx++;
 		}
 
 		for (auto& pos : MousePositions)
