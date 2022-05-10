@@ -1,8 +1,9 @@
 #define MST_GL_IMPLEMENTATION
-#include "mst_Engine.h"
-#include "mst_BatchRenderer.h"
+#include "Engine.h"
+#include "BatchRenderer.h"
 #include <vector>
 
+#include <iostream>
 #define dbgval(val) std::cout << #val << ": " << val << std::endl;
 #define dbglog(msg) std::cout << msg << std::endl;
 
@@ -22,7 +23,7 @@ public:
 	{ 
 		MainCamera.Position = ScreenSize/2;
 
-		QuadRenderer = new mst::QuadRenderer(4000);
+		QuadRenderer = new mst::QuadRenderer(14400/6);
 		mst::InitColourShader(QuadRenderer->shaderProgram);
 
 		GLint cameraPosLoc = glGetUniformLocation(QuadRenderer->shaderProgram, "u_CameraPos");
@@ -62,7 +63,7 @@ public:
 			GLint worldSizeLoc = glGetUniformLocation(QuadRenderer->shaderProgram, "u_WorldSize");
 			if (worldSizeLoc != -1)
 			{
-				mst::v2f screenSize(ScreenSize);
+				v2f screenSize(ScreenSize);
 				glUniform2fv(worldSizeLoc, 1, &screenSize[0]);
 			}
 		}
@@ -85,7 +86,7 @@ public:
 			PostQuitMessage(0);
 		}
 
-		mst::v2f cameraMove(0);
+		v2f cameraMove(0);
 		if (IsMouseButtonDown(0))
 		{
 			cameraMove = -GetMouseMoveDelta();
@@ -114,13 +115,13 @@ public:
 		int idx = 0;
 		for (auto& pos : GridRectPositions)
 		{
-			QuadRenderer->AddRect(pos, { SquareSizes }, RandomColours[idx]);
+			QuadRenderer->AddRect(pos, { SquareSizes, SquareSizes }, RandomColours[idx]);
 			idx++;
 		}
 
 		for (auto& pos : MousePositions)
 		{
-			QuadRenderer->AddCenteredQuad(pos, { SquareSizes*SquareSizes }, mst::Color{0,0,0});
+			QuadRenderer->AddCenteredQuad(pos, { SquareSizes, SquareSizes }, Color{0,0,0});
 		}
 
 		QuadRenderer->EndRender();
@@ -129,9 +130,9 @@ public:
 	int SquareSizes = 5;
 	float Tick = 0.0f;
 	mst::QuadRenderer* QuadRenderer = nullptr;
-	std::vector<mst::v2f> MousePositions;
-	std::vector<mst::v2f> GridRectPositions;
-	std::vector<mst::Color> RandomColours;
+	std::vector<v2f> MousePositions;
+	std::vector<v2f> GridRectPositions;
+	std::vector<Color> RandomColours;
 };
 
 

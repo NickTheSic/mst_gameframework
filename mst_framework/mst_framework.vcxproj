@@ -84,17 +84,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="mst_BatchRenderer.cpp" />
-    <ClCompile Include="mst_Engine_win.cpp" />
+    <ClCompile Include="BatchRenderer.cpp" />
+    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mst_BatchRenderer.h" />
-    <ClInclude Include="mst_Engine.h" />
-    <ClInclude Include="mst_gl_header.h" />
-    <ClInclude Include="mst_keys.h" />
-    <ClInclude Include="mst_vec2.h" />
-    <ClInclude Include="mst_vec3.h" />
+    <ClInclude Include="BatchRenderer.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Engine.h" />
+    <ClInclude Include="mstgl.h" />
+    <ClInclude Include="mstglm.h" />
+    <ClInclude Include="mstkeys.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

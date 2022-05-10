@@ -18,30 +18,39 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mst_Engine_win.cpp">
+    <ClCompile Include="Engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mst_BatchRenderer.cpp">
+    <ClCompile Include="BatchRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="mst_gl_header.h">
+    <ClInclude Include="mstgl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mst_Engine.h">
+    <ClInclude Include="Engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mst_vec2.h">
+    <ClInclude Include="mstkeys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mst_keys.h">
+    <ClInclude Include="BatchRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mst_BatchRenderer.h">
+    <ClInclude Include="mstglm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mst_vec3.h">
+    <ClInclude Include="Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
