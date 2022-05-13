@@ -30,8 +30,9 @@ namespace mst
 	public:
 		virtual ~Engine() = default;
 
-		virtual bool UserStartup() {return true;};
+		virtual bool UserStartup() {return false; /*Forces user to override?*/ };
 		virtual void UserUpdate(){};
+		virtual void UserRender(){};
 		virtual void UserResize(){};
 
 		bool Construct(int width, int height)
@@ -66,7 +67,10 @@ namespace mst
 		v2f GetMouseMoveDelta();
 		v2f GetMouseToScreen();
 
+		void ShowFPS();
+
 	protected:
+
 	#if defined _WIN64
 		HWND  Window;
 		HDC   Device;
@@ -74,22 +78,29 @@ namespace mst
 		static LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
 	#endif
 
+	#if defined __EMSCRIPTEN
+		
+	#endif
+
 		v2i PrevMousePos      = {};
 		v2i CurrMousePos      = {};
-		v2f MouseDelta        = {};
+		v2f MouseMoveDelta    = {};
+
+		int MouseScroll;
+		int CurrentFrameMouseScroll;
+
 		v2i ScreenSize        = {};
 		v2i ScreenCenter      = {};
 		v2i InitialScreenSize = {};
+
 		Camera MainCamera;
 
 		Timer timer;
 
-		int MouseScroll;
-		int PrevMouseScroll;
-
 		std::array<ButtonState, 256> KeyStates;
 		std::array<ButtonState, 3> MouseStates;
+		//std::array<ButtonState, Controllerinputs> ControllerInput;?
 
 		bool IsRunning = true;
 	};
-}                  // namespace mst
+} // namespace mst

@@ -23,7 +23,7 @@ namespace mst
 
 	v2f Engine::GetMouseMoveDelta()
 	{
-		return MouseDelta;
+		return MouseMoveDelta;
 	}
 	
 	void Engine::HandleKey(Key key, bool Down)
@@ -75,7 +75,7 @@ namespace mst
 
 	void Engine::HandleMouseScroll(int scroll)
 	{	
-		MouseScroll = scroll;
+		CurrentFrameMouseScroll = scroll;
 	}
 
 	void Engine::SetWindowTitle(std::string title)
@@ -160,19 +160,37 @@ namespace mst
 			KeyStates[i].PrevState = KeyStates[i].DownState;
 		}
 
-		if (MouseScroll == PrevMouseScroll)
-		{
-			PrevMouseScroll = MouseScroll = 0;
-		}
-		PrevMouseScroll = MouseScroll;
+		MouseScroll = CurrentFrameMouseScroll;
+		CurrentFrameMouseScroll = 0;
 
-		MouseDelta = CurrMousePos - PrevMousePos;
+		MouseMoveDelta = CurrMousePos - PrevMousePos;
 		PrevMousePos = CurrMousePos;
 
 		timer.Update();
-		SetWindowTitle("Delta Time: " + std::to_string(timer.delta));
 
+		ShowFPS();
+
+		// Custom Update
 		UserUpdate();
+
+		// Custom Render
+		UserRender();
+	}
+
+	void Engine::ShowFPS()
+	{
+		static float TimedLoop;
+		static int frameCount;
+
+		TimedLoop += timer.delta;
+		if (TimedLoop > 1.f)
+		{
+			double fps = double(frameCount) / TimedLoop;
+			double msPerFrame = 1000.0 / fps;
+			SetWindowTitle("FPS: " + std::to_string(fps) + " | " + std::to_string(msPerFrame) + "ms");
+			TimedLoop -= 1.f;
+		}
+		frameCount++;
 	}
 	
 	bool Engine::CreateGLWindow(int width, int height)
@@ -360,7 +378,7 @@ namespace mst
 	
 		case WM_MOUSEWHEEL:
 		{
-			int scroll = GET_WHEEL_DELTA_WPARAM(wParam);
+			const int scroll = GET_WHEEL_DELTA_WPARAM(wParam);
 			UserEngine->HandleMouseScroll(scroll);
 		} break;
 

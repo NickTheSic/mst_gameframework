@@ -11,6 +11,8 @@ namespace mst
 		#if defined _WIN64
 		unsigned long long frequency;
 		unsigned long long startoffset;
+		#else
+		//std::chrono::time tp1, tp2;
 		#endif
 	};
 }

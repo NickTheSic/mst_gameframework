@@ -4,24 +4,29 @@
 
 namespace mst
 {
-
     QuadRenderer::QuadRenderer(unsigned int BatchCount)
     {
         Init(BatchCount);
     }
 
+    QuadRenderer::~QuadRenderer()
+    {
+        glDeleteBuffers(1, &rd.vbo);
+        glDeleteBuffers(1, &rd.ebo);
+    }
+
     void QuadRenderer::Init(unsigned int BatchCount)
     {
-        maxVertices = BatchCount * 4;
+        rd.maxVertices = BatchCount * 4;
         unsigned int IndiceCount = BatchCount * 6;
 
-        glGenVertexArrays(1, &vao);
-        glGenBuffers(1, &vbo);
-        glGenBuffers(1, &ebo);
+        glGenVertexArrays(1, &rd.vao);
+        glGenBuffers(1, &rd.vbo);
+        glGenBuffers(1, &rd.ebo);
 
-        glBindVertexArray(vao);
+        glBindVertexArray(rd.vao);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
         glBufferData(GL_ARRAY_BUFFER,
             size_t(4) * size_t(BatchCount) * sizeof(VertexData),
             NULL, GL_DYNAMIC_DRAW);
@@ -39,7 +44,7 @@ namespace mst
             offset+=4;
         }
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rd.ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER,
             size_t(IndiceCount) * sizeof(unsigned int),
             indices, GL_STATIC_DRAW);
@@ -55,7 +60,7 @@ namespace mst
 
     void QuadRenderer::AddRect(const v2f& pos, const v2f& size, const Color& c)
     {
-        if (vertexCount + 4 > maxVertices)
+        if (rd.vertexCount + 4 > rd.maxVertices)
         {
             EndRender();
         }
@@ -78,19 +83,19 @@ namespace mst
         vertices[3].pos.y = pos.y + size.y;
         vertices[3].color = c;
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
         glBufferSubData(GL_ARRAY_BUFFER,
-            vertexCount * sizeof(VertexData),
+            rd.vertexCount * sizeof(VertexData),
             4 * sizeof(VertexData),
             &vertices[0]);
 
-        elementDrawCount++;
-        vertexCount+=4;
+        rd.elementDrawCount++;
+        rd.vertexCount+=4;
     }
 
     void QuadRenderer::AddCenteredQuad(const v2f& pos, const v2f& size, const Color& c)
     {
-        if (vertexCount + 4 > maxVertices)
+        if (rd.vertexCount + 4 > rd.maxVertices)
         {
             EndRender();
         }
@@ -113,32 +118,60 @@ namespace mst
         vertices[3].pos.y = pos.y + hsize.y;
         vertices[3].color = c;
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
         glBufferSubData(GL_ARRAY_BUFFER,
-            vertexCount * sizeof(VertexData),
+            rd.vertexCount * sizeof(VertexData),
             4 * sizeof(VertexData),
             &vertices[0]);
 
-        elementDrawCount++;
-        vertexCount += 4;
+        rd.elementDrawCount++;
+        rd.vertexCount += 4;
     }
 
     void QuadRenderer::StartRender()
     {
-        glBindVertexArray(vao);
-        glUseProgram(shaderProgram);
+        glBindVertexArray(rd.vao);
+        glUseProgram(rd.shaderProgram);
 
-        DrawsPerFrame = 0;
+        rd.DrawsPerFrame = 0;
     }
 
     void QuadRenderer::EndRender()
     {
-        glDrawElements(GL_TRIANGLES, elementDrawCount * 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, rd.elementDrawCount * 6, GL_UNSIGNED_INT, 0);
 
-        vertexCount = 0;
-        elementDrawCount = 0;
+        rd.vertexCount = 0;
+        rd.elementDrawCount = 0;
 
-        DrawsPerFrame++;
+        rd.DrawsPerFrame++;
+    }
+
+    TextRenderer::TextRenderer(unsigned int BatchCount, const std::string& FileName)
+    {
+        Init(BatchCount, FileName);
+    }
+    void TextRenderer::Init(unsigned int BatchCount, const std::string& FileName)
+    {
+        rd.maxVertices = BatchCount * 4;
+
+        if (FT_Init_FreeType(&ft))
+        {
+            std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+        }
+
+        if (FT_New_Face(ft, "fonts/arial.ttf", 0, &face))
+        {
+            std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
+        }
+    }
+
+    void TextRenderer::StartRender()
+    {
+
+    }
+    void TextRenderer::EndRender()
+    {
+
     }
 
     void CompileShader(unsigned int& shader, unsigned int type, const char* shaderSource)
@@ -171,11 +204,11 @@ namespace mst
             "out vec4 oColour;                                            \n"
             "void main()                                                  \n"
             "{                                                            \n"
-            "   oColour = vec4(aColour, u_CameraZoom);                             \n"
+            "   oColour = vec4(aColour, 0);                               \n"
             "   vec2 pos = aPos;                                          \n"
             "   pos -= u_CameraPos;                                       \n"
-            "   pos /= u_WorldSize * 0.5;                                 \n"
-            "   gl_Position = vec4(pos, 0, 1.0);             \n"
+            "   pos /= u_WorldSize * 0.5;                  \n"
+            "   gl_Position = vec4(pos, 0, 1.0);                          \n"
             "}                                                            \0";
 
         const char* fragmentShaderSource = 
