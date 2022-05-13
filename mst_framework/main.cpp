@@ -56,7 +56,7 @@ public:
 		QuadRenderer = new mst::QuadRenderer(14400/6);
 		mst::InitColourShader(QuadRenderer->rd.shaderProgram);
 
-		TextRenderer = new mst::TextRenderer(100, "");
+		TextRenderer = new mst::TextRenderer(100, "leadcoat.ttf");
 
 		GLint cameraPosLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_CameraPos");
 		if (cameraPosLoc != -1)
