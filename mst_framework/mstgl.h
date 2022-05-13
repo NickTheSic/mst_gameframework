@@ -16,6 +16,7 @@ bool LoadGLExtensions();
 #define GL_INFO_LOG_LENGTH       0x8B84	  
 #define GL_TEXTURE0              0x84C0			  
 #define GL_ELEMENT_ARRAY_BUFFER  0x8893 		  
+#define GL_CLAMP_TO_EDGE         0x812F
 
 typedef void   (APIENTRY* PFNGLATTACHSHADERPROC) (GLuint program, GLuint shader);
 extern  PFNGLATTACHSHADERPROC glAttachShader;
