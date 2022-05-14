@@ -9,6 +9,8 @@ Build
 *.vcxproj.filters
 *.vcxproj.filters.user
 *.sln
+Makefile
+*.make
 
 # User-specific files
 *.rsuser
