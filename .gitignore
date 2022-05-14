@@ -7,6 +7,7 @@
 Build
 *.vcxproj
 *.vcxproj.filters
+*.vcxproj.filters.user
 *.sln
 
 # User-specific files
