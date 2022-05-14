@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "Sandbox\Sandbox.vcxproj", "{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4F3FF37F-BBA9-A7F6-04E8-589C7091854B} = {4F3FF37F-BBA9-A7F6-04E8-589C7091854B}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Config", "Config", "{02DA29DD-EE3C-B981-97C2-F13783048504}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Config", "Config.vcxproj", "{5B583FAC-47FA-6982-30B5-7DD61CF6F0D2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MSTEngine", "MSTEngine\MSTEngine.vcxproj", "{4F3FF37F-BBA9-A7F6-04E8-589C7091854B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3096E6B0-9C00-9B27-E53E-4CCD51E8787C} = {3096E6B0-9C00-9B27-E53E-4CCD51E8787C}
+		{89895BD8-7556-B6E3-9E6F-A48B8A9BEB71} = {89895BD8-7556-B6E3-9E6F-A48B8A9BEB71}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParty", "ThirdParty", "{376E56B9-2367-750B-4C99-5A9038F15417}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "ThirdParty\freetype\freetype.vcxproj", "{89895BD8-7556-B6E3-9E6F-A48B8A9BEB71}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "glm", "ThirdParty\glm\glm.vcxproj", "{6577880B-D180-887C-5AFC-9E7CC604947C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stb_image", "ThirdParty\stb_image\stb_image.vcxproj", "{3096E6B0-9C00-9B27-E53E-4CCD51E8787C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win64 = Debug|Win64
+		Release|Win64 = Release|Win64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}.Debug|Win64.ActiveCfg = Debug Win64|x64
+		{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}.Debug|Win64.Build.0 = Debug Win64|x64
+		{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}.Release|Win64.ActiveCfg = Release Win64|x64
+		{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}.Release|Win64.Build.0 = Release Win64|x64
+		{5B583FAC-47FA-6982-30B5-7DD61CF6F0D2}.Debug|Win64.ActiveCfg = Debug Win64|x64
+		{5B583FAC-47FA-6982-30B5-7DD61CF6F0D2}.Release|Win64.ActiveCfg = Release Win64|x64
+		{4F3FF37F-BBA9-A7F6-04E8-589C7091854B}.Debug|Win64.ActiveCfg = Debug Win64|x64
+		{4F3FF37F-BBA9-A7F6-04E8-589C7091854B}.Debug|Win64.Build.0 = Debug Win64|x64
+		{4F3FF37F-BBA9-A7F6-04E8-589C7091854B}.Release|Win64.ActiveCfg = Release Win64|x64
+		{4F3FF37F-BBA9-A7F6-04E8-589C7091854B}.Release|Win64.Build.0 = Release Win64|x64
+		{89895BD8-7556-B6E3-9E6F-A48B8A9BEB71}.Debug|Win64.ActiveCfg = Debug Win64|x64
+		{89895BD8-7556-B6E3-9E6F-A48B8A9BEB71}.Debug|Win64.Build.0 = Debug Win64|x64
+		{89895BD8-7556-B6E3-9E6F-A48B8A9BEB71}.Release|Win64.ActiveCfg = Release Win64|x64
+		{89895BD8-7556-B6E3-9E6F-A48B8A9BEB71}.Release|Win64.Build.0 = Release Win64|x64
+		{6577880B-D180-887C-5AFC-9E7CC604947C}.Debug|Win64.ActiveCfg = Debug Win64|x64
+		{6577880B-D180-887C-5AFC-9E7CC604947C}.Debug|Win64.Build.0 = Debug Win64|x64
+		{6577880B-D180-887C-5AFC-9E7CC604947C}.Release|Win64.ActiveCfg = Release Win64|x64
+		{6577880B-D180-887C-5AFC-9E7CC604947C}.Release|Win64.Build.0 = Release Win64|x64
+		{3096E6B0-9C00-9B27-E53E-4CCD51E8787C}.Debug|Win64.ActiveCfg = Debug Win64|x64
+		{3096E6B0-9C00-9B27-E53E-4CCD51E8787C}.Debug|Win64.Build.0 = Debug Win64|x64
+		{3096E6B0-9C00-9B27-E53E-4CCD51E8787C}.Release|Win64.ActiveCfg = Release Win64|x64
+		{3096E6B0-9C00-9B27-E53E-4CCD51E8787C}.Release|Win64.Build.0 = Release Win64|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5B583FAC-47FA-6982-30B5-7DD61CF6F0D2} = {02DA29DD-EE3C-B981-97C2-F13783048504}
+		{89895BD8-7556-B6E3-9E6F-A48B8A9BEB71} = {376E56B9-2367-750B-4C99-5A9038F15417}
+		{6577880B-D180-887C-5AFC-9E7CC604947C} = {376E56B9-2367-750B-4C99-5A9038F15417}
+		{3096E6B0-9C00-9B27-E53E-4CCD51E8787C} = {376E56B9-2367-750B-4C99-5A9038F15417}
+	EndGlobalSection
+EndGlobal

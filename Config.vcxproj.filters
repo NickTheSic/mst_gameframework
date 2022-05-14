@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="CompileScripts">
+      <UniqueIdentifier>{363EC10F-220C-B515-0BA0-253CF70C917A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MSTEngine">
+      <UniqueIdentifier>{4F3FF37F-BBA9-A7F6-04E8-589C7091854B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sandbox">
+      <UniqueIdentifier>{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{107145F9-FC28-8746-6530-60A251072237}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\freetype">
+      <UniqueIdentifier>{C3A11EE1-2F03-FCEE-B870-42A124D132AE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\glm">
+      <UniqueIdentifier>{5F03D311-4BD1-C617-3465-373E20D2A27C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\stb_image">
+      <UniqueIdentifier>{AAB50CD2-9644-969B-3F63-AA962BD1A641}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="CompileScripts\compile_web.bat">
+      <Filter>CompileScripts</Filter>
+    </None>
+    <None Include="MSTEngine\MSTEngine.lua">
+      <Filter>MSTEngine</Filter>
+    </None>
+    <None Include="ProjectConfig.lua" />
+    <None Include="Sandbox\premake5.lua">
+      <Filter>Sandbox</Filter>
+    </None>
+    <None Include="ThirdParty\freetype\freetype.lua">
+      <Filter>ThirdParty\freetype</Filter>
+    </None>
+    <None Include="ThirdParty\glm\glm.lua">
+      <Filter>ThirdParty\glm</Filter>
+    </None>
+    <None Include="ThirdParty\premake5.lua">
+      <Filter>ThirdParty</Filter>
+    </None>
+    <None Include="ThirdParty\stb_image\compile_win.bat">
+      <Filter>ThirdParty\stb_image</Filter>
+    </None>
+    <None Include="ThirdParty\stb_image\stb_image.lua">
+      <Filter>ThirdParty\stb_image</Filter>
+    </None>
+    <None Include="compile_web.bat" />
+    <None Include="premake5.lua" />
+    <None Include="vs2019.bat" />
+  </ItemGroup>
+</Project>
