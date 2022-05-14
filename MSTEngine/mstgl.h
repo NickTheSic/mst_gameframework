@@ -1,8 +1,17 @@
 #pragma once
 
+#ifdef _WIN64
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#endif
+
 #include <gl/GL.h>
+
+#if defined PLATFORM_WEB
+#include <EGL/egl.h>
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#endif
 
 bool LoadGLExtensions();
 
@@ -18,6 +27,7 @@ bool LoadGLExtensions();
 #define GL_ELEMENT_ARRAY_BUFFER  0x8893 		  
 #define GL_CLAMP_TO_EDGE         0x812F
 
+#ifdef _WIN64
 typedef void   (APIENTRY* PFNGLATTACHSHADERPROC) (GLuint program, GLuint shader);
 extern  PFNGLATTACHSHADERPROC glAttachShader;
 
@@ -126,6 +136,8 @@ extern  PFNGLUNIFORM4FVPROC glUniform4fv;
 typedef void   (APIENTRY* PFNGLBUFFERSUBDATAPROC)  (GLenum target, ptrdiff_t offset, ptrdiff_t size, const void* data);
 extern  PFNGLBUFFERSUBDATAPROC glBufferSubData;
 
+#endif // _WIN64
+
 #if defined MST_GL_IMPLEMENTATION
 
 #pragma region Windows Implementation
@@ -214,5 +226,14 @@ bool LoadGLExtensions()
 	return true;
 }
 #endif   //WIN 64
+
+#if defined PLATFORM_WEB
+bool LoadGLExtensions()
+{
+	// I think that exmscritpen technically handles this for me
+	return true;
+}
+#endif
+
 #pragma endregion // WINDOWS IMPLEMENTAION
 #endif //MST_GL_IMPLEMENTATION

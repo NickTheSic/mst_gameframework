@@ -11,7 +11,13 @@ namespace mst
 {
 	void Engine::SwapBuffers()
 	{
+		#ifdef _WIN64
 		::SwapBuffers(Device);
+		#endif
+
+		#if defined PLATFORM_WEB | __EMSCRIPTEN__
+		eglSwapBuffers(Display, Surface);
+		#endif
 	}
 
 	v2f Engine::GetMouseToScreen()
@@ -85,26 +91,33 @@ namespace mst
 
 	void Engine::SetWindowTitle(std::string title)
 	{
-	#ifdef UNICODE
-	#ifdef __MINGW32__
-		wchar_t* buffer = new wchar_t[s.length() + 1];
-		mbstowcs(buffer, s.c_str(), s.length());
-		buffer[s.length()] = L'\0';
-	#else
-		int count = MultiByteToWideChar(CP_UTF8, 0, title.c_str(), -1, NULL, 0);
-		wchar_t* buffer = new wchar_t[count];
-		MultiByteToWideChar(CP_UTF8, 0, title.c_str(), -1, buffer, count);
-	#endif
-		SetWindowText(Window, buffer);
+	#ifdef _WIN64
+		#ifdef UNICODE
+		#ifdef __MINGW32__
+			wchar_t* buffer = new wchar_t[s.length() + 1];
+			mbstowcs(buffer, s.c_str(), s.length());
+			buffer[s.length()] = L'\0';
+		#else
+			int count = MultiByteToWideChar(CP_UTF8, 0, title.c_str(), -1, NULL, 0);
+			wchar_t* buffer = new wchar_t[count];
+			MultiByteToWideChar(CP_UTF8, 0, title.c_str(), -1, buffer, count);
+		#endif
+			SetWindowText(Window, buffer);
 
-		delete[] buffer;
-	#else
-		SetWindowText(Window, s.c_str());
+			delete[] buffer;
+		#else
+			SetWindowText(Window, title.c_str());
+		#endif
+	#endif//win64
+
+	#if defined PLATFORM_WEB || __EMSCRIPTEN__
+		emscripten_set_window_title(title.c_str());
 	#endif
 	}
 	
 	bool Engine::PollEvents()
 	{
+		#ifdef _WIN64
 		MSG Message;
 		while (PeekMessage(&Message, nullptr, 0, 0, PM_REMOVE))
 		{
@@ -118,6 +131,9 @@ namespace mst
 				return false;
 			}
 		}
+		#endif
+
+		// web can just return true
 		return true;
 	}
 
@@ -193,10 +209,13 @@ namespace mst
 			double msPerFrame = 1000.0 / fps;
 			SetWindowTitle("FPS: " + std::to_string(fps) + " | " + std::to_string(msPerFrame) + "ms");
 			TimedLoop -= 1.f;
+			frameCount = 0;
 		}
 		frameCount++;
 	}
 	
+
+#ifdef _WIN64
 	bool Engine::CreateGLWindow(int width, int height)
 	{
 		ScreenSize.x = width;
@@ -323,8 +342,6 @@ namespace mst
 			if (rendererString) dbglog(rendererString);
 		}
 
-
-	
 		ShowWindow(Window, SW_SHOW);
 		SetForegroundWindow(Window);
 		SetFocus(Window);
@@ -425,4 +442,51 @@ namespace mst
 	
 		return result;
 	}
+#endif //_WIN64
+
+#if defined PLATFORM_WEB || __EMSCRIPTEN__
+}// end namespace mst
+
+	EM_BOOL keyboard_callback(int eventType, const EmscriptenKeyboardEvent* e, void* engine)
+	{
+		if (eventType == EMSCRIPTEN_EVENT_KEYDOWN)
+			static_cast<mst::Engine*>(engine)->HandleKey((mst::Key)emscripten_compute_dom_pk_code(e->code), true);
+
+		if (eventType == EMSCRIPTEN_EVENT_KEYUP)
+			static_cast<mst::Engine*>(engine)->HandleKey((mst::Key)emscripten_compute_dom_pk_code(e->code), false);
+
+		return EM_TRUE;
+	}
+
+namespace mst
+{ 
+	bool Engine::CreateGLWindow(int w, int h)
+	{
+		emscripten_set_canvas_element_size("#canvas", w, h);
+
+		//set up callbacks here
+		emscripten_set_keydown_callback("#canvas", this, 1, keyboard_callback);
+		emscripten_set_keyup_callback("#canvas", this, 1, keyboard_callback);
+
+
+		EmscriptenWebGLContextAttributes attr;
+		emscripten_webgl_init_context_attributes(&attr);
+
+		EGLint const attribute_list[] = { EGL_RED_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_BLUE_SIZE, 8, EGL_ALPHA_SIZE, 8, EGL_NONE };
+		EGLint const context_config[] = { EGL_CONTEXT_CLIENT_VERSION , 2, EGL_NONE };
+		EGLint num_config;
+
+		Display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+		eglInitialize(Display, nullptr, nullptr);
+		eglChooseConfig(Display, attribute_list, &Config, 1, &num_config);
+
+		/* create an EGL rendering context */
+		Context = eglCreateContext(Display, Config, EGL_NO_CONTEXT, context_config);
+		Surface = eglCreateWindowSurface(Display, Config, NULL, nullptr);
+
+		eglMakeCurrent(Display, Surface, Surface, Context);
+		return true;
+	}
+#endif
+
 } //namespace mst

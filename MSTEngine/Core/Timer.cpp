@@ -1,6 +1,8 @@
 #include "Timer.h"
 
-#if defined _WIN64
+#include <iostream>
+
+#if !CHRONO_WAY
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 namespace mst
@@ -29,13 +31,8 @@ namespace mst
 {
 	Timer::Timer()
 	{
-		m_tp2 = std::chrono::system_clock::now();
-		std::chrono::duration<float> elapsedTime = m_tp2 - m_tp1;
-		m_tp1 = m_tp2;
-
-		// Our time per frame coefficient
-		float fElapsedTime = elapsedTime.count();
-		fLastElapsed = fElapsedTime;
+		tp2 = std::chrono::system_clock::now();
+		tp1 = tp2;
 
 		delta = 0.0f;
 		time = 0.0;
@@ -43,17 +40,18 @@ namespace mst
 
 	void Timer::Update()
 	{
-		m_tp2 = std::chrono::system_clock::now();
-		std::chrono::duration<float> elapsedTime = m_tp2 - m_tp1;
-		m_tp1 = m_tp2;
+		tp2 = std::chrono::system_clock::now();
+		std::chrono::duration<float> elapsedTime = tp2 - tp1;
+		tp1 = tp2;
 
 		// Our time per frame coefficient
 		float fElapsedTime = elapsedTime.count();
-		fLastElapsed = fElapsedTime;
 
 		//do olc video stuff here
-		delta = curr - time;
-		time = curr;
+		delta = fElapsedTime;
+
+		std::cout << "Delta: " << delta << " time: " << time << " Elapsed: " << fElapsedTime << std::endl;
+		time += fElapsedTime;
 	}
 }
 #endif

@@ -1,5 +1,15 @@
 #pragma once
 
+#ifdef _WIN64
+#define CHRONO_WAY 0
+#else
+#define CHRONO_WAY 1
+#endif
+
+#if CHRONO_WAY
+#include <chrono>
+#endif
+
 namespace mst
 {
 	struct Timer
@@ -8,11 +18,11 @@ namespace mst
 		void Update();
 		float delta;
 		float time;
-		#if defined _WIN64
+		#if !CHRONO_WAY
 		unsigned long long frequency;
 		unsigned long long startoffset;
 		#else
-		//std::chrono::time tp1, tp2;
+		std::chrono::time_point<std::chrono::system_clock> tp1, tp2;
 		#endif
 	};
 }

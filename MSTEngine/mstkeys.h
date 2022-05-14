@@ -1,6 +1,10 @@
 #ifndef _MST_KEYS_H_
 #define _MST_KEYS_H_
 
+#if defined __EMSCRIPTEN__ || defined PLATFORM_WEB
+#include <emscripten/key_codes.h> // To use the DOM_PK codes
+#endif
+
 namespace mst
 {
     #if defined _WIN64
@@ -27,7 +31,6 @@ namespace mst
     #endif
     
     #if defined __EMSCRIPTEN__
-    #include <emscripten/key_codes.h> // To use the DOM_PK codes
     enum class Key : unsigned short
     {
         UNKOWN = DOM_PK_UNKNOWN,
@@ -147,14 +150,11 @@ namespace mst
         NUMPAD_ENTER = DOM_PK_NUMPAD_ENTER,
         CONTROL_RIGHT = DOM_PK_CONTROL_RIGHT,
         AUDIO_VOLUME_MUTE = DOM_PK_AUDIO_VOLUME_MUTE,
-        AUDIO_VOLUME_MUTE = DOM_PK_AUDIO_VOLUME_MUTE,
         LAUNCH_APP_2 = DOM_PK_LAUNCH_APP_2,
         MEDIA_PLAY_PAUSE = DOM_PK_MEDIA_PLAY_PAUSE,
         MEDIA_STOP = DOM_PK_MEDIA_STOP,
         EJECT = DOM_PK_EJECT,
         AUDIO_VOLUME_DOWN = DOM_PK_AUDIO_VOLUME_DOWN,
-        AUDIO_VOLUME_DOWN = DOM_PK_AUDIO_VOLUME_DOWN,
-        AUDIO_VOLUME_UP = DOM_PK_AUDIO_VOLUME_UP,
         AUDIO_VOLUME_UP = DOM_PK_AUDIO_VOLUME_UP,
         BROWSER_HOME = DOM_PK_BROWSER_HOME,
         NUMPAD_DIVIDE = DOM_PK_NUMPAD_DIVIDE,

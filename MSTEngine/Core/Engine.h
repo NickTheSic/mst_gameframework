@@ -4,7 +4,14 @@
 	#define WIN32_LEAN_AND_MEAN
 	#include <Windows.h>
 #endif
+
+#if defined PLATFORM_WEB || __EMSCRIPTEN__
+	#include <emscripten/emscripten.h>
+	#include <emscripten/HTML5.h>
+#endif
+
 #include "mstgl.h"
+
 #include "mstkeys.h"
 #include "mstglm.h"
 
@@ -82,8 +89,11 @@ namespace mst
 		static LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
 	#endif
 
-	#if defined __EMSCRIPTEN
-		
+	#if defined __EMSCRIPTEN__ || PLATFORM_WEB
+		EGLDisplay Display;
+		EGLConfig  Config;
+		EGLContext Context;
+		EGLSurface Surface;
 	#endif
 
 		v2i PrevMousePos      = {};
