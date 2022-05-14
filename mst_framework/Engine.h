@@ -30,6 +30,8 @@ namespace mst
 	public:
 		virtual ~Engine() = default;
 
+		static Engine* CreateEngine();
+
 		virtual bool UserStartup() {return false; /*Forces user to override?*/ };
 		virtual void UserUpdate(){};
 		virtual void UserRender(){};
@@ -66,6 +68,7 @@ namespace mst
 
 		v2f GetMouseMoveDelta();
 		v2f GetMouseToScreen();
+		v2f GetMousePosition();
 
 		void ShowFPS();
 

@@ -1,6 +1,7 @@
 #define MST_GL_IMPLEMENTATION
 #include "Engine.h"
 #include "BatchRenderer.h"
+#include "TextRenderer.h"
 #include <vector>
 
 #include <iostream>
@@ -130,19 +131,18 @@ public:
 
 		if (IsMouseButtonDown(0) && MoveableGridPiece != nullptr)
 		{
-			*MoveableGridPiece = GetMouseToScreen();
+			*MoveableGridPiece = GetMouseToScreen() - v2f{SquareSizes*0.5, SquareSizes * 0.5};
 		}
 
-
-		v2f cameraMove(0);
-		if (MainCamera.MoveCamera(cameraMove))
-		{
-			GLint cameraPosLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_CameraPos");
-			if (cameraPosLoc != -1)
-			{
-				glUniform2fv(cameraPosLoc, 1, &MainCamera.Position[0]);
-			}
-		}
+		//v2f cameraMove(0);
+		//if (MainCamera.MoveCamera(cameraMove))
+		//{
+		//	GLint cameraPosLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_CameraPos");
+		//	if (cameraPosLoc != -1)
+		//	{
+		//		glUniform2fv(cameraPosLoc, 1, &MainCamera.Position[0]);
+		//	}
+		//}
 		if (MainCamera.Zoom(MouseScroll*GetDeltaTime()))
 		{
 			GLint cameraZoomLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_CameraZoom");
@@ -203,7 +203,7 @@ int main(int argc, char** argv)
 
 	if (Engine->Construct(800, 600))
 	{
-		glClearColor(0.25f,0.5f,0.7f,1.0f);
+		glClearColor(0.0f,0.0f,0.0f,1.0f);
 
 		while (Engine->PollEvents())
 		{

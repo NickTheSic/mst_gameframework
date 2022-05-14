@@ -16,9 +16,14 @@ namespace mst
 
 	v2f Engine::GetMouseToScreen()
 	{
-		v2f mousePos(CurrMousePos);
+		v2f mousePos = v2f(CurrMousePos) + MouseMoveDelta;
 		mousePos -= v2f(ScreenCenter) - MainCamera.Position;
 		return std::move(mousePos);
+	}
+
+	v2f Engine::GetMousePosition()
+	{
+		return CurrMousePos;
 	}
 
 	v2f Engine::GetMouseMoveDelta()
@@ -162,7 +167,6 @@ namespace mst
 
 		MouseScroll = CurrentFrameMouseScroll;
 		CurrentFrameMouseScroll = 0;
-
 		MouseMoveDelta = CurrMousePos - PrevMousePos;
 		PrevMousePos = CurrMousePos;
 
@@ -305,12 +309,21 @@ namespace mst
 			return false;
 		}
 
+		typedef BOOL(WINAPI* PFNWGLSWAPINTERVALEXTPROC) (int interval);
+		PFNWGLSWAPINTERVALEXTPROC wglSwap = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+		if (wglSwap != nullptr)
+		{
+			wglSwap(0);
+		}
+
 		// Get the name of the video card.
 		{
 			char* rendererString;
 			rendererString = (char*)glGetString(GL_RENDERER);
 			if (rendererString) dbglog(rendererString);
 		}
+
+
 	
 		ShowWindow(Window, SW_SHOW);
 		SetForegroundWindow(Window);

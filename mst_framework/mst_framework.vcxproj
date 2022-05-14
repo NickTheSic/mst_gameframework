@@ -90,6 +90,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="BatchRenderer.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="RenderUtils.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +102,8 @@
     <ClInclude Include="mstgl.h" />
     <ClInclude Include="mstglm.h" />
     <ClInclude Include="mstkeys.h" />
+    <ClInclude Include="RenderUtils.h" />
+    <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
