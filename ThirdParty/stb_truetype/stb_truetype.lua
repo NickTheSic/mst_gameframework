@@ -1,8 +1,8 @@
-project "stb_image"
+project "stb_truetype"
 	kind "staticlib"
 	language "C"
 
 	files
 	{
-		"*c", "*.h"
+		"*c", "*.h",
 	}
