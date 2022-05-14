@@ -30,7 +30,8 @@ namespace mst
 	public:
 		virtual ~Engine() = default;
 
-		static Engine* CreateEngine();
+		//Implemented by use game
+		static class Engine* CreateEngine();
 
 		virtual bool UserStartup() {return false; /*Forces user to override?*/ };
 		virtual void UserUpdate(){};

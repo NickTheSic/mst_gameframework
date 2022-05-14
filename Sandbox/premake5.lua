@@ -6,8 +6,8 @@ project "Sandbox"
 	
 	includedirs
 	{
-		"ThirdParty",
-		"MSTEngine",
+		"%{wks.location}/ThirdParty",
+		"%{wks.location}/MSTEngine",
 	}
 
 	dependson
