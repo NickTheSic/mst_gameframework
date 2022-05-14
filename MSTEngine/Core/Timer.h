@@ -17,8 +17,8 @@ namespace mst
 		Timer();
 		void Update();
 		float delta;
-		float time;
 		#if !CHRONO_WAY
+		float time;
 		unsigned long long frequency;
 		unsigned long long startoffset;
 		#else

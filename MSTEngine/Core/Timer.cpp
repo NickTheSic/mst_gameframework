@@ -19,7 +19,6 @@ namespace mst
 	{
 		unsigned long long value;
 		QueryPerformanceCounter((LARGE_INTEGER*)&value);
-		//double curr = (double)(value - timer.startoffset) / (double)timer.frequency;
 		float curr = (float)(value - startoffset) / (float)frequency;
 	
 		delta = curr - time;
@@ -35,7 +34,6 @@ namespace mst
 		tp1 = tp2;
 
 		delta = 0.0f;
-		time = 0.0;
 	}
 
 	void Timer::Update()
@@ -47,11 +45,7 @@ namespace mst
 		// Our time per frame coefficient
 		float fElapsedTime = elapsedTime.count();
 
-		//do olc video stuff here
 		delta = fElapsedTime;
-
-		std::cout << "Delta: " << delta << " time: " << time << " Elapsed: " << fElapsedTime << std::endl;
-		time += fElapsedTime;
 	}
 }
 #endif
