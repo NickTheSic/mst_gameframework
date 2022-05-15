@@ -2,11 +2,13 @@ project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
 
-	 targetdir ("%{wks.location}/Build/" ..outputdir)
-	
+	targetdir ("%{wks.location}/Build/" ..outputdir)
+	debugdir ("%{wks.location}/")
+
 	includedirs
 	{
 		"%{wks.location}/ThirdParty",
+		"%{wks.location}/ThirdParty/freetype/include",
 		"%{wks.location}/MSTEngine",
 	}
 
@@ -27,7 +29,7 @@ project "Sandbox"
 
 	links
 	{
-		"MSTEngine"
+		"MSTEngine",
 	}
 
 	filter "Release"

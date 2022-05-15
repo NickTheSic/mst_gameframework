@@ -6,12 +6,13 @@ project "MSTEngine"
 	{
 		"%{wks.location}/MSTEngine",
 		"%{wks.location}/ThirdParty",
+		"%{wks.location}/ThirdParty/freetype/include",
 	}
 
 	dependson
 	{
 		"stb_image",
-		"stb_truetype",
+		"freetype",
 	}
 
 	files
@@ -31,5 +32,5 @@ project "MSTEngine"
 		"gdi32",
 		"opengl32",
 		"stb_image",
-		"stb_truetype",
+		"freetype",
 	}

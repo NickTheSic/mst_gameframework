@@ -54,7 +54,7 @@ bool MyGame::UserStartup()
 	QuadRenderer = new mst::QuadRenderer((ScreenSize.y*ScreenSize.x)/SquareSizes);
 	mst::InitColourShader(QuadRenderer->rd.shaderProgram);
 
-	TextRenderer = new mst::TextRenderer(100, "leadcoat.ttf");
+	TextRenderer = new mst::TextRenderer(100, "Data/leadcoat.ttf");
 
 	GLint cameraPosLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_CameraPos");
 	if (cameraPosLoc != -1)

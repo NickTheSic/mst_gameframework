@@ -2,6 +2,8 @@ workspace "MST Framework"
     architecture "x86_64"
     startproject "Sandbox"
 
+    debugdir "%{wks.location}"
+
     configurations
     {
         "Debug",
@@ -24,7 +26,7 @@ filter "configurations:Debug"
     symbols "on"
 
 filter "configurations:Release"
-    defines{"RELEASE"}
+    defines{"RELEASE", "NDEBUG"}
     runtime "Release"
     optimize "on"
 
