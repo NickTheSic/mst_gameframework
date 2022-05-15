@@ -14,7 +14,7 @@ namespace mst
     
         BACKSPACE = 0x08,
         TAB = 0x09,
-    
+
         SHIFT_LEFT = 0X10, CONTROL_LEFT, ALT_LEFT, PAUSE, CAPS_LOCK,
     
         ESCAPE = 0x1B,

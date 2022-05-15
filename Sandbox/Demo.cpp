@@ -16,7 +16,6 @@ std::ostream& operator<<(std::ostream& os, const v2f& v)
 	return os;
 }
 
-
 mst::Engine* mst::Engine::CreateEngine()
 {
 	return new MyGame();
