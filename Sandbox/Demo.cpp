@@ -53,9 +53,6 @@ bool MyGame::UserStartup()
 
 	QuadRenderer = new mst::QuadRenderer((ScreenSize.y*ScreenSize.x)/SquareSizes);
 	mst::InitColourShader(QuadRenderer->rd.shaderProgram);
-
-	TextRenderer = new mst::TextRenderer(100, "Data/leadcoat.ttf");
-
 	GLint cameraPosLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_CameraPos");
 	if (cameraPosLoc != -1)
 	{
@@ -65,6 +62,15 @@ bool MyGame::UserStartup()
 	if (cameraZoomLoc != -1)
 	{
 		glUniform1f(cameraZoomLoc, MainCamera.CurrentZoom);
+	}
+
+	TextRenderer = new mst::QuadRenderer(SquareSizes); //new mst::TextRenderer(5, "Data/leadcoat.ttf");
+	////mst::InitTextShader(TextRenderer->rd.shaderProgram);
+	mst::InitColourShader(TextRenderer->rd.shaderProgram);
+	GLint cameraPosLocText = glGetUniformLocation(TextRenderer->rd.shaderProgram, "u_CameraPos");
+	if (cameraPosLocText != -1)
+	{
+		glUniform2fv(cameraPosLocText, 1, &MainCamera.Position[0]);
 	}
 
 	GridSize = ScreenSize / SquareSizes;
@@ -87,7 +93,19 @@ void MyGame::UserResize()
 {
 	if (QuadRenderer != nullptr)
 	{
+		glUseProgram(QuadRenderer->rd.shaderProgram);
 		GLint worldSizeLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_WorldSize");
+		if (worldSizeLoc != -1)
+		{
+			v2f screenSize(ScreenSize);
+			glUniform2fv(worldSizeLoc, 1, &screenSize[0]);
+		}
+	}
+
+	if (TextRenderer != nullptr)
+	{
+		glUseProgram(TextRenderer->rd.shaderProgram);
+		GLint worldSizeLoc = glGetUniformLocation(TextRenderer->rd.shaderProgram, "u_WorldSize");
 		if (worldSizeLoc != -1)
 		{
 			v2f screenSize(ScreenSize);
@@ -165,10 +183,14 @@ void MyGame::UserRender()
 
 	for (auto& pos : MousePositions)
 	{
-		QuadRenderer->AddCenteredQuad(pos, { SquareSizes, SquareSizes }, Color{ 0,0,0 });
+		QuadRenderer->AddCenteredQuad(pos, { SquareSizes, SquareSizes }, Color{ 255,255,255 });
 	}
 
 	QuadRenderer->EndRender();
+
+	TextRenderer->StartRender();
+	TextRenderer->AddRect(ScreenCenter, {30, 30}, Color{0,255,255});
+	TextRenderer->EndRender();
 };
 
 v2i MyGame::WorldSpaceToIndex(const v2f& WorldCoord)

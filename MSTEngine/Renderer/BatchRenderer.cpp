@@ -83,7 +83,6 @@ namespace mst
         vertices[3].pos.y = pos.y + size.y;
         vertices[3].color = c;
 
-        glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
         glBufferSubData(GL_ARRAY_BUFFER,
             rd.vertexCount * sizeof(VertexData),
             4 * sizeof(VertexData),
@@ -118,7 +117,6 @@ namespace mst
         vertices[3].pos.y = pos.y + hsize.y;
         vertices[3].color = c;
 
-        glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
         glBufferSubData(GL_ARRAY_BUFFER,
             rd.vertexCount * sizeof(VertexData),
             4 * sizeof(VertexData),
@@ -132,6 +130,7 @@ namespace mst
     {
         glBindVertexArray(rd.vao);
         glUseProgram(rd.shaderProgram);
+        glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
 
         rd.DrawsPerFrame = 0;
     }

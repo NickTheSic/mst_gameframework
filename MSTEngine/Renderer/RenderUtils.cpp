@@ -60,21 +60,30 @@ namespace mst
             "layout (location = 0) in vec2 aPos;                          \n"
             "layout (location = 1) in vec3 aColour;                       \n"
             "layout (location = 2) in vec2 size;                          \n"
+            "layout (location = 3) in vec2 InCoords;                      \n"
             "out vec2 TexCoords;                                          \n"
-            "uniform mat4 projection;                                     \n"
+            "out vec3 oColour;                                            \n"
+            "uniform vec2 u_WorldSize;                                    \n"
+            "uniform vec2 u_CameraPos;                                    \n"
             "void main()                                                  \n"
             "{                                                            \n"
-            "   gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);     \n"
-            "    TexCoords = vertex.zw;                                   \n"
+            "   vec2 pos = aPos;                                          \n"
+            "   pos -= u_CameraPos;                                       \n"
+            "   pos /= u_WorldSize * 0.5;                                 \n"
+            "   gl_Position = vec4(pos, 0, 1.0);                          \n"
+            "   TexCoords = InCoords;                                     \n"
+            "   oColour = aColour;                                        \n"
             "}                                                            \0";
 
         const char* fragmentShaderSource =
-            "#version 330 core                                \n"
-            "out vec4 FragColor;                              \n"
-            "in vec4 oColour;                                 \n"
-            "void main(){                                     \n"
-            "FragColor = oColour;                             \n"
-            "}                                                \0";
+            "#version 330 core                                            \n"
+            "out vec4 FragColor;                                          \n"
+            "in vec3 oColour;                                             \n"
+            "in vec2 TexCoords;                                           \n"
+            "uniform sampler2D text;                                      \n"
+            "void main(){                                                 \n"
+            "FragColor = vec4(oColour, texture(text, TexCoords).r);        \n"
+            "}                                                            \0";
 
         InitShaderCode(Program, vertexShaderSource, fragmentShaderSource);
     }

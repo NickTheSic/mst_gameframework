@@ -16,7 +16,7 @@ public:
 	int SquareSizes = 10;
 	float Tick = 0.0f;
 	mst::QuadRenderer* QuadRenderer = nullptr;
-	mst::TextRenderer* TextRenderer = nullptr;
+	mst::QuadRenderer* TextRenderer = nullptr;
 	std::vector<v2f> MousePositions;
 	std::vector<v2f> GridRectPositions;
 	std::vector<Color> RandomColours;

@@ -63,10 +63,10 @@ namespace mst
         glVertexAttribPointer(1, 3, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, color)));
         glEnableVertexAttribArray(1);
 
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, glyph.size)));
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, size)));
         glEnableVertexAttribArray(2);
 
-        glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, glyph.bearing)));
+        glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, coords)));
         glEnableVertexAttribArray(3);
 
         InitFont(FileName);
@@ -93,7 +93,7 @@ namespace mst
         FT_Set_Pixel_Sizes(face, 48, 48);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
         
-        for (unsigned char c = 48; c < 122; c++)
+        for (unsigned char c = OffsetChar; c < 122; c++)
         {
             if (FT_Load_Char(face, c, FT_LOAD_RENDER))
             {
@@ -127,7 +127,7 @@ namespace mst
                 static_cast<unsigned int>(face->glyph->advance.x),
                 texture
             };
-            Glyphs.push_back(glyph);
+            Glyphs.push_back(std::move(glyph));
         }
         
         FT_Done_Face(face);
@@ -136,7 +136,9 @@ namespace mst
 
     void TextRenderer::StartRender()
     {
+        glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(rd.vao);
+        glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
         glUseProgram(rd.shaderProgram);
 
         rd.DrawsPerFrame = 0;
@@ -155,44 +157,54 @@ namespace mst
     void TextRenderer::RenderString(const std::string& text, v2f pos)
     {
         //glUniform3f(glGetUniformLocation(s.Program, "textColor"), color.x, color.y, color.z);
-        glActiveTexture(GL_TEXTURE0);
-        glBindVertexArray(rd.vao);
+
+        size_t stringVerts = text.size() * 4;
+        size_t stringOffset = 0;
+        if (stringVerts > rd.maxVertices)
+        {
+            // UNABLE To fit string into maxVertices!!
+            // just cycle through text from the begining
+            int end = stringVerts - (rd.maxVertices-1);
+            RenderString(text.substr(0, end), pos);
+            stringOffset = (stringVerts - end) / 4;
+        }
 
         float scale = 10.f;
 
         // iterate through all characters
         std::string::const_iterator c;
-        for (c = text.begin(); c != text.end(); c++)
+        for (c = text.begin() + stringOffset; c != text.end(); c++)
         {
-            GlyphData ch = Glyphs[*c];
+            GlyphData ch = Glyphs[*c-OffsetChar];
 
             float xpos = pos.x + ch.bearing.x * scale;
             float ypos = pos.y - (ch.size.y - ch.bearing.y) * scale;
-
+            
             float w = ch.size.x * scale;
             float h = ch.size.y * scale;
             // update VBO for each character
-            float vertices[6][4] = {
-                { xpos,     ypos + h,   0.0f, 0.0f },
-                { xpos,     ypos,       0.0f, 1.0f },
-                { xpos + w, ypos,       1.0f, 1.0f },
 
-                { xpos,     ypos + h,   0.0f, 0.0f },
-                { xpos + w, ypos,       1.0f, 1.0f },
-                { xpos + w, ypos + h,   1.0f, 0.0f }
+            GlyphVertexData vertices[4] = 
+            {
+                {{pos.x,   pos.y},     {255,255,255}, ch.size, {0.0f, 1.0f}},
+                {{pos.x+w, pos.y},     {255,255,255}, ch.size, {1.0f, 1.0f}},
+                {{pos.x+w, pos.y+h},   {255,255,255}, ch.size, {1.0f, 1.0f}},
+                {{pos.x,   pos.y+h},   {255,255,255}, ch.size, {1.0f, 0.0f}},
             };
             // render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.TextureId);
             // update content of VBO memory
-            glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            // render quad
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            glBufferSubData(GL_ARRAY_BUFFER, rd.vertexCount * sizeof(GlyphVertexData), 4 * sizeof(GlyphVertexData), vertices);
+
+            rd.elementDrawCount++;
+            rd.vertexCount += 4;
+
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
             pos.x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
         }
-        glBindVertexArray(0);
-        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    void TextRenderer::RenderChar(unsigned char c)
+    {
     }
 }

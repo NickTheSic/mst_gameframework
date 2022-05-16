@@ -19,7 +19,8 @@ namespace mst
     {
         v2f pos;
         Color color;
-        GlyphData glyph;
+        v2f size;
+        v2f coords;
     };
 
     class TextRenderer
@@ -35,10 +36,13 @@ namespace mst
         void EndRender();
 
         void RenderString(const std::string& String, v2f pos);
-        //void RenderChar(unsigned char c);
+        void RenderChar(unsigned char c);
 
         RendererData rd;
 
+        unsigned char OffsetChar = '!';
+
+        // used to keep track of the loaded glyphs
         std::vector<GlyphData> Glyphs;
     };
 }
