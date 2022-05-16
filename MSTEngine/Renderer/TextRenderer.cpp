@@ -20,17 +20,21 @@ namespace mst
             glDeleteTextures(1, &g.TextureId);
         }
     }
+
     void TextRenderer::Init(unsigned int BatchCount, const std::string& FileName)
     {
         rd.maxVertices = BatchCount * 4;
 
         unsigned int IndiceCount = BatchCount * 6;
 
+
         glGenVertexArrays(1, &rd.vao);
         glGenBuffers(1, &rd.vbo);
         glGenBuffers(1, &rd.ebo);
 
         glBindVertexArray(rd.vao);
+
+        InitFont(FileName);
 
         glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
         glBufferData(GL_ARRAY_BUFFER,
@@ -71,8 +75,6 @@ namespace mst
 
         glVertexAttribPointer(4, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, textureIndex)));
         glEnableVertexAttribArray(4);
-
-        InitFont(FileName);
     }
 
     void TextRenderer::InitFont(std::string FileName)
@@ -93,7 +95,7 @@ namespace mst
             return;
         }
         
-        FT_Set_Pixel_Sizes(face, 12, 12);
+        FT_Set_Pixel_Sizes(face, 0, 20);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
         
         for (unsigned char c = OffsetChar; c < 122; c++)
@@ -163,28 +165,20 @@ namespace mst
 
     void TextRenderer::RenderString(const std::string& text, v2f& pos)
     {
-        //glUniform3f(glGetUniformLocation(s.Program, "textColor"), color.x, color.y, color.z);
+        //glUniform3f
 
-        size_t stringVerts = text.size();
-        size_t stringOffset = 0;
-        if (stringVerts*4 > rd.maxVertices)
-        {
-            // UNABLE To fit string into maxVertices!!
-            // just cycle through text from the begining
-            // DOesn't work as expected
-            *(int*)0 = 5;
-            return;
-            int end = stringVerts - (rd.maxVertices/4);
-            RenderString(text.substr(0, text.size()-end), pos);
-            stringOffset = ((stringVerts - end) + 1);
-        }
-
-        float scale = 10.f;
+        float scale = 1.f;
 
         // iterate through all characters
         std::string::const_iterator c;
-        for (c = text.begin() + stringOffset; c != text.end(); c++)
+        for (c = text.begin(); c != text.end(); c++)
         {
+            if (*c == ' ')
+            {
+                pos.x += 6 * scale;
+                continue;
+            }
+
             GlyphData ch = Glyphs[*c-OffsetChar];
 
             float xpos = pos.x + ch.bearing.x * scale;

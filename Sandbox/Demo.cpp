@@ -38,17 +38,15 @@ bool MyGame::UserStartup()
 {
 	glClearDepth(1.0f);
 	// Set the polygon winding to front facing for the left handed system.
-	glFrontFace(GL_CCW);
-	glCullFace(GL_BACK);
+	//glFrontFace(GL_CCW);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	glEnable(GL_BLEND
-		| GL_CULL_FACE
-		| GL_DEPTH_TEST
-	);
-	//glBlendColor();glEnable(GL_BLEND);
+	glEnable(GL_DEPTH);
+	
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	MainCamera.Position = ScreenSize / 2;
 
@@ -67,7 +65,6 @@ bool MyGame::UserStartup()
 
 	TextRenderer = new mst::TextRenderer(100, "Data/leadcoat.ttf");
 	mst::InitTextShader(TextRenderer->rd.shaderProgram);
-	
 	GLint cameraPosLocText = glGetUniformLocation(TextRenderer->rd.shaderProgram, "u_CameraPos");
 	if (cameraPosLocText != -1)
 	{
@@ -159,14 +156,14 @@ void MyGame::UserUpdate()
 	//		glUniform2fv(cameraPosLoc, 1, &MainCamera.Position[0]);
 	//	}
 	//}
-	if (MainCamera.Zoom(MouseScroll * GetDeltaTime()))
-	{
-		GLint cameraZoomLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_CameraZoom");
-		if (cameraZoomLoc != -1)
-		{
-			glUniform1f(cameraZoomLoc, MainCamera.CurrentZoom);
-		}
-	}
+	//if (MainCamera.Zoom(MouseScroll * GetDeltaTime()))
+	//{
+	//	GLint cameraZoomLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_CameraZoom");
+	//	if (cameraZoomLoc != -1)
+	//	{
+	//		glUniform1f(cameraZoomLoc, MainCamera.CurrentZoom);
+	//	}
+	//}
 }
 
 void MyGame::UserRender()
@@ -187,9 +184,8 @@ void MyGame::UserRender()
 	QuadRenderer->EndRender();
 
 	TextRenderer->StartRender();
-	TextRenderer->RenderString("Hello!", v2f(0,0));
+	TextRenderer->RenderString("Hello! World", v2f(0,0));
 	TextRenderer->EndRender();
-
 };
 
 v2i MyGame::WorldSpaceToIndex(const v2f& WorldCoord)

@@ -32,10 +32,10 @@ namespace mst
             "uniform vec2 u_WorldSize;                                    \n"
             "uniform vec2 u_CameraPos;                                    \n"
             "uniform float u_CameraZoom;                                  \n"
-            "out vec4 oColour;                                            \n"
+            "out vec3 oColour;                                            \n"
             "void main()                                                  \n"
             "{                                                            \n"
-            "   oColour = vec4(aColour, 0);                               \n"
+            "   oColour = aColour;                               \n"
             "   vec2 pos = aPos;                                          \n"
             "   pos -= u_CameraPos;                                       \n"
             "   pos /= u_WorldSize * 0.5;                  \n"
@@ -45,9 +45,9 @@ namespace mst
         const char* fragmentShaderSource =
             "#version 330 core                                \n"
             "out vec4 FragColor;                              \n"
-            "in vec4 oColour;                                 \n"
+            "in vec3 oColour;                                 \n"
             "void main(){                                     \n"
-            "FragColor = oColour;                             \n"
+            "FragColor = vec4(oColour, 1.0);                             \n"
             "}                                                \0";
 
         InitShaderCode(Program, vertexShaderSource, fragmentShaderSource);
@@ -82,8 +82,8 @@ namespace mst
             "in vec2 TexCoords;                                           \n"
             "uniform sampler2D text;                                      \n"
             "void main(){                                                 \n"
-            //"if (texture(text, TexCoords).r < 0.1) discard;               \n"
-            "FragColor = vec4(oColour, texture(text, TexCoords).r);       \n"
+            "vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r); \n"
+            "FragColor = vec4(oColour, 1.0) * sampled;       \n"
             "}                                                            \0";
 
         InitShaderCode(Program, vertexShaderSource, fragmentShaderSource);
