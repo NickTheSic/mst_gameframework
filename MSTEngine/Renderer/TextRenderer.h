@@ -21,6 +21,7 @@ namespace mst
         Color color;
         v2f size;
         v2f coords;
+        unsigned int textureIndex;
     };
 
     class TextRenderer
@@ -35,7 +36,7 @@ namespace mst
         void StartRender();
         void EndRender();
 
-        void RenderString(const std::string& String, v2f pos);
+        void RenderString(const std::string& String, v2f& pos);
         void RenderChar(unsigned char c);
 
         RendererData rd;

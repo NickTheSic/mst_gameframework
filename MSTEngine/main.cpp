@@ -10,12 +10,15 @@ extern "C"
 		if (Engine->Construct(800, 600))
 		{
 			glClearColor(0.0f,0.0f,0.0f,1.0f);
-	
-			while (Engine->PollEvents())
+			
+			//do
+			while(!Engine->ShouldExit())
 			{
 				Engine->CoreUpdate();
 				Engine->SwapBuffers();
-			}
+				Engine->PollEvents();
+			} 
+
 		}
 	
 		//Engine Cleanup

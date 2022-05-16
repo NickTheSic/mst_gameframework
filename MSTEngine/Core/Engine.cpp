@@ -115,7 +115,7 @@ namespace mst
 	#endif
 	}
 	
-	bool Engine::PollEvents()
+	void Engine::PollEvents()
 	{
 		#ifdef _WIN64
 		MSG Message;
@@ -128,13 +128,15 @@ namespace mst
 			}
 			else
 			{
-				return false;
+				bShouldExit = true;
 			}
 		}
 		#endif
+	}
 
-		// web can just return true
-		return true;
+	bool Engine::ShouldExit()
+	{
+		return bShouldExit;
 	}
 
 	void Engine::CoreUpdate()
@@ -433,7 +435,6 @@ namespace mst
 		{
 			PostQuitMessage(0);
 		} break;
-	
 		default:
 		{
 			result = DefWindowProc(window, msg, wParam, lParam);

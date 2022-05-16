@@ -52,7 +52,8 @@ namespace mst
 		}
 
 		bool CreateGLWindow(int width, int height);
-		bool PollEvents();
+		void PollEvents();
+		bool ShouldExit();
 		void CoreUpdate();
 		void SwapBuffers();
 		void SetWindowTitle(std::string title);
@@ -115,6 +116,6 @@ namespace mst
 		std::array<ButtonState, 3> MouseStates;
 		//std::array<ButtonState, Controllerinputs> ControllerInput;?
 
-		bool IsRunning = true;
+		bool bShouldExit = false;
 	};
 } // namespace mst

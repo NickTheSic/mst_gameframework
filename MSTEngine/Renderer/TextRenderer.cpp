@@ -69,6 +69,9 @@ namespace mst
         glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, coords)));
         glEnableVertexAttribArray(3);
 
+        glVertexAttribPointer(4, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, textureIndex)));
+        glEnableVertexAttribArray(4);
+
         InitFont(FileName);
     }
 
@@ -90,7 +93,7 @@ namespace mst
             return;
         }
         
-        FT_Set_Pixel_Sizes(face, 48, 48);
+        FT_Set_Pixel_Sizes(face, 12, 12);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
         
         for (unsigned char c = OffsetChar; c < 122; c++)
@@ -115,11 +118,13 @@ namespace mst
                 GL_UNSIGNED_BYTE,
                 face->glyph->bitmap.buffer
             );
+
             // set texture options
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
             // now store character for later use
             GlyphData glyph = {
                 glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
@@ -130,6 +135,8 @@ namespace mst
             Glyphs.push_back(std::move(glyph));
         }
         
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
         FT_Done_Face(face);
         FT_Done_FreeType(ft);
     }
@@ -154,19 +161,22 @@ namespace mst
         rd.DrawsPerFrame++;
     }
 
-    void TextRenderer::RenderString(const std::string& text, v2f pos)
+    void TextRenderer::RenderString(const std::string& text, v2f& pos)
     {
         //glUniform3f(glGetUniformLocation(s.Program, "textColor"), color.x, color.y, color.z);
 
-        size_t stringVerts = text.size() * 4;
+        size_t stringVerts = text.size();
         size_t stringOffset = 0;
-        if (stringVerts > rd.maxVertices)
+        if (stringVerts*4 > rd.maxVertices)
         {
             // UNABLE To fit string into maxVertices!!
             // just cycle through text from the begining
-            int end = stringVerts - (rd.maxVertices-1);
-            RenderString(text.substr(0, end), pos);
-            stringOffset = (stringVerts - end) / 4;
+            // DOesn't work as expected
+            *(int*)0 = 5;
+            return;
+            int end = stringVerts - (rd.maxVertices/4);
+            RenderString(text.substr(0, text.size()-end), pos);
+            stringOffset = ((stringVerts - end) + 1);
         }
 
         float scale = 10.f;
@@ -186,10 +196,10 @@ namespace mst
 
             GlyphVertexData vertices[4] = 
             {
-                {{pos.x,   pos.y},     {255,255,255}, ch.size, {0.0f, 1.0f}},
-                {{pos.x+w, pos.y},     {255,255,255}, ch.size, {1.0f, 1.0f}},
-                {{pos.x+w, pos.y+h},   {255,255,255}, ch.size, {1.0f, 1.0f}},
-                {{pos.x,   pos.y+h},   {255,255,255}, ch.size, {1.0f, 0.0f}},
+                {{xpos,   ypos},     {255,255,255}, ch.size, {0.0f, 1.0f}, ch.TextureId},
+                {{xpos+w, ypos},     {255,255,255}, ch.size, {1.0f, 1.0f}, ch.TextureId},
+                {{xpos+w, ypos+h},   {255,255,255}, ch.size, {1.0f, 0.0f}, ch.TextureId},
+                {{xpos,   ypos+h},   {255,255,255}, ch.size, {0.0f, 0.0f}, ch.TextureId},
             };
             // render glyph texture over quad
             glBindTexture(GL_TEXTURE_2D, ch.TextureId);
@@ -198,6 +208,8 @@ namespace mst
 
             rd.elementDrawCount++;
             rd.vertexCount += 4;
+
+            EndRender();
 
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
             pos.x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)

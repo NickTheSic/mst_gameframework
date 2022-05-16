@@ -47,6 +47,7 @@ bool MyGame::UserStartup()
 		| GL_CULL_FACE
 		| GL_DEPTH_TEST
 	);
+	//glBlendColor();glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	MainCamera.Position = ScreenSize / 2;
@@ -64,9 +65,9 @@ bool MyGame::UserStartup()
 		glUniform1f(cameraZoomLoc, MainCamera.CurrentZoom);
 	}
 
-	TextRenderer = new mst::QuadRenderer(SquareSizes); //new mst::TextRenderer(5, "Data/leadcoat.ttf");
-	////mst::InitTextShader(TextRenderer->rd.shaderProgram);
-	mst::InitColourShader(TextRenderer->rd.shaderProgram);
+	TextRenderer = new mst::TextRenderer(100, "Data/leadcoat.ttf");
+	mst::InitTextShader(TextRenderer->rd.shaderProgram);
+	
 	GLint cameraPosLocText = glGetUniformLocation(TextRenderer->rd.shaderProgram, "u_CameraPos");
 	if (cameraPosLocText != -1)
 	{
@@ -173,24 +174,22 @@ void MyGame::UserRender()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	QuadRenderer->StartRender();
-
 	int idx = 0;
 	for (auto& pos : GridRectPositions)
 	{
 		QuadRenderer->AddRect(pos, { SquareSizes, SquareSizes }, RandomColours[idx]);
 		idx++;
 	}
-
 	for (auto& pos : MousePositions)
 	{
 		QuadRenderer->AddCenteredQuad(pos, { SquareSizes, SquareSizes }, Color{ 255,255,255 });
 	}
-
 	QuadRenderer->EndRender();
 
 	TextRenderer->StartRender();
-	TextRenderer->AddRect(ScreenCenter, {30, 30}, Color{0,255,255});
+	TextRenderer->RenderString("Hello!", v2f(0,0));
 	TextRenderer->EndRender();
+
 };
 
 v2i MyGame::WorldSpaceToIndex(const v2f& WorldCoord)

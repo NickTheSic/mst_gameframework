@@ -82,7 +82,8 @@ namespace mst
             "in vec2 TexCoords;                                           \n"
             "uniform sampler2D text;                                      \n"
             "void main(){                                                 \n"
-            "FragColor = vec4(oColour, texture(text, TexCoords).r);        \n"
+            //"if (texture(text, TexCoords).r < 0.1) discard;               \n"
+            "FragColor = vec4(oColour, texture(text, TexCoords).r);       \n"
             "}                                                            \0";
 
         InitShaderCode(Program, vertexShaderSource, fragmentShaderSource);
