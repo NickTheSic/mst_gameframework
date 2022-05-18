@@ -2,6 +2,8 @@
 
 namespace mst
 {
+    extern int GlobalTextureIdOffset;
+
     struct RendererData
     {
         unsigned int vbo;

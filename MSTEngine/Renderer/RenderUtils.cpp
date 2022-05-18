@@ -4,6 +4,7 @@
 
 namespace mst
 {
+    int GlobalTextureIdOffset = 0;
 
     void CompileShader(unsigned int& shader, unsigned int type, const char* shaderSource)
     {
@@ -35,20 +36,20 @@ namespace mst
             "out vec3 oColour;                                            \n"
             "void main()                                                  \n"
             "{                                                            \n"
-            "   oColour = aColour;                               \n"
+            "   oColour = aColour;                                        \n"
             "   vec2 pos = aPos;                                          \n"
             "   pos -= u_CameraPos;                                       \n"
-            "   pos /= u_WorldSize * 0.5;                  \n"
+            "   pos /= u_WorldSize * 0.5;                                 \n"
             "   gl_Position = vec4(pos, 0, 1.0);                          \n"
             "}                                                            \0";
 
         const char* fragmentShaderSource =
-            "#version 330 core                                \n"
-            "out vec4 FragColor;                              \n"
-            "in vec3 oColour;                                 \n"
-            "void main(){                                     \n"
-            "FragColor = vec4(oColour, 0.6);                             \n"
-            "}                                                \0";
+            "#version 330 core                                            \n"
+            "out vec4 FragColor;                                          \n"
+            "in vec3 oColour;                                             \n"
+            "void main(){                                                 \n"
+            "FragColor = vec4(oColour, 1.0);                              \n"
+            "}                                                            \0";
 
         InitShaderCode(Program, vertexShaderSource, fragmentShaderSource);
     }

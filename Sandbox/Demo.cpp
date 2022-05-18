@@ -71,6 +71,14 @@ bool MyGame::UserStartup()
 		glUniform2fv(cameraPosLocText, 1, &MainCamera.Position[0]);
 	}
 
+	TextRenderer2 = new mst::TextRenderer(100, "Data/leadcoat.ttf");
+	mst::InitTextShader(TextRenderer2->rd.shaderProgram);
+	GLint cameraPosLocText2 = glGetUniformLocation(TextRenderer2->rd.shaderProgram, "u_CameraPos");
+	if (cameraPosLocText2 != -1)
+	{
+		glUniform2fv(cameraPosLocText2, 1, &MainCamera.Position[0]);
+	}
+
 	GridSize = ScreenSize / SquareSizes;
 	for (int y = 0; y < ScreenSize.y; y += SquareSizes)
 	{
@@ -104,6 +112,17 @@ void MyGame::UserResize()
 	{
 		glUseProgram(TextRenderer->rd.shaderProgram);
 		GLint worldSizeLoc = glGetUniformLocation(TextRenderer->rd.shaderProgram, "u_WorldSize");
+		if (worldSizeLoc != -1)
+		{
+			v2f screenSize(ScreenSize);
+			glUniform2fv(worldSizeLoc, 1, &screenSize[0]);
+		}
+	}
+
+	if (TextRenderer2 != nullptr)
+	{
+		glUseProgram(TextRenderer2->rd.shaderProgram);
+		GLint worldSizeLoc = glGetUniformLocation(TextRenderer2->rd.shaderProgram, "u_WorldSize");
 		if (worldSizeLoc != -1)
 		{
 			v2f screenSize(ScreenSize);
@@ -186,6 +205,10 @@ void MyGame::UserRender()
 	TextRenderer->StartRender();
 	TextRenderer->RenderString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(0,0));
 	TextRenderer->EndRender();
+
+	TextRenderer2->StartRender();
+	TextRenderer2->RenderString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(0, 35));
+	TextRenderer2->EndRender();
 };
 
 v2i MyGame::WorldSpaceToIndex(const v2f& WorldCoord)

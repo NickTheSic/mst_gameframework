@@ -30,7 +30,6 @@ namespace mst
         TextRenderer(unsigned int BatchCount, const std::string& FileName);
         ~TextRenderer();
         void Init(unsigned int BatchCount, const std::string& FileName);
-
         void InitFont(std::string FileName);
 
         void StartRender();
@@ -40,14 +39,14 @@ namespace mst
 
         RendererData rd;
 
+        unsigned int TextureIdOffset;
         unsigned int FontTexture;
         float DivAtlasWidth;
         float DivAtlasHeight;
-        unsigned char OffsetChar = 32; // First 32 characters are control codes
+
+        unsigned char OffsetChar = 0; // First 32 characters are control codes
 
         // used to keep track of the loaded glyphs
         std::vector<GlyphData> Glyphs;
-
-        unsigned char* ImageData;
     };
 }

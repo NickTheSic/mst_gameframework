@@ -21,7 +21,6 @@ namespace mst
     void TextRenderer::Init(unsigned int BatchCount, const std::string& FileName)
     {
         rd.maxVertices = BatchCount * 4;
-
         unsigned int IndiceCount = BatchCount * 6;
 
         glGenVertexArrays(1, &rd.vao);
@@ -29,6 +28,9 @@ namespace mst
         glGenBuffers(1, &rd.ebo);
 
         glBindVertexArray(rd.vao);
+
+        TextureIdOffset = GlobalTextureIdOffset;
+        GlobalTextureIdOffset++;
 
         InitFont(FileName);
 
@@ -72,7 +74,7 @@ namespace mst
 
     void TextRenderer::StartRender()
     {
-        glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0 + TextureIdOffset);
         glBindVertexArray(rd.vao);
         glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
         glUseProgram(rd.shaderProgram);
@@ -112,7 +114,7 @@ namespace mst
     
         int atlasw = 0;
         int atlash = 0;
-        for (unsigned char c = OffsetChar; c < 122; c++)
+        for (unsigned char c = OffsetChar; c < 128; c++)
         {
             if (FT_Load_Char(face, c, FT_LOAD_RENDER))
             {
@@ -129,7 +131,7 @@ namespace mst
         DivAtlasWidth = 1.0f / (float)atlasw;
         DivAtlasHeight = 1.0f / (float)atlash;
     
-        glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0 + TextureIdOffset);
         glGenTextures(1, &FontTexture);
         glBindTexture(GL_TEXTURE_2D, FontTexture);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
@@ -152,7 +154,7 @@ namespace mst
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     
         int xoffset = 0;
-        for (unsigned char c = OffsetChar; c < '~'; c++)
+        for (unsigned char c = OffsetChar; c < 128; c++)
         {
             if (FT_Load_Char(face, c, FT_LOAD_RENDER))
             {
@@ -166,7 +168,6 @@ namespace mst
                 GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
     
             float tx = (float)xoffset * DivAtlasWidth;
-
             // now store character for later use
             GlyphData glyph = {
                 glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
@@ -214,7 +215,7 @@ namespace mst
             float h = ch.size.y * scale;
     
             float atlasOffsetW = (ch.size.x * DivAtlasWidth);
-            float atlasH  = (ch.size.y * DivAtlasHeight);
+            float atlasH       = (ch.size.y * DivAtlasHeight);
     
             GlyphVertexData vertices[4] =
             {
