@@ -11,17 +11,17 @@ namespace mst
     {
         v2i size;
         v2i bearing;
-        unsigned int advance;
-        unsigned int TextureId;
+        float xoffset;        // works for ascii characters
+        unsigned int advance; // works for ascii characters
     };
 
     struct GlyphVertexData
     {
         v2f pos;
         Color color;
+
         v2f size;
         v2f coords;
-        unsigned int textureIndex;
     };
 
     class TextRenderer
@@ -37,13 +37,17 @@ namespace mst
         void EndRender();
 
         void RenderString(const std::string& String, v2f& pos);
-        void RenderChar(unsigned char c);
 
         RendererData rd;
 
-        unsigned char OffsetChar = '!';
+        unsigned int FontTexture;
+        float DivAtlasWidth;
+        float DivAtlasHeight;
+        unsigned char OffsetChar = 32; // First 32 characters are control codes
 
         // used to keep track of the loaded glyphs
         std::vector<GlyphData> Glyphs;
+
+        unsigned char* ImageData;
     };
 }

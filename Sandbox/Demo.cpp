@@ -63,7 +63,7 @@ bool MyGame::UserStartup()
 		glUniform1f(cameraZoomLoc, MainCamera.CurrentZoom);
 	}
 
-	TextRenderer = new mst::TextRenderer(100, "Data/leadcoat.ttf");
+	TextRenderer = new mst::TextRenderer(100, "Data/caviardreamsbold.ttf");
 	mst::InitTextShader(TextRenderer->rd.shaderProgram);
 	GLint cameraPosLocText = glGetUniformLocation(TextRenderer->rd.shaderProgram, "u_CameraPos");
 	if (cameraPosLocText != -1)
@@ -184,7 +184,7 @@ void MyGame::UserRender()
 	QuadRenderer->EndRender();
 
 	TextRenderer->StartRender();
-	TextRenderer->RenderString("Hello! World", v2f(0,0));
+	TextRenderer->RenderString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(0,0));
 	TextRenderer->EndRender();
 };
 
