@@ -44,7 +44,7 @@ namespace mst
         float DivAtlasWidth;
         float DivAtlasHeight;
 
-        unsigned char OffsetChar = 0; // First 32 characters are control codes
+        unsigned char OffsetChar = 32; // First 32 characters are control codes
 
         // used to keep track of the loaded glyphs
         std::vector<GlyphData> Glyphs;

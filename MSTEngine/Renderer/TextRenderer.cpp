@@ -11,6 +11,8 @@ namespace mst
     TextRenderer::TextRenderer(unsigned int BatchCount, const std::string& FileName)
     {
         Init(BatchCount, FileName);
+
+        InitTextShader(rd.shaderProgram);
     }
 
     TextRenderer::~TextRenderer()
@@ -28,11 +30,6 @@ namespace mst
         glGenBuffers(1, &rd.ebo);
 
         glBindVertexArray(rd.vao);
-
-        TextureIdOffset = GlobalTextureIdOffset;
-        GlobalTextureIdOffset++;
-
-        InitFont(FileName);
 
         glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
         glBufferData(GL_ARRAY_BUFFER,
@@ -59,6 +56,10 @@ namespace mst
 
         delete[] indices;
 
+        TextureIdOffset = GlobalTextureIdOffset;
+        GlobalTextureIdOffset++;
+        InitFont(FileName);
+
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, pos)));
         glEnableVertexAttribArray(0);
 
@@ -74,10 +75,12 @@ namespace mst
 
     void TextRenderer::StartRender()
     {
-        glActiveTexture(GL_TEXTURE0 + TextureIdOffset);
+        glUseProgram(rd.shaderProgram);
+        glActiveTexture(GL_TEXTURE0 );
         glBindVertexArray(rd.vao);
         glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
-        glUseProgram(rd.shaderProgram);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rd.ebo);
+        glBindTexture(GL_TEXTURE_2D, FontTexture);
 
         rd.DrawsPerFrame = 0;
     }
@@ -131,8 +134,8 @@ namespace mst
         DivAtlasWidth = 1.0f / (float)atlasw;
         DivAtlasHeight = 1.0f / (float)atlash;
     
-        glActiveTexture(GL_TEXTURE0 + TextureIdOffset);
         glGenTextures(1, &FontTexture);
+        glActiveTexture(GL_TEXTURE0 + TextureIdOffset);
         glBindTexture(GL_TEXTURE_2D, FontTexture);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
         glTexImage2D(
@@ -188,7 +191,7 @@ namespace mst
     
     void TextRenderer::RenderString(const std::string& text, v2f& pos)
     {
-        float scale = 1.f;
+        //float scale = 1.f;
     
         // iterate through all characters
         std::string::const_iterator c;
@@ -202,17 +205,17 @@ namespace mst
     
             if (*c == ' ')
             {
-                pos.x += 6 * scale;
+                pos.x += 6;// * scale;
                 continue;
             }
     
             const GlyphData& ch = Glyphs[*c - OffsetChar];
     
-            float xpos = pos.x + ch.bearing.x * scale;
-            float ypos = pos.y - (ch.size.y - ch.bearing.y) * scale;
+            float xpos = pos.x + ch.bearing.x;// * scale;
+            float ypos = pos.y - (ch.size.y - ch.bearing.y);// * scale;
     
-            float w = ch.size.x * scale;
-            float h = ch.size.y * scale;
+            float w = ch.size.x;// * scale;
+            float h = ch.size.y;// * scale;
     
             float atlasOffsetW = (ch.size.x * DivAtlasWidth);
             float atlasH       = (ch.size.y * DivAtlasHeight);
@@ -231,7 +234,7 @@ namespace mst
             rd.vertexCount += 4;
     
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            pos.x += (ch.advance) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+            pos.x += (ch.advance);// * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
         }
     }
 }

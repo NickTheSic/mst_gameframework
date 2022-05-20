@@ -64,7 +64,6 @@ bool MyGame::UserStartup()
 	}
 
 	TextRenderer = new mst::TextRenderer(100, "Data/caviardreamsbold.ttf");
-	mst::InitTextShader(TextRenderer->rd.shaderProgram);
 	GLint cameraPosLocText = glGetUniformLocation(TextRenderer->rd.shaderProgram, "u_CameraPos");
 	if (cameraPosLocText != -1)
 	{
@@ -72,7 +71,6 @@ bool MyGame::UserStartup()
 	}
 
 	TextRenderer2 = new mst::TextRenderer(100, "Data/leadcoat.ttf");
-	mst::InitTextShader(TextRenderer2->rd.shaderProgram);
 	GLint cameraPosLocText2 = glGetUniformLocation(TextRenderer2->rd.shaderProgram, "u_CameraPos");
 	if (cameraPosLocText2 != -1)
 	{
@@ -203,11 +201,11 @@ void MyGame::UserRender()
 	QuadRenderer->EndRender();
 
 	TextRenderer->StartRender();
-	TextRenderer->RenderString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(0,0));
+	TextRenderer->RenderString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(30,45));
 	TextRenderer->EndRender();
 
 	TextRenderer2->StartRender();
-	TextRenderer2->RenderString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(0, 35));
+	TextRenderer2->RenderString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(0, 5));
 	TextRenderer2->EndRender();
 };
 
