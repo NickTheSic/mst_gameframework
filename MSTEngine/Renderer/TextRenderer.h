@@ -39,7 +39,6 @@ namespace mst
 
         RendererData rd;
 
-        unsigned int TextureIdOffset;
         unsigned int FontTexture;
         float DivAtlasWidth;
         float DivAtlasHeight;

@@ -18,46 +18,14 @@ namespace mst
     TextRenderer::~TextRenderer()
     {
         glDeleteTextures(1, &FontTexture);
+
+        FreeRenderData(rd);
     }
 
     void TextRenderer::Init(unsigned int BatchCount, const std::string& FileName)
     {
-        rd.maxVertices = BatchCount * 4;
-        unsigned int IndiceCount = BatchCount * 6;
-
-        glGenVertexArrays(1, &rd.vao);
-        glGenBuffers(1, &rd.vbo);
-        glGenBuffers(1, &rd.ebo);
-
-        glBindVertexArray(rd.vao);
-
-        glBindBuffer(GL_ARRAY_BUFFER, rd.vbo);
-        glBufferData(GL_ARRAY_BUFFER,
-            size_t(4) * size_t(BatchCount) * sizeof(GlyphVertexData),
-            NULL, GL_DYNAMIC_DRAW);
-
-        unsigned int* indices = new unsigned int[IndiceCount];
-        unsigned int offset = 0;
-        for (size_t i = 0; i < IndiceCount; i += 6)
-        {
-            indices[i + 0] = offset + 0;
-            indices[i + 1] = offset + 1;
-            indices[i + 2] = offset + 2;
-            indices[i + 3] = offset + 2;
-            indices[i + 4] = offset + 3;
-            indices[i + 5] = offset + 0;
-            offset += 4;
-        }
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rd.ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-            size_t(IndiceCount) * sizeof(unsigned int),
-            indices, GL_STATIC_DRAW);
-
-        delete[] indices;
-
-        TextureIdOffset = GlobalTextureIdOffset;
-        GlobalTextureIdOffset++;
+        InitializeRendererData<GlyphVertexData>(rd, BatchCount);
+        
         InitFont(FileName);
 
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, pos)));
@@ -135,7 +103,7 @@ namespace mst
         DivAtlasHeight = 1.0f / (float)atlash;
     
         glGenTextures(1, &FontTexture);
-        glActiveTexture(GL_TEXTURE0 + TextureIdOffset);
+        //glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, FontTexture);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
         glTexImage2D(

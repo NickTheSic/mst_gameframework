@@ -4,8 +4,6 @@
 
 namespace mst
 {
-    int GlobalTextureIdOffset = 0;
-
     void CompileShader(unsigned int& shader, unsigned int type, const char* shaderSource)
     {
         shader = glCreateShader(type);
@@ -119,6 +117,14 @@ namespace mst
 
         glDeleteShader(vertex);
         glDeleteShader(fragment);
+    }
+
+    void FreeRenderData(RendererData& renderData)
+    {
+        glDeleteBuffers(1, &renderData.ebo);
+        glDeleteBuffers(1, &renderData.vbo);
+        glDeleteVertexArrays(1, &renderData.vao);
+        glDeleteProgram(renderData.shaderProgram);
     }
 
 }
