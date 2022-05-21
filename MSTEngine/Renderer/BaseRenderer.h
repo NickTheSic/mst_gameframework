@@ -11,6 +11,8 @@ namespace mst
 	public:
 		virtual ~BaseRenderer() = default;
 
+		void UseProgram();
+		void SetUniform(const char* name, const v2f& val);
 	protected:
 		BaseRenderer() = default;
 
@@ -20,17 +22,16 @@ namespace mst
 		void CompileShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
 		void CompileShaderCode(unsigned int& shader, unsigned int type, const char* shaderSource);
 
-		void SetUniform(const char* name, const v2f& val);
 		int GetUniformLocation(const char* name);
 
 		std::map<std::string, int> UniformLocations;
 
-		unsigned int vbo;
-		unsigned int vao;
-		unsigned int ebo;
-		unsigned int elementDrawCount;
-		unsigned int maxVertices;
-		unsigned int shaderProgram;
-		unsigned int vertexCount;
+		unsigned int vbo              = 0;
+		unsigned int vao              = 0;
+		unsigned int ebo              = 0;
+		unsigned int elementDrawCount = 0;
+		unsigned int maxVertices      = 0;
+		unsigned int shaderProgram    = 0;
+		unsigned int vertexCount      = 0;
 	};
 }

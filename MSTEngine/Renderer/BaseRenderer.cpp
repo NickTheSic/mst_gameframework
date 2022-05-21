@@ -99,10 +99,13 @@ namespace mst
         }
 	}
     
-    void BaseRenderer::SetUniform(const char* name, const v2f& val)
+    void BaseRenderer::UseProgram()
     {
         glUseProgram(shaderProgram);
+    }
 
+    void BaseRenderer::SetUniform(const char* name, const v2f& val)
+    {
         int Loc = GetUniformLocation(name);
         glUniform2fv(Loc, 1, &val[0]);
     }

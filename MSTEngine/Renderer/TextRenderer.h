@@ -28,36 +28,19 @@ namespace mst
     class TextRenderer : public BaseRenderer
     {
     public:
+        TextRenderer() = default;
         TextRenderer(unsigned int BatchCount, const char* FilePath);
+        ~TextRenderer();
         void Init(unsigned int BatchCount, const char* FilePath);
         void InitFontSheet(const char* FilePath);
         void InitShader();
-
-        unsigned int FontTexture;
-    };
-
-    class _TextRenderer
-    {
-    public:
-        _TextRenderer(unsigned int BatchCount, const std::string& FileName);
-        ~_TextRenderer();
-        void Init(unsigned int BatchCount, const std::string& FileName);
-        void InitFont(std::string FileName);
-
         void StartRender();
         void EndRender();
-
-        void RenderString(const std::string& String, v2f& pos);
-
-        RendererData rd;
+        void RenderText(const std::string& String, v2f& pos, float scale = 1.f);
 
         unsigned int FontTexture;
         float DivAtlasWidth;
         float DivAtlasHeight;
-
-        unsigned char OffsetChar = 32; // First 32 characters are control codes
-
-        // used to keep track of the loaded glyphs
         std::vector<GlyphData> Glyphs;
     };
 }

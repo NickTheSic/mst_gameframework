@@ -63,19 +63,14 @@ bool MyGame::UserStartup()
 		glUniform1f(cameraZoomLoc, MainCamera.CurrentZoom);
 	}
 
-	TextRenderer = new mst::_TextRenderer(100, "Data/caviardreamsbold.ttf");
-	GLint cameraPosLocText = glGetUniformLocation(TextRenderer->rd.shaderProgram, "u_CameraPos");
-	if (cameraPosLocText != -1)
-	{
-		glUniform2fv(cameraPosLocText, 1, &MainCamera.Position[0]);
-	}
+	TextRenderer = new mst::TextRenderer();
+	TextRenderer->Init(100, "Data/caviardreamsbold.ttf");
+	TextRenderer->UseProgram();
+	TextRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 
-	TextRenderer2 = new mst::_TextRenderer(100, "Data/leadcoat.ttf");
-	GLint cameraPosLocText2 = glGetUniformLocation(TextRenderer2->rd.shaderProgram, "u_CameraPos");
-	if (cameraPosLocText2 != -1)
-	{
-		glUniform2fv(cameraPosLocText2, 1, &MainCamera.Position[0]);
-	}
+	TextRenderer2 = new mst::TextRenderer(100, "Data/leadcoat.ttf");
+	TextRenderer2->UseProgram();
+	TextRenderer2->SetUniform("u_CameraPos", MainCamera.Position);
 
 	GridSize = ScreenSize / SquareSizes;
 	for (int y = 0; y < ScreenSize.y; y += SquareSizes)
@@ -108,24 +103,14 @@ void MyGame::UserResize()
 
 	if (TextRenderer != nullptr)
 	{
-		glUseProgram(TextRenderer->rd.shaderProgram);
-		GLint worldSizeLoc = glGetUniformLocation(TextRenderer->rd.shaderProgram, "u_WorldSize");
-		if (worldSizeLoc != -1)
-		{
-			v2f screenSize(ScreenSize);
-			glUniform2fv(worldSizeLoc, 1, &screenSize[0]);
-		}
+		TextRenderer->UseProgram();
+		TextRenderer->SetUniform("u_WorldSize", ScreenSize);
 	}
 
 	if (TextRenderer2 != nullptr)
 	{
-		glUseProgram(TextRenderer2->rd.shaderProgram);
-		GLint worldSizeLoc = glGetUniformLocation(TextRenderer2->rd.shaderProgram, "u_WorldSize");
-		if (worldSizeLoc != -1)
-		{
-			v2f screenSize(ScreenSize);
-			glUniform2fv(worldSizeLoc, 1, &screenSize[0]);
-		}
+		TextRenderer2->UseProgram();
+		TextRenderer2->SetUniform("u_WorldSize", ScreenSize);
 	}
 }
 
@@ -201,11 +186,11 @@ void MyGame::UserRender()
 	QuadRenderer->EndRender();
 
 	TextRenderer->StartRender();
-	TextRenderer->RenderString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(30,45));
+	TextRenderer->RenderText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(30,45));
 	TextRenderer->EndRender();
 
 	TextRenderer2->StartRender();
-	TextRenderer2->RenderString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(0, 5));
+	TextRenderer2->RenderText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(0, 5));
 	TextRenderer2->EndRender();
 };
 
