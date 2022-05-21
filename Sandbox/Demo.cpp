@@ -63,14 +63,14 @@ bool MyGame::UserStartup()
 		glUniform1f(cameraZoomLoc, MainCamera.CurrentZoom);
 	}
 
-	TextRenderer = new mst::TextRenderer(100, "Data/caviardreamsbold.ttf");
+	TextRenderer = new mst::_TextRenderer(100, "Data/caviardreamsbold.ttf");
 	GLint cameraPosLocText = glGetUniformLocation(TextRenderer->rd.shaderProgram, "u_CameraPos");
 	if (cameraPosLocText != -1)
 	{
 		glUniform2fv(cameraPosLocText, 1, &MainCamera.Position[0]);
 	}
 
-	TextRenderer2 = new mst::TextRenderer(100, "Data/leadcoat.ttf");
+	TextRenderer2 = new mst::_TextRenderer(100, "Data/leadcoat.ttf");
 	GLint cameraPosLocText2 = glGetUniformLocation(TextRenderer2->rd.shaderProgram, "u_CameraPos");
 	if (cameraPosLocText2 != -1)
 	{

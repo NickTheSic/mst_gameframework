@@ -6,23 +6,48 @@
 
 #include <iostream>
 
+
 namespace mst
 {
-    TextRenderer::TextRenderer(unsigned int BatchCount, const std::string& FileName)
+    TextRenderer::TextRenderer(unsigned int BatchCount, const char* FilePath)
+    {
+        //Init(BatchCount, FilePath);
+    }
+
+    void TextRenderer::Init(unsigned int BatchCount, const char* FilePath)
+    {
+        InitBaseBufferObjects(BatchCount, sizeof(GlyphVertexData));
+        InitShader();
+        InitFontSheet(FilePath);
+    }
+
+    void TextRenderer::InitFontSheet(const char* FilePath)
+    {
+    }
+
+    void TextRenderer::InitShader()
+    {
+    }
+
+}
+
+namespace mst
+{
+    _TextRenderer::_TextRenderer(unsigned int BatchCount, const std::string& FileName)
     {
         Init(BatchCount, FileName);
 
         InitTextShader(rd.shaderProgram);
     }
 
-    TextRenderer::~TextRenderer()
+    _TextRenderer::~_TextRenderer()
     {
         glDeleteTextures(1, &FontTexture);
 
         FreeRenderData(rd);
     }
 
-    void TextRenderer::Init(unsigned int BatchCount, const std::string& FileName)
+    void _TextRenderer::Init(unsigned int BatchCount, const std::string& FileName)
     {
         InitializeRendererData<GlyphVertexData>(rd, BatchCount);
         
@@ -41,7 +66,7 @@ namespace mst
         glEnableVertexAttribArray(3);
     }
 
-    void TextRenderer::StartRender()
+    void _TextRenderer::StartRender()
     {
         glUseProgram(rd.shaderProgram);
         glActiveTexture(GL_TEXTURE0 );
@@ -53,7 +78,7 @@ namespace mst
         rd.DrawsPerFrame = 0;
     }
 
-    void TextRenderer::EndRender()
+    void _TextRenderer::EndRender()
     {
         glDrawElements(GL_TRIANGLES, rd.elementDrawCount * 6, GL_UNSIGNED_INT, 0);
 
@@ -63,7 +88,7 @@ namespace mst
         rd.DrawsPerFrame++;
     }
 
-    void TextRenderer::InitFont(std::string FileName)
+    void _TextRenderer::InitFont(std::string FileName)
     {
         FT_Library ft;
         if (FT_Init_FreeType(&ft))
@@ -157,7 +182,7 @@ namespace mst
         FT_Done_FreeType(ft);
     }
     
-    void TextRenderer::RenderString(const std::string& text, v2f& pos)
+    void _TextRenderer::RenderString(const std::string& text, v2f& pos)
     {
         //float scale = 1.f;
     

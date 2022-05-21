@@ -2,6 +2,7 @@
 
 #include "mstglm.h"
 #include "RenderUtils.h"
+#include "BaseRenderer.h"
 #include <string>
 #include <vector>
 
@@ -24,11 +25,22 @@ namespace mst
         v2f coords;
     };
 
-    class TextRenderer
+    class TextRenderer : public BaseRenderer
     {
     public:
-        TextRenderer(unsigned int BatchCount, const std::string& FileName);
-        ~TextRenderer();
+        TextRenderer(unsigned int BatchCount, const char* FilePath);
+        void Init(unsigned int BatchCount, const char* FilePath);
+        void InitFontSheet(const char* FilePath);
+        void InitShader();
+
+        unsigned int FontTexture;
+    };
+
+    class _TextRenderer
+    {
+    public:
+        _TextRenderer(unsigned int BatchCount, const std::string& FileName);
+        ~_TextRenderer();
         void Init(unsigned int BatchCount, const std::string& FileName);
         void InitFont(std::string FileName);
 
