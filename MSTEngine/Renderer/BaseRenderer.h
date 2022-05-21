@@ -12,7 +12,9 @@ namespace mst
 		virtual ~BaseRenderer() = default;
 
 		void UseProgram();
+		void SetUniform(const char* name, const float& val);
 		void SetUniform(const char* name, const v2f& val);
+
 	protected:
 		BaseRenderer() = default;
 

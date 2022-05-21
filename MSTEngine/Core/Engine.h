@@ -6,8 +6,7 @@
 #endif
 
 #if defined PLATFORM_WEB || __EMSCRIPTEN__
-	#include <emscripten/emscripten.h>
-	#include <emscripten/HTML5.h>
+
 #endif
 
 #include "mstgl.h"

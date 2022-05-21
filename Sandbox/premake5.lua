@@ -15,8 +15,6 @@ project "Sandbox"
 	dependson
 	{
 		"MSTEngine",
-		"freetype",
-		"stb_image",
 	}
 
 	files

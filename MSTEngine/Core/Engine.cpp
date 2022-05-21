@@ -3,6 +3,11 @@
 #define MST_KEY_OPERATOR_IMPLEMENTATION
 #include "mstkeys.h"
 
+#if defined PLATFORM_WEB || __EMSCRIPTEN__
+#include <emscripten.h>
+#include <emscripten/html5.h>
+#endif
+
 #include <iostream>
 #define dbglog(dbmsg) std::cout << dbmsg << std::endl;
 #define dbgval(val)   std::cout << #val << ": " << (val) << std::endl;

@@ -1,9 +1,6 @@
 #pragma once
-#include "mstgl.h"
 #include "mstglm.h"
-
-#include "RenderUtils.h"
-
+#include "BaseRenderer.h"
 #include <string>
 #include <vector>
 
@@ -15,12 +12,14 @@ namespace mst
         Color color;
     };
 
-    class QuadRenderer
+    class QuadRenderer : public BaseRenderer
     {
     public:
         QuadRenderer(unsigned int BatchCount);
         ~QuadRenderer();
         void Init(unsigned int BatchCount);
+
+        void InitColourShader();
 
         // adds a rect where pos = lower left and size = top right
         void AddRect(const v2f& pos, const v2f& size, const Color& c = Color(255, 255, 255));
@@ -28,7 +27,5 @@ namespace mst
 
         void StartRender();
         void EndRender();
-
-        RendererData rd;
     };
 }

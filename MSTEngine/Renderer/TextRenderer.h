@@ -1,7 +1,6 @@
 #pragma once
 
 #include "mstglm.h"
-#include "RenderUtils.h"
 #include "BaseRenderer.h"
 #include <string>
 #include <vector>
@@ -36,7 +35,7 @@ namespace mst
         void InitShader();
         void StartRender();
         void EndRender();
-        void RenderText(const std::string& String, v2f& pos, float scale = 1.f);
+        void RenderText(const std::string& String, v2f pos, float scale = 1.f);
 
         unsigned int FontTexture;
         float DivAtlasWidth;

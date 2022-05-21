@@ -1,6 +1,6 @@
 #include <Core/Engine.h>
-#include "Renderer/BatchRenderer.h"
-#include "Renderer/TextRenderer.h"
+#include <Renderer/QuadRenderer.h>
+#include <Renderer/TextRenderer.h>
 #include <vector>
 
 class MyGame : public mst::Engine
@@ -15,9 +15,11 @@ public:
 
 	int SquareSizes = 20;
 	float Tick = 0.0f;
+
 	mst::QuadRenderer* QuadRenderer = nullptr;
 	mst::TextRenderer* TextRenderer = nullptr;
 	mst::TextRenderer* TextRenderer2 = nullptr;
+
 	std::vector<v2f> MousePositions;
 	std::vector<v2f> GridRectPositions;
 	std::vector<Color> RandomColours;

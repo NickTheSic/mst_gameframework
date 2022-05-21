@@ -7,14 +7,22 @@
 
 #include <gl/GL.h>
 
-#if defined PLATFORM_WEB
+#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
+
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #define GL_GLEXT_PROTOTYPES
 #include <GLES2/gl2ext.h>
 
-#define glBindVertexArray glBindVertexArrayOES;
-#define glGenVertexArrays glGenVertexArraysOES;
+#ifndef glBindVertexArray
+#define glBindVertexArray    glBindVertexArrayOES
+#endif
+#ifndef glGenVertexArrays
+#define glGenVertexArrays    glGenVertexArraysOES
+#endif
+#ifndef glDeleteVertexArrays
+#define glDeleteVertexArrays glDeleteVertexArraysOES
+#endif
 
 #endif
 

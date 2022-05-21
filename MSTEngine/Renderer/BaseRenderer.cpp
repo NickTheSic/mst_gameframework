@@ -6,10 +6,12 @@ namespace mst
 {
 	void BaseRenderer::FreeGraphicsMemory()
 	{
+#ifndef PLATFORM_WEB
         glDeleteBuffers(1, &ebo);
         glDeleteBuffers(1, &vbo);
         glDeleteVertexArrays(1, &vao);
         glDeleteProgram(shaderProgram);
+#endif
 	}
 
 	void BaseRenderer::InitBaseBufferObjects(unsigned int BatchCount, size_t VertexDataSize)
@@ -86,9 +88,11 @@ namespace mst
         shader = glCreateShader(type);
         glShaderSource(shader, 1, &shaderSource, 0);
         glCompileShader(shader);
-
-        int  success;
+        
+        int  success = 0;
+        #ifndef PLATFORM_WEB
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+        #endif
 
         if (!success)
         {
@@ -108,6 +112,12 @@ namespace mst
     {
         int Loc = GetUniformLocation(name);
         glUniform2fv(Loc, 1, &val[0]);
+    }
+
+    void BaseRenderer::SetUniform(const char* name, const float& val)
+    {
+        int Loc = GetUniformLocation(name);
+        glUniform1f(Loc, val);
     }
 
     int BaseRenderer::GetUniformLocation(const char* name)

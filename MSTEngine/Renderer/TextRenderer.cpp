@@ -136,7 +136,12 @@ namespace mst
     void TextRenderer::InitShader()
     {
         const char* vertexShaderSource =
+#if defined PLATFORM_WEB
+            "#version 300 es                                                 \n"
+            "precision mediump float;                                        \n"
+#else
             "#version 330 core                                               \n"
+#endif
             "layout (location = 0) in vec2 aPos;                             \n"
             "layout (location = 1) in vec3 aColour;                          \n"
             "layout (location = 2) in vec2 size;                             \n"
@@ -156,7 +161,12 @@ namespace mst
             "}                                                               \0";
 
         const char* fragmentShaderSource =
+#if defined PLATFORM_WEB
+            "#version 300 es                                                 \n"
+            "precision mediump float;                                        \n"
+#else
             "#version 330 core                                               \n"
+#endif
             "out vec4 FragColor;                                             \n"
             "in vec3 oColour;                                                \n"
             "in vec2 TexCoords;                                              \n"
@@ -165,7 +175,7 @@ namespace mst
             "FragColor = vec4(oColour, texture(text, TexCoords).r);          \n"
             "}                                                               \0";
 
-        InitShaderCode(shaderProgram, vertexShaderSource, fragmentShaderSource);
+        CompileShaderProgram(vertexShaderSource, fragmentShaderSource);
     }
 
     void TextRenderer::StartRender()
@@ -188,7 +198,7 @@ namespace mst
         elementDrawCount = 0;
     }
 
-    void TextRenderer::RenderText(const std::string& String, v2f& pos, float scale /*=1.f*/)
+    void TextRenderer::RenderText(const std::string& String, v2f pos, float scale /*=1.f*/)
     {
         std::string::const_iterator c;
         for (c = String.begin(); c != String.end(); c++)

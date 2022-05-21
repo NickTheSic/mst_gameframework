@@ -51,17 +51,9 @@ bool MyGame::UserStartup()
 	MainCamera.Position = ScreenSize / 2;
 
 	QuadRenderer = new mst::QuadRenderer((ScreenSize.y*ScreenSize.x)/SquareSizes);
-	mst::InitColourShader(QuadRenderer->rd.shaderProgram);
-	GLint cameraPosLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_CameraPos");
-	if (cameraPosLoc != -1)
-	{
-		glUniform2fv(cameraPosLoc, 1, &MainCamera.Position[0]);
-	}
-	GLint cameraZoomLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_CameraZoom");
-	if (cameraZoomLoc != -1)
-	{
-		glUniform1f(cameraZoomLoc, MainCamera.CurrentZoom);
-	}
+	QuadRenderer->UseProgram();
+	QuadRenderer->SetUniform("u_CameraPos", MainCamera.Position);
+	QuadRenderer->SetUniform("u_CameraZoo", MainCamera.CurrentZoom);
 
 	TextRenderer = new mst::TextRenderer();
 	TextRenderer->Init(100, "Data/caviardreamsbold.ttf");
@@ -92,13 +84,8 @@ void MyGame::UserResize()
 {
 	if (QuadRenderer != nullptr)
 	{
-		glUseProgram(QuadRenderer->rd.shaderProgram);
-		GLint worldSizeLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_WorldSize");
-		if (worldSizeLoc != -1)
-		{
-			v2f screenSize(ScreenSize);
-			glUniform2fv(worldSizeLoc, 1, &screenSize[0]);
-		}
+		QuadRenderer->UseProgram();
+		QuadRenderer->SetUniform("u_WorldSize", ScreenSize);
 	}
 
 	if (TextRenderer != nullptr)
@@ -116,21 +103,13 @@ void MyGame::UserResize()
 
 void MyGame::UserUpdate()
 {
-	Tick += GetDeltaTime();
-	if (Tick > 3.0f)
-	{
-		dbgval(QuadRenderer->rd.DrawsPerFrame);
-		dbgval(MousePositions.size() + GridRectPositions.size());
-		Tick -= 3.0f;
-	}
-
-	//MousePositions.push_back(GetMouseToScreen());
-
+#ifndef PLATFORM_WEB
 	if (IsKeyPressed(mst::Key::ESCAPE))
 	{
 		PostQuitMessage(0);
 		return;
 	}
+#endif
 
 	if (IsMouseButtonPressed(0))
 	{
