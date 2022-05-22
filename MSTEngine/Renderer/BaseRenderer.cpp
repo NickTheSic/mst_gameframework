@@ -90,9 +90,7 @@ namespace mst
         glCompileShader(shader);
         
         int  success = 0;
-        #ifndef PLATFORM_WEB
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        #endif
 
         if (!success)
         {

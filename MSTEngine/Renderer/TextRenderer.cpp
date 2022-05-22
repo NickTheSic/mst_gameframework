@@ -48,7 +48,7 @@ namespace mst
             *(int*)(0) = 5;
             return;
         }
-
+        
         FT_Face face;
         if (FT_New_Face(ft, FilePath, 0, &face))
         {
@@ -56,9 +56,9 @@ namespace mst
             *(int*)(0) = 5;
             return;
         }
-
+        
         FT_Set_Pixel_Sizes(face, 0, 30);
-
+        
         int atlasw = 0;
         int atlash = 0;
         for (unsigned char c = 32; c < 128; c++)
@@ -68,16 +68,16 @@ namespace mst
                 std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
                 continue;
             }
-
+        
             atlasw += face->glyph->bitmap.width;
             atlash = (face->glyph->bitmap.rows > atlash)
                 ? face->glyph->bitmap.rows
                 : atlash;
         }
-
+        
         DivAtlasWidth = 1.0f / (float)atlasw;
         DivAtlasHeight = 1.0f / (float)atlash;
-
+        
         glGenTextures(1, &FontTexture);
         //glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, FontTexture);
@@ -93,13 +93,13 @@ namespace mst
             GL_UNSIGNED_BYTE,
             0
         );
-
+        
         // set texture options
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
+        
         int xoffset = 0;
         for (unsigned char c = 32; c < 128; c++)
         {
@@ -108,12 +108,12 @@ namespace mst
                 std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
                 continue;
             }
-
+        
             glTexSubImage2D(GL_TEXTURE_2D, 0,
                 xoffset, 0,
                 face->glyph->bitmap.width, face->glyph->bitmap.rows,
                 GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
-
+        
             float tx = (float)xoffset * DivAtlasWidth;
             // now store character for later use
             GlyphData glyph = {
@@ -123,12 +123,12 @@ namespace mst
                 static_cast<unsigned int>(face->glyph->advance.x >> 6)
             };
             Glyphs.push_back(std::move(glyph));
-
+        
             xoffset += face->glyph->bitmap.width;
         }
-
+        
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-
+        
         FT_Done_Face(face);
         FT_Done_FreeType(ft);
     }

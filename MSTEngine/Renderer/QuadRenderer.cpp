@@ -30,7 +30,7 @@ namespace mst
     void QuadRenderer::InitColourShader()
     {
         const char* vertexShaderSource =
-#if defined PLATFORM_WEB
+#if defined PLATFORM_WEB | defined __EMSCRIPTEN__
             "#version 300 es                                              \n"
             "precision mediump float;                                     \n"
 #else
@@ -52,7 +52,7 @@ namespace mst
             "}                                                            \0";
 
         const char* fragmentShaderSource =
-#if defined PLATFORM_WEB
+#if defined PLATFORM_WEB | defined __EMSCRIPTEN__
             "#version 300 es                                              \n"
             "precision mediump float;                                     \n"
 #else

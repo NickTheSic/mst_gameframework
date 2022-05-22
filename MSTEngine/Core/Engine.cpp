@@ -20,7 +20,7 @@ namespace mst
 		::SwapBuffers(Device);
 		#endif
 
-		#if defined PLATFORM_WEB | __EMSCRIPTEN__
+		#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
 		eglSwapBuffers(Display, Surface);
 		#endif
 	}

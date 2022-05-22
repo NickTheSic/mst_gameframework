@@ -8,10 +8,10 @@ set MSTENGINE=../../MSTEngine/main.cpp ../../MSTEngine/Core/Engine.cpp ../../MST
 
 set FREETYPE= -L../../ThirdParty/freetype/lib -lfreetype
 
-set FLAGS= -O2 -sALLOW_MEMORY_GROWTH=1 -DPLATFORM_WEB -sMAX_WEBGL_VERSION=2 -sMIN_WEBGL_VERSION=2 
+set FLAGS= -O2 -sALLOW_MEMORY_GROWTH=1 -DPLATFORM_WEB -sMAX_WEBGL_VERSION=2 -sMIN_WEBGL_VERSION=2 -sFULL_ES2
 rem -sFULL_ES2 -sFULL_ES3
 
-em++ %INCLUDE% %FREETYPE% %FLAGS% %MSTENGINE% %MYGAME% -o mygame.html --preload-file Data
+em++ %INCLUDE% %FREETYPE% %FLAGS% %MSTENGINE% %MYGAME% -o index.html --preload-file Data
 
 
 
