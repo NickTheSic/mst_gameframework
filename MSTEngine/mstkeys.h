@@ -30,7 +30,7 @@ namespace mst
     };
     #endif
     
-    #if defined __EMSCRIPTEN__
+    #if defined __EMSCRIPTEN__ || defined PLATFORM_WEB
     enum class Key : unsigned short
     {
         UNKOWN = DOM_PK_UNKNOWN,

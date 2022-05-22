@@ -17,7 +17,9 @@ namespace mst
 
     void QuadRenderer::Init(unsigned int BatchCount)
     {
+#if !defined __EMSCRITPEN__ || !defined PLATFORM_WEB
         InitBaseBufferObjects(BatchCount, sizeof(VertexData));
+#endif
         InitColourShader();
 
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(offsetof(VertexData, pos)));
@@ -29,8 +31,10 @@ namespace mst
 
     void QuadRenderer::InitColourShader()
     {
+        std::cout << "Init colour shader" << std::endl;
+
         const char* vertexShaderSource =
-#if defined PLATFORM_WEB | defined __EMSCRIPTEN__
+#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
             "#version 300 es                                              \n"
             "precision mediump float;                                     \n"
 #else
@@ -52,7 +56,7 @@ namespace mst
             "}                                                            \0";
 
         const char* fragmentShaderSource =
-#if defined PLATFORM_WEB | defined __EMSCRIPTEN__
+#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
             "#version 300 es                                              \n"
             "precision mediump float;                                     \n"
 #else
@@ -92,10 +96,17 @@ namespace mst
         vertices[3].pos.y = pos.y + size.y;
         vertices[3].color = c;
 
-        glBufferSubData(GL_ARRAY_BUFFER,
-            vertexCount * sizeof(VertexData),
-            4 * sizeof(VertexData),
-            &vertices[0]);
+//#if !defined __EMSCRITPEN__ || !defined PLATFORM_WEB
+//        glBufferSubData(GL_ARRAY_BUFFER,
+//            vertexCount * sizeof(VertexData),
+//            4 * sizeof(VertexData),
+//            &vertices[0]);
+//#else
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(VertexData) * 4, &vertices[0], GL_STREAM_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+//#endif
 
         elementDrawCount++;
         vertexCount+=4;
@@ -126,10 +137,14 @@ namespace mst
         vertices[3].pos.y = pos.y + hsize.y;
         vertices[3].color = c;
 
+#if !defined __EMSCRITPEN__ || !defined PLATFORM_WEB
         glBufferSubData(GL_ARRAY_BUFFER,
             vertexCount * sizeof(VertexData),
             4 * sizeof(VertexData),
             &vertices[0]);
+#else
+
+#endif
 
         elementDrawCount++;
         vertexCount += 4;
@@ -141,13 +156,21 @@ namespace mst
         glUseProgram(shaderProgram);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
+#if defined __EMSCRIPTEN__ || PLATFORM_WEB
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(offsetof(VertexData, pos)));
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VertexData), (void*)(offsetof(VertexData, color)));
+        glEnableVertexAttribArray(1);
+#endif
     }
 
     void QuadRenderer::EndRender()
     {
+    #if !defined __EMSCRITPEN__ || !defined PLATFORM_WEB
         glDrawElements(GL_TRIANGLES, elementDrawCount * 6, GL_UNSIGNED_INT, 0);
 
         vertexCount = 0;
         elementDrawCount = 0;
+    #endif
     }
 }

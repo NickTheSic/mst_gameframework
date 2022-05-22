@@ -36,6 +36,7 @@ MyGame::~MyGame()
 
 bool MyGame::UserStartup()
 {
+	std::cout << "User Startup!" << std::endl;
 	glClearDepth(1.0f);
 	// Set the polygon winding to front facing for the left handed system.
 	//glFrontFace(GL_CCW);
@@ -43,6 +44,8 @@ bool MyGame::UserStartup()
 	//glCullFace(GL_BACK);
 
 	//glEnable(GL_DEPTH);
+
+	glClearColor(1.f,0.f,0.f,1.f);
 	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -50,17 +53,17 @@ bool MyGame::UserStartup()
 
 	MainCamera.Position = ScreenSize / 2;
 
-	QuadRenderer = new mst::QuadRenderer((ScreenSize.y*ScreenSize.x)/SquareSizes);
+	QuadRenderer = new mst::QuadRenderer(100);
 	QuadRenderer->UseProgram();
 	QuadRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 	QuadRenderer->SetUniform("u_CameraZoo", MainCamera.CurrentZoom);
-
+	
 	TextRenderer = new mst::TextRenderer();
 	TextRenderer->Init(100, "Data/caviardreamsbold.ttf");
 	TextRenderer->UseProgram();
 	TextRenderer->SetUniform("u_CameraPos", MainCamera.Position);
-
-	TextRenderer2 = new mst::TextRenderer(100, "Data/leadcoat.ttf");
+	
+	TextRenderer2 = new mst::TextRenderer(26, "Data/leadcoat.ttf");
 	TextRenderer2->UseProgram();
 	TextRenderer2->SetUniform("u_CameraPos", MainCamera.Position);
 
@@ -111,6 +114,27 @@ void MyGame::UserUpdate()
 	}
 #endif
 
+	v2f cameraMove(0,0);
+
+	float speed = 80;
+
+	if (IsKeyDown(mst::Key::W))
+	{
+	    cameraMove.y -= speed * GetDeltaTime();
+	}
+	if (IsKeyDown(mst::Key::S))
+	{
+		cameraMove.y += speed * GetDeltaTime();
+	}
+	if (IsKeyDown(mst::Key::A))
+	{
+		cameraMove.x += speed * GetDeltaTime();
+	}
+	if (IsKeyDown(mst::Key::D))
+	{
+		cameraMove.x -= speed * GetDeltaTime();
+	}
+
 	if (IsMouseButtonPressed(0))
 	{
 		v2i Coord = WorldSpaceToIndex(GetMouseToScreen());
@@ -128,23 +152,17 @@ void MyGame::UserUpdate()
 		*MoveableGridPiece = GetMouseToScreen() - v2f{ SquareSizes * 0.5, SquareSizes * 0.5 };
 	}
 
-	//v2f cameraMove(0);
-	//if (MainCamera.MoveCamera(cameraMove))
-	//{
-	//	GLint cameraPosLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_CameraPos");
-	//	if (cameraPosLoc != -1)
-	//	{
-	//		glUniform2fv(cameraPosLoc, 1, &MainCamera.Position[0]);
-	//	}
-	//}
-	//if (MainCamera.Zoom(MouseScroll * GetDeltaTime()))
-	//{
-	//	GLint cameraZoomLoc = glGetUniformLocation(QuadRenderer->rd.shaderProgram, "u_CameraZoom");
-	//	if (cameraZoomLoc != -1)
-	//	{
-	//		glUniform1f(cameraZoomLoc, MainCamera.CurrentZoom);
-	//	}
-	//}
+	if (MainCamera.MoveCamera(cameraMove))
+	{
+		dbgval(MainCamera.Position);
+		QuadRenderer->UseProgram();
+		QuadRenderer->SetUniform("u_CameraPos", MainCamera.Position);
+	}
+	if (MainCamera.Zoom(MouseScroll * GetDeltaTime()))
+	{
+		QuadRenderer->UseProgram();
+		QuadRenderer->SetUniform("u_CameraZoom", MainCamera.CurrentZoom);
+	}
 }
 
 void MyGame::UserRender()
@@ -162,12 +180,13 @@ void MyGame::UserRender()
 	{
 		QuadRenderer->AddCenteredQuad(pos, { SquareSizes, SquareSizes }, Color{ 255,255,255 });
 	}
+	QuadRenderer->AddCenteredQuad(GetMousePosition(), { SquareSizes, SquareSizes }, Color{ 255,255,255 });
 	QuadRenderer->EndRender();
-
+	
 	TextRenderer->StartRender();
 	TextRenderer->RenderText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(30,45));
 	TextRenderer->EndRender();
-
+	
 	TextRenderer2->StartRender();
 	TextRenderer2->RenderText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(0, 5));
 	TextRenderer2->EndRender();

@@ -24,11 +24,11 @@ namespace mst
 {
 	struct ButtonState
 	{
-		bool Held      : 1;
-		bool Pressed   : 1;
-		bool Released  : 1;
-		bool DownState : 1;
-		bool PrevState : 1;
+		bool Held      = false; //: 1;
+		bool Pressed   = false; //: 1;
+		bool Released  = false; //: 1;
+		bool DownState = false; //: 1;
+		bool PrevState = false; //: 1;
 	};
 
 	class Engine
@@ -46,6 +46,10 @@ namespace mst
 
 		bool Construct(int width, int height)
 		{
+			ScreenSize.x = width;
+			ScreenSize.y = height;
+			InitialScreenSize.x = width;
+			InitialScreenSize.y = height;
 			bool success = CreateGLWindow(width, height) & UserStartup();
 			return success;
 		}
@@ -111,7 +115,11 @@ namespace mst
 
 		Timer timer;
 
+		#if !defined __EMSCRIPTEN__ || PLATFORM_WEB
 		std::array<ButtonState, 256> KeyStates;
+		#else
+		std::array<ButtonState, DOM_PK_MEDIA_SELECT> KeyStates;
+		#endif
 		std::array<ButtonState, 3> MouseStates;
 		//std::array<ButtonState, Controllerinputs> ControllerInput;?
 

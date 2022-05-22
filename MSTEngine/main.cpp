@@ -23,8 +23,6 @@ extern "C"
 		
 		if (Engine->Construct(800, 600))
 		{
-			glClearColor(0.0f,0.0f,0.0f,1.0f);
-			
 			#if !defined PLATFORM_WEB || !defined __EMSCRIPTEN__
 			while(!Engine->ShouldExit())
 			{

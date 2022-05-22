@@ -16,6 +16,7 @@ namespace mst
 
 	void BaseRenderer::InitBaseBufferObjects(unsigned int BatchCount, size_t VertexDataSize)
 	{
+        std::cout << "init base buffer obejcts" << std::endl;
         maxVertices = BatchCount * 4;
         unsigned int IndiceCount = BatchCount * 6;
 
@@ -118,13 +119,13 @@ namespace mst
         glUniform1f(Loc, val);
     }
 
-    int BaseRenderer::GetUniformLocation(const char* name)
+    int BaseRenderer::GetUniformLocation(const std::string& name)
     {
         auto It = UniformLocations.find(name);
 
         if (It == UniformLocations.end())
         {
-            UniformLocations[name] = glGetUniformLocation(shaderProgram, name);
+            UniformLocations[name] = glGetUniformLocation(shaderProgram, name.c_str());
         }
 
         return UniformLocations[name];

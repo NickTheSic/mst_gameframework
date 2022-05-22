@@ -24,7 +24,7 @@ namespace mst
 		void CompileShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
 		void CompileShaderCode(unsigned int& shader, unsigned int type, const char* shaderSource);
 
-		int GetUniformLocation(const char* name);
+		int GetUniformLocation(const std::string& name);
 
 		std::map<std::string, int> UniformLocations;
 

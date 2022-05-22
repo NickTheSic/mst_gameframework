@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include <mstDebug.h>
 
 #define MST_KEY_OPERATOR_IMPLEMENTATION
 #include "mstkeys.h"
@@ -44,12 +45,13 @@ namespace mst
 	
 	void Engine::HandleKey(Key key, bool Down)
 	{
-		//dbglog(key << " Is " << Down);
+		dbglog(key << " Is " << Down);
 		KeyStates[(unsigned int)key].DownState = Down;
 	}
 
 	bool Engine::IsKeyDown(Key key)
 	{
+		//dbglog(key << " Is down: " << KeyStates[(unsigned int)key].Held);
 		return KeyStates[(unsigned int)key].Held;
 	}
 
@@ -87,6 +89,9 @@ namespace mst
 	{
 		CurrMousePos.x = x;
 		CurrMousePos.y = y;
+
+		//dbgval(CurrMousePos.x);
+		//dbgval(CurrMousePos.y);
 	}
 
 	void Engine::HandleMouseScroll(int scroll)
@@ -152,6 +157,7 @@ namespace mst
 			MouseStates[i].Released = false;
 			if (MouseStates[i].DownState != MouseStates[i].PrevState)
 			{
+				dbglog("Mouse sattes not same");
 				if (MouseStates[i].DownState)
 				{
 					MouseStates[i].Pressed = !MouseStates[i].Held;
@@ -173,6 +179,7 @@ namespace mst
 			KeyStates[i].Released = false;
 			if (KeyStates[i].DownState != KeyStates[i].PrevState)
 			{
+				dbglog("keys sattes not same");
 				if (KeyStates[i].DownState)
 				{
 					KeyStates[i].Pressed = !KeyStates[i].Held;
@@ -184,7 +191,6 @@ namespace mst
 					KeyStates[i].Held = false;
 				}
 			}
-
 			KeyStates[i].PrevState = KeyStates[i].DownState;
 		}
 
@@ -225,12 +231,6 @@ namespace mst
 #ifdef _WIN64
 	bool Engine::CreateGLWindow(int width, int height)
 	{
-		ScreenSize.x = width;
-		ScreenSize.y = height;
-
-		InitialScreenSize.x = width;
-		InitialScreenSize.y = height;
-
 		DWORD dwExStyle;
 		DWORD dwStyle;
 
@@ -455,6 +455,8 @@ namespace mst
 
 	EM_BOOL keyboard_callback(int eventType, const EmscriptenKeyboardEvent* e, void* engine)
 	{
+		dbglog("Keyboared called back!");
+
 		if (eventType == EMSCRIPTEN_EVENT_KEYDOWN)
 			static_cast<mst::Engine*>(engine)->HandleKey((mst::Key)emscripten_compute_dom_pk_code(e->code), true);
 
@@ -464,32 +466,63 @@ namespace mst
 		return EM_TRUE;
 	}
 
+	static EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent* e, void* engine)
+	{
+		//Mouse Movement
+		if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE)
+			static_cast<mst::Engine*>(engine)->HandleMouseMove(e->targetX, e->targetY);
+
+
+		//Mouse button press
+		if (e->button == 0) // left click
+		{
+			if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN)
+				static_cast<mst::Engine*>(engine)->HandleMouseButton(0, true);
+			else if (eventType == EMSCRIPTEN_EVENT_MOUSEUP)
+				static_cast<mst::Engine*>(engine)->HandleMouseButton(0, false);
+		}
+
+		if (e->button == 2) // right click
+		{
+			if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN)
+				static_cast<mst::Engine*>(engine)->HandleMouseButton(1, true);
+			else if (eventType == EMSCRIPTEN_EVENT_MOUSEUP)
+				static_cast<mst::Engine*>(engine)->HandleMouseButton(1, false);
+		}
+
+		return EM_FALSE;
+		}
+
 namespace mst
 { 
 	bool Engine::CreateGLWindow(int w, int h)
 	{
+		EmscriptenWebGLContextAttributes attr;
+		emscripten_webgl_init_context_attributes(&attr);
+
 		emscripten_set_canvas_element_size("#canvas", w, h);
 
 		//set up callbacks here
 		emscripten_set_keydown_callback("#canvas", this, 1, keyboard_callback);
 		emscripten_set_keyup_callback("#canvas", this, 1, keyboard_callback);
 
-
-		EmscriptenWebGLContextAttributes attr;
-		emscripten_webgl_init_context_attributes(&attr);
+		//emscripten_set_wheel_callback("#canvas", 0, 1, wheel_callback);
+		emscripten_set_mousedown_callback("#canvas", 0, 1, mouse_callback);
+		emscripten_set_mouseup_callback("#canvas", 0, 1, mouse_callback);
+		emscripten_set_mousemove_callback("#canvas", 0, 1, mouse_callback);
 
 		EGLint const attribute_list[] = { EGL_RED_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_BLUE_SIZE, 8, EGL_ALPHA_SIZE, 8, EGL_NONE };
 		EGLint const context_config[] = { EGL_CONTEXT_CLIENT_VERSION , 2, EGL_NONE };
 		EGLint num_config;
-
+		
 		Display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 		eglInitialize(Display, nullptr, nullptr);
 		eglChooseConfig(Display, attribute_list, &Config, 1, &num_config);
-
+		
 		/* create an EGL rendering context */
 		Context = eglCreateContext(Display, Config, EGL_NO_CONTEXT, context_config);
 		Surface = eglCreateWindowSurface(Display, Config, NULL, nullptr);
-
+		
 		eglMakeCurrent(Display, Surface, Surface, Context);
 		return true;
 	}

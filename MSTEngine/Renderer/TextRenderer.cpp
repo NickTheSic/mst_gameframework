@@ -1,5 +1,6 @@
 #include "TextRenderer.h"
 #include "mstgl.h"
+#include "mstDebug.h"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H  
@@ -79,19 +80,31 @@ namespace mst
         DivAtlasHeight = 1.0f / (float)atlash;
         
         glGenTextures(1, &FontTexture);
-        //glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, FontTexture);
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
         glTexImage2D(
             GL_TEXTURE_2D,
             0,
+#if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
             GL_RED,
+#else
+            GL_ALPHA,
+#endif
             atlasw,
             atlash,
             0,
+#if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
             GL_RED,
+#else
+            GL_ALPHA,
+#endif
             GL_UNSIGNED_BYTE,
+#if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
             0
+#else
+            new unsigned char[atlasw*atlash]
+#endif
         );
         
         // set texture options
@@ -112,7 +125,13 @@ namespace mst
             glTexSubImage2D(GL_TEXTURE_2D, 0,
                 xoffset, 0,
                 face->glyph->bitmap.width, face->glyph->bitmap.rows,
-                GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+#if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
+                GL_RED,
+#else
+                GL_ALPHA,
+#endif
+                GL_UNSIGNED_BYTE, 
+                face->glyph->bitmap.buffer);
         
             float tx = (float)xoffset * DivAtlasWidth;
             // now store character for later use
@@ -136,7 +155,7 @@ namespace mst
     void TextRenderer::InitShader()
     {
         const char* vertexShaderSource =
-#if defined PLATFORM_WEB
+#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
             "#version 300 es                                                 \n"
             "precision mediump float;                                        \n"
 #else
@@ -161,7 +180,7 @@ namespace mst
             "}                                                               \0";
 
         const char* fragmentShaderSource =
-#if defined PLATFORM_WEB
+#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
             "#version 300 es                                                 \n"
             "precision mediump float;                                        \n"
 #else
@@ -172,7 +191,11 @@ namespace mst
             "in vec2 TexCoords;                                              \n"
             "uniform sampler2D text;                                         \n"
             "void main(){                                                    \n"
+#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
+            "FragColor = vec4(oColour, texture(text, TexCoords).a);          \n"
+#else
             "FragColor = vec4(oColour, texture(text, TexCoords).r);          \n"
+#endif
             "}                                                               \0";
 
         CompileShaderProgram(vertexShaderSource, fragmentShaderSource);
@@ -188,6 +211,17 @@ namespace mst
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
         glBindTexture(GL_TEXTURE_2D, FontTexture);
+
+#if defined __EMSCRIPTEN__ || PLATFORM_WEB
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, pos)));
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, color)));
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, size)));
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, coords)));
+        glEnableVertexAttribArray(3);
+#endif
     }
 
     void TextRenderer::EndRender()
@@ -203,7 +237,7 @@ namespace mst
         std::string::const_iterator c;
         for (c = String.begin(); c != String.end(); c++)
         {
-            if (vertexCount + 4 >= maxVertices)
+            if (vertexCount >= maxVertices)
             {
                 std::cout << "Early EndRender in font Rendering" << std::endl;
                 EndRender();
