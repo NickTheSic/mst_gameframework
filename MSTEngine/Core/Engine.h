@@ -6,7 +6,8 @@
 #endif
 
 #if defined PLATFORM_WEB || __EMSCRIPTEN__
-
+	#include <emscripten.h>
+	#include <emscripten/html5.h>
 #endif
 
 #include "mstgl.h"
@@ -24,11 +25,20 @@ namespace mst
 {
 	struct ButtonState
 	{
-		bool Held      = false; //: 1;
-		bool Pressed   = false; //: 1;
-		bool Released  = false; //: 1;
-		bool DownState = false; //: 1;
-		bool PrevState = false; //: 1;
+		ButtonState(): pad(0) {}
+	union
+	{
+		struct
+		{
+			bool Held      : 1;
+			bool Pressed   : 1;
+			bool Released  : 1;
+			bool DownState : 1;
+			bool PrevState : 1; 
+		};
+		// Padding required as there is garbage data after the PrevState bool aparently
+		unsigned char pad;
+	};
 	};
 
 	class Engine
@@ -50,6 +60,8 @@ namespace mst
 			ScreenSize.y = height;
 			InitialScreenSize.x = width;
 			InitialScreenSize.y = height;
+			ScreenCenter.x = width * 0.5f;
+			ScreenCenter.y = height * 0.5f;
 			bool success = CreateGLWindow(width, height) & UserStartup();
 			return success;
 		}
@@ -98,6 +110,9 @@ namespace mst
 		EGLConfig  Config;
 		EGLContext Context;
 		EGLSurface Surface;
+		static EM_BOOL keyboard_callback(int eventType, const EmscriptenKeyboardEvent* e, void* engine);
+		static EM_BOOL mouse_move_callback(int eventType, const EmscriptenMouseEvent* e, void* engine);
+		static EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent* e, void* engine);
 	#endif
 
 		v2i PrevMousePos      = {};
@@ -115,11 +130,7 @@ namespace mst
 
 		Timer timer;
 
-		#if !defined __EMSCRIPTEN__ || PLATFORM_WEB
 		std::array<ButtonState, 256> KeyStates;
-		#else
-		std::array<ButtonState, DOM_PK_MEDIA_SELECT> KeyStates;
-		#endif
 		std::array<ButtonState, 3> MouseStates;
 		//std::array<ButtonState, Controllerinputs> ControllerInput;?
 

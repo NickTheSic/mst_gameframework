@@ -10,8 +10,6 @@
 #endif
 
 #include <iostream>
-#define dbglog(dbmsg) std::cout << dbmsg << std::endl;
-#define dbgval(val)   std::cout << #val << ": " << (val) << std::endl;
 
 namespace mst 
 {
@@ -45,7 +43,6 @@ namespace mst
 	
 	void Engine::HandleKey(Key key, bool Down)
 	{
-		dbglog(key << " Is " << Down);
 		KeyStates[(unsigned int)key].DownState = Down;
 	}
 
@@ -68,6 +65,10 @@ namespace mst
 	void Engine::HandleMouseButton(int button, bool Down)
 	{
 		MouseStates[button].DownState = Down;
+
+		dbgval(button);
+		dbgval(MouseStates[button].PrevState);
+		dbgval(MouseStates[button].DownState);
 	}
 
 	bool Engine::IsMouseButtonDown(int button)
@@ -89,9 +90,6 @@ namespace mst
 	{
 		CurrMousePos.x = x;
 		CurrMousePos.y = y;
-
-		//dbgval(CurrMousePos.x);
-		//dbgval(CurrMousePos.y);
 	}
 
 	void Engine::HandleMouseScroll(int scroll)
@@ -157,7 +155,6 @@ namespace mst
 			MouseStates[i].Released = false;
 			if (MouseStates[i].DownState != MouseStates[i].PrevState)
 			{
-				dbglog("Mouse sattes not same");
 				if (MouseStates[i].DownState)
 				{
 					MouseStates[i].Pressed = !MouseStates[i].Held;
@@ -179,7 +176,6 @@ namespace mst
 			KeyStates[i].Released = false;
 			if (KeyStates[i].DownState != KeyStates[i].PrevState)
 			{
-				dbglog("keys sattes not same");
 				if (KeyStates[i].DownState)
 				{
 					KeyStates[i].Pressed = !KeyStates[i].Held;
@@ -451,50 +447,71 @@ namespace mst
 #endif //_WIN64
 
 #if defined PLATFORM_WEB || __EMSCRIPTEN__
-}// end namespace mst
 
-	EM_BOOL keyboard_callback(int eventType, const EmscriptenKeyboardEvent* e, void* engine)
+	EM_BOOL Engine::keyboard_callback(int eventType, const EmscriptenKeyboardEvent* e, void* engine)
 	{
-		dbglog("Keyboared called back!");
-
 		if (eventType == EMSCRIPTEN_EVENT_KEYDOWN)
+		{
 			static_cast<mst::Engine*>(engine)->HandleKey((mst::Key)emscripten_compute_dom_pk_code(e->code), true);
+		}
 
 		if (eventType == EMSCRIPTEN_EVENT_KEYUP)
+		{
 			static_cast<mst::Engine*>(engine)->HandleKey((mst::Key)emscripten_compute_dom_pk_code(e->code), false);
+		}
 
 		return EM_TRUE;
 	}
 
-	static EM_BOOL mouse_callback(int eventType, const EmscriptenMouseEvent* e, void* engine)
+	/*
+	
+GetMousePosition(): X: 793 Y: 594
+GetMouseToScreen(): X: 1193 Y: 894
+
+
+GetMousePosition(): X: 10 Y: 10
+GetMouseToScreen(): X: 410 Y: 310
+
+	*/
+
+	EM_BOOL Engine::mouse_move_callback(int eventType, const EmscriptenMouseEvent* e, void* inEngine)
 	{
-		//Mouse Movement
-		if (eventType == EMSCRIPTEN_EVENT_MOUSEMOVE)
-			static_cast<mst::Engine*>(engine)->HandleMouseMove(e->targetX, e->targetY);
+		mst::Engine* engine = static_cast<mst::Engine*>(inEngine);
+		engine->HandleMouseMove(e->targetX, engine->ScreenSize.y - e->targetY);
 
+		return EM_FALSE;
+	}
 
+	EM_BOOL Engine::mouse_callback(int eventType, const EmscriptenMouseEvent* e, void* engine)
+	{
 		//Mouse button press
 		if (e->button == 0) // left click
 		{
 			if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN)
+			{
 				static_cast<mst::Engine*>(engine)->HandleMouseButton(0, true);
+			}
 			else if (eventType == EMSCRIPTEN_EVENT_MOUSEUP)
+			{
 				static_cast<mst::Engine*>(engine)->HandleMouseButton(0, false);
+			}
 		}
 
 		if (e->button == 2) // right click
 		{
 			if (eventType == EMSCRIPTEN_EVENT_MOUSEDOWN)
+			{
 				static_cast<mst::Engine*>(engine)->HandleMouseButton(1, true);
+			}
 			else if (eventType == EMSCRIPTEN_EVENT_MOUSEUP)
+			{
 				static_cast<mst::Engine*>(engine)->HandleMouseButton(1, false);
+			}
 		}
 
 		return EM_FALSE;
-		}
+	}
 
-namespace mst
-{ 
 	bool Engine::CreateGLWindow(int w, int h)
 	{
 		EmscriptenWebGLContextAttributes attr;
@@ -503,13 +520,13 @@ namespace mst
 		emscripten_set_canvas_element_size("#canvas", w, h);
 
 		//set up callbacks here
-		emscripten_set_keydown_callback("#canvas", this, 1, keyboard_callback);
-		emscripten_set_keyup_callback("#canvas", this, 1, keyboard_callback);
+		emscripten_set_keydown_callback("#canvas", this, 1, Engine::keyboard_callback);
+		emscripten_set_keyup_callback("#canvas", this, 1, Engine::keyboard_callback);
 
 		//emscripten_set_wheel_callback("#canvas", 0, 1, wheel_callback);
-		emscripten_set_mousedown_callback("#canvas", 0, 1, mouse_callback);
-		emscripten_set_mouseup_callback("#canvas", 0, 1, mouse_callback);
-		emscripten_set_mousemove_callback("#canvas", 0, 1, mouse_callback);
+		emscripten_set_mousedown_callback("#canvas", this, 1, Engine::mouse_callback);
+		emscripten_set_mouseup_callback("#canvas", this, 1, Engine::mouse_callback);
+		emscripten_set_mousemove_callback("#canvas", this, 1, Engine::mouse_move_callback);
 
 		EGLint const attribute_list[] = { EGL_RED_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_BLUE_SIZE, 8, EGL_ALPHA_SIZE, 8, EGL_NONE };
 		EGLint const context_config[] = { EGL_CONTEXT_CLIENT_VERSION , 2, EGL_NONE };

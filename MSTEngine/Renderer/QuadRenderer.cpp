@@ -94,17 +94,10 @@ namespace mst
         vertices[3].pos.y = pos.y + size.y;
         vertices[3].color = c;
 
-//#if !defined __EMSCRITPEN__ || !defined PLATFORM_WEB
         glBufferSubData(GL_ARRAY_BUFFER,
             vertexCount * sizeof(VertexData),
             4 * sizeof(VertexData),
             &vertices[0]);
-//#else
-//        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-//        glBufferData(GL_ARRAY_BUFFER, sizeof(VertexData) * 4, &vertices[0], GL_STREAM_DRAW);
-//        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-//        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-//#endif
 
         elementDrawCount++;
         vertexCount+=4;
@@ -135,14 +128,10 @@ namespace mst
         vertices[3].pos.y = pos.y + hsize.y;
         vertices[3].color = c;
 
-#if !defined __EMSCRITPEN__ || !defined PLATFORM_WEB
         glBufferSubData(GL_ARRAY_BUFFER,
             vertexCount * sizeof(VertexData),
             4 * sizeof(VertexData),
             &vertices[0]);
-#else
-
-#endif
 
         elementDrawCount++;
         vertexCount += 4;

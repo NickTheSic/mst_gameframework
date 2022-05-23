@@ -53,7 +53,7 @@ bool MyGame::UserStartup()
 
 	MainCamera.Position = ScreenSize / 2;
 
-	QuadRenderer = new mst::QuadRenderer(100);
+	QuadRenderer = new mst::QuadRenderer(1000);
 	QuadRenderer->UseProgram();
 	QuadRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 	QuadRenderer->SetUniform("u_CameraZoo", MainCamera.CurrentZoom);
@@ -137,9 +137,12 @@ void MyGame::UserUpdate()
 
 	if (IsMouseButtonPressed(0))
 	{
+		MousePositions.push_back(GetMouseToScreen());
+
 		v2i Coord = WorldSpaceToIndex(GetMouseToScreen());
 		int idx = (Coord.y * GridSize.x) + Coord.x;
-		MoveableGridPiece = &GridRectPositions[idx];
+		if (idx > 0 && idx < GridSize.x * GridSize.y)
+			MoveableGridPiece = &GridRectPositions[idx];
 	}
 
 	if (IsMouseButtonReleased(0))
@@ -154,7 +157,6 @@ void MyGame::UserUpdate()
 
 	if (MainCamera.MoveCamera(cameraMove))
 	{
-		dbgval(MainCamera.Position);
 		QuadRenderer->UseProgram();
 		QuadRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 	}
@@ -180,7 +182,7 @@ void MyGame::UserRender()
 	{
 		QuadRenderer->AddCenteredQuad(pos, { SquareSizes, SquareSizes }, Color{ 255,255,255 });
 	}
-	QuadRenderer->AddCenteredQuad(GetMousePosition(), { SquareSizes, SquareSizes }, Color{ 255,255,255 });
+	QuadRenderer->AddCenteredQuad(GetMouseToScreen(), { SquareSizes, SquareSizes }, Color{ 255,255,255 });
 	QuadRenderer->EndRender();
 	
 	TextRenderer->StartRender();
