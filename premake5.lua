@@ -35,6 +35,7 @@ filter {}
 include "MSTEngine/MSTEngine.lua"
 include "Sandbox"
 include "Pong"
+include "Snake"
 
 group "Config"
 include "ProjectConfig.lua"
