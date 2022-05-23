@@ -10,6 +10,9 @@
 #endif
 
 #include <iostream>
+#include <string>
+#include <sstream>
+#include <iomanip>
 
 namespace mst 
 {
@@ -193,8 +196,6 @@ namespace mst
 
 		timer.Update();
 
-		ShowFPS();
-
 		// Custom Update
 		UserUpdate();
 
@@ -202,21 +203,25 @@ namespace mst
 		UserRender();
 	}
 
-	void Engine::ShowFPS()
+	std::string Engine::GetFPSString()
 	{
 		static float TimedLoop;
 		static int frameCount;
+		static float fps = 30.0f;
 
 		TimedLoop += timer.delta;
 		if (TimedLoop > 1.f)
 		{
-			double fps = double(frameCount) / TimedLoop;
-			double msPerFrame = 1000.0 / fps;
-			SetWindowTitle("FPS: " + std::to_string(fps) + " | " + std::to_string(msPerFrame) + "ms");
+			fps = double(frameCount) / TimedLoop;
 			TimedLoop -= 1.f;
 			frameCount = 0;
 		}
 		frameCount++;
+
+		std::ostringstream str; 
+		str << "FPS: " << std::setprecision(4) << fps;
+
+		return str.str();
 	}
 	
 

@@ -94,7 +94,7 @@ namespace mst
 		v2f GetMouseToScreen();
 		v2f GetMousePosition();
 
-		void ShowFPS();
+		std::string GetFPSString();
 
 	protected:
 
