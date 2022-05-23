@@ -45,13 +45,12 @@ bool MyGame::UserStartup()
 
 	MainCamera.Position = ScreenSize / 2;
 
-	QuadRenderer = new mst::QuadRenderer(1000);
+	QuadRenderer = new mst::QuadRenderer(10);
 	QuadRenderer->UseProgram();
 	QuadRenderer->SetUniform("u_CameraPos", MainCamera.Position);
-	QuadRenderer->SetUniform("u_CameraZoo", MainCamera.CurrentZoom);
 	
 	TextRenderer = new mst::TextRenderer();
-	TextRenderer->Init(100, "Data/caviardreamsbold.ttf");
+	TextRenderer->Init(20, "Data/caviardreamsbold.ttf");
 	TextRenderer->UseProgram();
 	TextRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 

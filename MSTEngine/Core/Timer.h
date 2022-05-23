@@ -23,6 +23,7 @@ namespace mst
 		unsigned long long startoffset;
 		#else
 		std::chrono::time_point<std::chrono::system_clock> tp1, tp2;
+		int startoffset;
 		#endif
 	};
 }

@@ -45,17 +45,26 @@ bool MyGame::UserStartup()
 
 	MainCamera.Position = ScreenSize / 2;
 
-	QuadRenderer = new mst::QuadRenderer(1000);
+	QuadRenderer = new mst::QuadRenderer(10);
 	QuadRenderer->UseProgram();
 	QuadRenderer->SetUniform("u_CameraPos", MainCamera.Position);
-	QuadRenderer->SetUniform("u_CameraZoo", MainCamera.CurrentZoom);
-	
+
 	TextRenderer = new mst::TextRenderer();
-	TextRenderer->Init(100, "Data/caviardreamsbold.ttf");
+	TextRenderer->Init(20, "Data/caviardreamsbold.ttf");
 	TextRenderer->UseProgram();
 	TextRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 
 	UserResize();
+
+	srand(timer.startoffset);
+
+	Player1Paddle.x = PaddleWallDistance;
+	Player2Paddle.x = ScreenSize.x - PaddleWallDistance - PaddleSize.x;
+	Player1Paddle.y = Player2Paddle.y = ScreenCenter.y - (PaddleSize.y*0.5f);
+
+	Ball = ScreenCenter;
+	BallSize = {10.f,10.f};
+	BallMoveDirection = v2f(RandomFloat()-0.5f, RandomFloat());
 
 	return true;
 }
@@ -84,6 +93,29 @@ void MyGame::UserUpdate()
 		return;
 	}
 #endif
+
+	if (IsKeyDown(mst::Key::W))
+	{
+		Player1Paddle.y += PaddMoveSpeed * GetDeltaTime();
+		ClampXPositionUp(Player1Paddle, PaddleSize);
+	}
+	if (IsKeyDown(mst::Key::S))
+	{
+		Player1Paddle.y -= PaddMoveSpeed * GetDeltaTime();
+		ClampXPositionDown(Player1Paddle);
+	}
+
+	Ball += BallMoveDirection * GetDeltaTime() * BallSpeed;
+	BallSpeed += GetDeltaTime();
+
+	if (Player2Paddle.y + (PaddleSize.y*.5f) < Ball.y)
+	{
+		Player2Paddle.y += PaddMoveSpeed * GetDeltaTime();
+	}
+	else if (Player2Paddle.y + (PaddleSize.y*.5f) > Ball.y)
+	{
+		Player2Paddle.y -= PaddMoveSpeed * GetDeltaTime();
+	}
 }
 
 void MyGame::UserRender()
@@ -91,10 +123,34 @@ void MyGame::UserRender()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	QuadRenderer->StartRender();
-
+	QuadRenderer->AddRect(Player1Paddle, PaddleSize);
+	QuadRenderer->AddRect(Player2Paddle, PaddleSize);
+	QuadRenderer->AddRect(Ball, BallSize);
 	QuadRenderer->EndRender();
 	
 	TextRenderer->StartRender();
 	TextRenderer->RenderText(GetFPSString(), v2f(0, ScreenSize.y-30));
 	TextRenderer->EndRender();
-};
+}
+
+void MyGame::ClampXPositionUp(v2f& pos, const v2f& size)
+{
+	if (pos.y > ScreenSize.y - size.y)
+	{
+		pos.y = ScreenSize.y - size.y;
+	}
+}
+
+void MyGame::ClampXPositionDown(v2f& pos)
+{
+	if (pos.y < 0)
+	{
+		pos.y = 0;
+	}
+}
+
+float MyGame::RandomFloat()
+{
+	return (float)rand() / float(RAND_MAX);
+}
+
