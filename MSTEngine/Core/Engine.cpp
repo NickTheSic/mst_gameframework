@@ -65,10 +65,6 @@ namespace mst
 	void Engine::HandleMouseButton(int button, bool Down)
 	{
 		MouseStates[button].DownState = Down;
-
-		dbgval(button);
-		dbgval(MouseStates[button].PrevState);
-		dbgval(MouseStates[button].DownState);
 	}
 
 	bool Engine::IsMouseButtonDown(int button)
@@ -463,17 +459,6 @@ namespace mst
 		return EM_TRUE;
 	}
 
-	/*
-	
-GetMousePosition(): X: 793 Y: 594
-GetMouseToScreen(): X: 1193 Y: 894
-
-
-GetMousePosition(): X: 10 Y: 10
-GetMouseToScreen(): X: 410 Y: 310
-
-	*/
-
 	EM_BOOL Engine::mouse_move_callback(int eventType, const EmscriptenMouseEvent* e, void* inEngine)
 	{
 		mst::Engine* engine = static_cast<mst::Engine*>(inEngine);
@@ -523,15 +508,18 @@ GetMouseToScreen(): X: 410 Y: 310
 		emscripten_set_keydown_callback("#canvas", this, 1, Engine::keyboard_callback);
 		emscripten_set_keyup_callback("#canvas", this, 1, Engine::keyboard_callback);
 
-		//emscripten_set_wheel_callback("#canvas", 0, 1, wheel_callback);
+		//emscripten_set_wheel_callback("#canvas", this, 1, wheel_callback);
 		emscripten_set_mousedown_callback("#canvas", this, 1, Engine::mouse_callback);
 		emscripten_set_mouseup_callback("#canvas", this, 1, Engine::mouse_callback);
 		emscripten_set_mousemove_callback("#canvas", this, 1, Engine::mouse_move_callback);
+
 
 		EGLint const attribute_list[] = { EGL_RED_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_BLUE_SIZE, 8, EGL_ALPHA_SIZE, 8, EGL_NONE };
 		EGLint const context_config[] = { EGL_CONTEXT_CLIENT_VERSION , 2, EGL_NONE };
 		EGLint num_config;
 		
+		EGLConfig  Config;
+
 		Display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 		eglInitialize(Display, nullptr, nullptr);
 		eglChooseConfig(Display, attribute_list, &Config, 1, &num_config);

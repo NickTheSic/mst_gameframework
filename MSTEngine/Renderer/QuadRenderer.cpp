@@ -29,8 +29,6 @@ namespace mst
 
     void QuadRenderer::InitColourShader()
     {
-        std::cout << "Init colour shader" << std::endl;
-
         const char* vertexShaderSource =
 #if defined PLATFORM_WEB || defined __EMSCRIPTEN__
             "#version 300 es                                              \n"

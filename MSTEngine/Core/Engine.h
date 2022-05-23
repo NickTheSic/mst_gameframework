@@ -107,7 +107,6 @@ namespace mst
 
 	#if defined __EMSCRIPTEN__ || PLATFORM_WEB
 		EGLDisplay Display;
-		EGLConfig  Config;
 		EGLContext Context;
 		EGLSurface Surface;
 		static EM_BOOL keyboard_callback(int eventType, const EmscriptenKeyboardEvent* e, void* engine);

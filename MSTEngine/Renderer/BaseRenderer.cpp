@@ -3,20 +3,17 @@
 #include <iostream>
 
 namespace mst
-{
+{   
 	void BaseRenderer::FreeGraphicsMemory()
 	{
-#ifndef PLATFORM_WEB
         glDeleteBuffers(1, &ebo);
         glDeleteBuffers(1, &vbo);
         glDeleteVertexArrays(1, &vao);
         glDeleteProgram(shaderProgram);
-#endif
 	}
 
 	void BaseRenderer::InitBaseBufferObjects(unsigned int BatchCount, size_t VertexDataSize)
 	{
-        std::cout << "init base buffer obejcts" << std::endl;
         maxVertices = BatchCount * 4;
         unsigned int IndiceCount = BatchCount * 6;
 
