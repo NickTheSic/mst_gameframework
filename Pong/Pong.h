@@ -6,6 +6,7 @@
 class MyGame : public mst::Engine
 {
 public:
+	MyGame(int w, int h) : mst::Engine(w,h) {};
 	~MyGame();
 	virtual bool UserStartup();
 	virtual void UserResize();
@@ -15,7 +16,9 @@ public:
 	void ClampXPositionUp(v2f& pos, const v2f& size);
 	void ClampXPositionDown(v2f& pos);
 
-	float RandomFloat();
+	float RandomFloat(float low = 0, float high = 1);
+	void BounceBall();
+	v2f GetNewBallDirection();
 
 	mst::QuadRenderer* QuadRenderer = nullptr;
 	mst::TextRenderer* TextRenderer = nullptr;
@@ -31,4 +34,7 @@ public:
 	float PaddMoveSpeed = 80;
 	float PaddleWallDistance = 20;
 	float BallSpeed = 80.0f;
+
+	int Player1Score;
+	int Player2Score;
 };

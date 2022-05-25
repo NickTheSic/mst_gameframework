@@ -44,6 +44,16 @@ namespace mst
 	class Engine
 	{
 	public:
+		Engine() : Engine(800,600){}
+		Engine(int width, int height)
+		{
+			ScreenSize.x = width;
+			ScreenSize.y = height;
+			InitialScreenSize.x = width;
+			InitialScreenSize.y = height;
+			ScreenCenter.x = width * 0.5f;
+			ScreenCenter.y = height * 0.5f;
+		}
 		virtual ~Engine() = default;
 
 		//Implemented by use game
@@ -54,19 +64,13 @@ namespace mst
 		virtual void UserRender(){};
 		virtual void UserResize(){};
 
-		bool Construct(int width, int height)
+		bool Construct()
 		{
-			ScreenSize.x = width;
-			ScreenSize.y = height;
-			InitialScreenSize.x = width;
-			InitialScreenSize.y = height;
-			ScreenCenter.x = width * 0.5f;
-			ScreenCenter.y = height * 0.5f;
-			bool success = CreateGLWindow(width, height) & UserStartup();
+			bool success = CreateViewWindow(InitialScreenSize.x, InitialScreenSize.y) & UserStartup();
 			return success;
 		}
 
-		bool CreateGLWindow(int width, int height);
+		bool CreateViewWindow(int width, int height);
 		void PollEvents();
 		bool ShouldExit();
 		void CoreUpdate();

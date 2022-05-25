@@ -226,7 +226,7 @@ namespace mst
 	
 
 #ifdef _WIN64
-	bool Engine::CreateGLWindow(int width, int height)
+	bool Engine::CreateViewWindow(int width, int height)
 	{
 		DWORD dwExStyle;
 		DWORD dwStyle;
@@ -502,7 +502,7 @@ namespace mst
 		return EM_FALSE;
 	}
 
-	bool Engine::CreateGLWindow(int w, int h)
+	bool Engine::CreateViewWindow(int w, int h)
 	{
 		EmscriptenWebGLContextAttributes attr;
 		emscripten_webgl_init_context_attributes(&attr);

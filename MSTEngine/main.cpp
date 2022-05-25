@@ -21,7 +21,7 @@ extern "C"
 	{
 		mst::Engine* Engine = mst::Engine::CreateEngine();
 		
-		if (Engine->Construct(800, 600))
+		if (Engine->Construct())
 		{
 			#if !defined PLATFORM_WEB || !defined __EMSCRIPTEN__
 			while(!Engine->ShouldExit())

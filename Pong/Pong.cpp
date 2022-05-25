@@ -18,7 +18,7 @@ std::ostream& operator<<(std::ostream& os, const v2f& v)
 
 mst::Engine* mst::Engine::CreateEngine()
 {
-	return new MyGame();
+	return new MyGame(300, 400);
 }
 
 MyGame::~MyGame()
@@ -64,7 +64,7 @@ bool MyGame::UserStartup()
 
 	Ball = ScreenCenter;
 	BallSize = {10.f,10.f};
-	BallMoveDirection = v2f(RandomFloat()-0.5f, RandomFloat());
+	BallMoveDirection = GetNewBallDirection();
 
 	return true;
 }
@@ -107,14 +107,17 @@ void MyGame::UserUpdate()
 
 	Ball += BallMoveDirection * GetDeltaTime() * BallSpeed;
 	BallSpeed += GetDeltaTime();
+	BounceBall();
 
 	if (Player2Paddle.y + (PaddleSize.y*.5f) < Ball.y)
 	{
 		Player2Paddle.y += PaddMoveSpeed * GetDeltaTime();
+		ClampXPositionUp(Player2Paddle, PaddleSize);
 	}
 	else if (Player2Paddle.y + (PaddleSize.y*.5f) > Ball.y)
 	{
 		Player2Paddle.y -= PaddMoveSpeed * GetDeltaTime();
+		ClampXPositionDown(Player2Paddle);
 	}
 }
 
@@ -149,8 +152,35 @@ void MyGame::ClampXPositionDown(v2f& pos)
 	}
 }
 
-float MyGame::RandomFloat()
+float MyGame::RandomFloat(float low, float high)
 {
-	return (float)rand() / float(RAND_MAX);
+	return low + ((float)rand() / float(RAND_MAX))*((high-low)+low);
+}
+
+void MyGame::BounceBall()
+{	
+	if (Ball.y > ScreenSize.y - BallSize.y || Ball.y < 0.0f)
+	{
+		BallMoveDirection.y *= -1.f;
+	}
+
+	if (Ball.x < 0.0)
+	{
+		Ball = ScreenCenter;
+		BallMoveDirection = GetNewBallDirection();
+		Player2Score++;
+	}
+	if (Ball.x > ScreenSize.x - BallSize.x)
+	{
+		Ball = ScreenCenter;
+		BallMoveDirection = GetNewBallDirection();
+		Player1Score++;
+	}
+}
+
+v2f MyGame::GetNewBallDirection()
+{
+	float Dir = RandomFloat(-1,1);
+	return std::move(v2f(Dir, cosf(Dir)));
 }
 
