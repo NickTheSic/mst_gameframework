@@ -132,7 +132,6 @@ void MyGame::UserRender()
 	QuadRenderer->EndRender();
 	
 	TextRenderer->StartRender();
-	TextRenderer->RenderTextFromRight(GetFPSString(), v2f(ScreenSize.x-30, 0));
 	TextRenderer->RenderText(std::to_string(Player1Score), v2f(0,ScreenSize.y-30));
 	TextRenderer->RenderTextFromRight(std::to_string(Player2Score), v2f(ScreenSize.x-30, ScreenSize.y - 30));
 	TextRenderer->EndRender();

@@ -58,7 +58,7 @@ namespace mst
 
 		bool Construct()
 		{
-			bool success = CreateViewWindow(InitialScreenSize.x, InitialScreenSize.y) & UserStartup();
+			bool success = CreateViewWindow(InitialScreenSize.x, InitialScreenSize.y) && UserStartup();
 			return success;
 		}
 
