@@ -25,20 +25,12 @@ namespace mst
 {
 	struct ButtonState
 	{
-		ButtonState(): pad(0) {}
-	union
-	{
-		struct
-		{
-			bool Held      : 1;
-			bool Pressed   : 1;
-			bool Released  : 1;
-			bool DownState : 1;
-			bool PrevState : 1; 
-		};
-		// Padding required as there is garbage data after the PrevState bool aparently
-		unsigned char pad;
-	};
+		ButtonState(): Held (false), Pressed (false),Released (false),DownState (false),PrevState (false) {}
+		bool Held      : 1;
+		bool Pressed   : 1;
+		bool Released  : 1;
+		bool DownState : 1;
+		bool PrevState : 1; 
 	};
 
 	class Engine
@@ -100,6 +92,8 @@ namespace mst
 
 		std::string GetFPSString();
 
+		float GetRandomFloat(float min = 0.0f, float max = 1.0f);
+
 	protected:
 
 	#if defined _WIN64
@@ -135,7 +129,6 @@ namespace mst
 
 		std::array<ButtonState, 256> KeyStates;
 		std::array<ButtonState, 3> MouseStates;
-		//std::array<ButtonState, Controllerinputs> ControllerInput;?
 
 		bool bShouldExit = false;
 	};

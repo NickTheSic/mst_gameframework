@@ -132,7 +132,9 @@ void MyGame::UserRender()
 	QuadRenderer->EndRender();
 	
 	TextRenderer->StartRender();
-	TextRenderer->RenderText(GetFPSString(), v2f(0, ScreenSize.y-30));
+	TextRenderer->RenderTextFromRight(GetFPSString(), v2f(ScreenSize.x-30, 0));
+	TextRenderer->RenderText(std::to_string(Player1Score), v2f(0,ScreenSize.y-30));
+	TextRenderer->RenderTextFromRight(std::to_string(Player2Score), v2f(ScreenSize.x-30, ScreenSize.y - 30));
 	TextRenderer->EndRender();
 }
 
@@ -150,11 +152,6 @@ void MyGame::ClampXPositionDown(v2f& pos)
 	{
 		pos.y = 0;
 	}
-}
-
-float MyGame::RandomFloat(float low, float high)
-{
-	return low + ((float)rand() / float(RAND_MAX))*((high-low)+low);
 }
 
 void MyGame::BounceBall()
@@ -176,11 +173,30 @@ void MyGame::BounceBall()
 		BallMoveDirection = GetNewBallDirection();
 		Player1Score++;
 	}
+
+	if (BallMoveDirection.x < 0.0f)
+	{ 
+		if (Ball.x < (Player1Paddle.x + PaddleSize.x) &&
+			Ball.y + BallSize.y > Player1Paddle.y && 
+			Ball.y  < Player1Paddle.y + PaddleSize.y)
+		{
+			BallMoveDirection.x *= -1;
+		}
+	}
+	else if (BallMoveDirection.x > 0.0f)
+	{
+		if (Ball.x + BallSize.x > Player2Paddle.x &&
+			Ball.y + BallSize.y > Player2Paddle.y &&
+			Ball.y < Player2Paddle.y + PaddleSize.y)
+		{
+			BallMoveDirection.x *= -1;
+		}
+    }
 }
 
 v2f MyGame::GetNewBallDirection()
 {
-	float Dir = RandomFloat(-1,1);
+	float Dir = GetRandomFloat(-1,1);
 	return std::move(v2f(Dir, cosf(Dir)));
 }
 

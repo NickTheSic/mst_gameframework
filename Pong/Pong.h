@@ -16,7 +16,6 @@ public:
 	void ClampXPositionUp(v2f& pos, const v2f& size);
 	void ClampXPositionDown(v2f& pos);
 
-	float RandomFloat(float low = 0, float high = 1);
 	void BounceBall();
 	v2f GetNewBallDirection();
 
@@ -35,6 +34,6 @@ public:
 	float PaddleWallDistance = 20;
 	float BallSpeed = 80.0f;
 
-	int Player1Score;
-	int Player2Score;
+	int Player1Score = 0;
+	int Player2Score = 0;
 };

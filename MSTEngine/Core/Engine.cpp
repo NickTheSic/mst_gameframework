@@ -27,6 +27,11 @@ namespace mst
 		#endif
 	}
 
+	float Engine::GetRandomFloat(float min /* = 0.0f*/, float max /* = 1.0f*/)
+	{
+		return min + (((float)rand() / float(RAND_MAX)) * (max - min));
+	}
+
 	v2f Engine::GetMouseToScreen()
 	{
 		v2f mousePos = v2f(CurrMousePos) + MouseMoveDelta;

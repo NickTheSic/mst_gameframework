@@ -33,9 +33,12 @@ namespace mst
         void Init(unsigned int BatchCount, const char* FilePath);
         void InitFontSheet(const char* FilePath);
         void InitShader();
+
         void StartRender();
         void EndRender();
+
         void RenderText(const std::string& String, v2f pos, float scale = 1.f);
+        void RenderTextFromRight(const std::string& String, v2f pos, float scale = 1.f);
 
         unsigned int FontTexture;
         float DivAtlasWidth;

@@ -7,7 +7,6 @@
 
 #include <iostream>
 
-
 namespace mst
 {
     TextRenderer::TextRenderer(unsigned int BatchCount, const char* FilePath)
@@ -275,6 +274,53 @@ namespace mst
 
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
             pos.x += (ch.advance);// * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+        }
+    }
+
+    void TextRenderer::RenderTextFromRight(const std::string& String, v2f pos, float scale)
+    {
+        char c;
+        for (c = String.length() - 1; c >= 0; c--)
+        {
+            if (vertexCount >= maxVertices)
+            {
+                std::cout << "Early EndRender in font Rendering" << std::endl;
+                EndRender();
+            }
+
+            if (String[c] == ' ')
+            {
+                pos.x -= 6;// * scale;
+                continue;
+            }
+
+            const int idx = String[c] - 32;
+            const GlyphData& ch = Glyphs[idx];
+
+            float xpos = pos.x + ch.bearing.x;// * scale;
+            float ypos = pos.y - (ch.size.y - ch.bearing.y);// * scale;
+
+            float w = ch.size.x;// * scale;
+            float h = ch.size.y;// * scale;
+
+            float atlasOffsetW = (ch.size.x * DivAtlasWidth);
+            float atlasH = (ch.size.y * DivAtlasHeight);
+
+            GlyphVertexData vertices[4] =
+            {
+                {{xpos,     ypos},     {255,255,255}, ch.size, {ch.xoffset,                atlasH}},
+                {{xpos + w, ypos},     {255,255,255}, ch.size, {ch.xoffset + atlasOffsetW, atlasH}},
+                {{xpos + w, ypos + h}, {255,255,255}, ch.size, {ch.xoffset + atlasOffsetW, 0.0f}},
+                {{xpos,     ypos + h}, {255,255,255}, ch.size, {ch.xoffset,                0.0f}},
+            };
+
+            glBufferSubData(GL_ARRAY_BUFFER, vertexCount * sizeof(GlyphVertexData), 4 * sizeof(GlyphVertexData), vertices);
+
+            elementDrawCount++;
+            vertexCount += 4;
+
+            // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+            pos.x -= (ch.advance);// * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
         }
     }
 }
