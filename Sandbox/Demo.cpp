@@ -187,6 +187,7 @@ void MyGame::UserRender()
 	
 	TextRenderer->StartRender();
 	TextRenderer->RenderText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(30,45));
+	TextRenderer->RenderTextFromRight("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(ScreenSize.x, 100));
 	TextRenderer->RenderText(GetFPSString(), v2f(0, ScreenSize.y-30));
 	TextRenderer->EndRender();
 	

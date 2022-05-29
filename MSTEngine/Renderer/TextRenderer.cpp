@@ -250,11 +250,11 @@ namespace mst
 
             const GlyphData& ch = Glyphs[*c - 32];
 
-            float xpos = pos.x + ch.bearing.x;// * scale;
-            float ypos = pos.y - (ch.size.y - ch.bearing.y);// * scale;
+            float xpos = pos.x + ch.bearing.x * scale;
+            float ypos = pos.y - (ch.size.y - ch.bearing.y) * scale;
 
-            float w = ch.size.x;// * scale;
-            float h = ch.size.y;// * scale;
+            float w = ch.size.x * scale;
+            float h = ch.size.y * scale;
 
             float atlasOffsetW = (ch.size.x * DivAtlasWidth);
             float atlasH = (ch.size.y * DivAtlasHeight);
@@ -273,7 +273,7 @@ namespace mst
             vertexCount += 4;
 
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            pos.x += (ch.advance);// * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+            pos.x += (ch.advance * scale); // bitshift by 6 to get value in pixels (2^6 = 64)
         }
     }
 
@@ -284,24 +284,30 @@ namespace mst
         {
             if (vertexCount >= maxVertices)
             {
-                std::cout << "Early EndRender in font Rendering" << std::endl;
+                static bool doonce;
+                if (doonce){
+                    std::cout << "Early EndRender in font Rendering" << std::endl;
+                }
                 EndRender();
             }
 
             if (String[c] == ' ')
             {
-                pos.x -= 6;// * scale;
+                pos.x -= 6 * scale;
                 continue;
             }
 
             const int idx = String[c] - 32;
             const GlyphData& ch = Glyphs[idx];
 
-            float xpos = pos.x + ch.bearing.x;// * scale;
-            float ypos = pos.y - (ch.size.y - ch.bearing.y);// * scale;
+            // Reverse by the size of the character first
+            pos.x -= (ch.advance) * scale;
 
-            float w = ch.size.x;// * scale;
-            float h = ch.size.y;// * scale;
+            float xpos = pos.x + ch.bearing.x * scale;
+            float ypos = pos.y - (ch.size.y - ch.bearing.y) * scale;
+
+            float w = ch.size.x * scale;
+            float h = ch.size.y * scale;
 
             float atlasOffsetW = (ch.size.x * DivAtlasWidth);
             float atlasH = (ch.size.y * DivAtlasHeight);
@@ -319,8 +325,8 @@ namespace mst
             elementDrawCount++;
             vertexCount += 4;
 
-            // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            pos.x -= (ch.advance);// * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+            //// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+            //pos.x -= (ch.advance * scale); // bitshift by 6 to get value in pixels (2^6 = 64)
         }
     }
 }
