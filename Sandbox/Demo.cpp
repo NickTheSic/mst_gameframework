@@ -211,8 +211,8 @@ void MyGame::UserRender()
 	TextRenderer2->EndRender();
 
 	FirstSpriteSheetGenerator->StartRender();
-	FirstSpriteSheetGenerator->QuickRenderSansImage(v2f(0,0));
-	FirstSpriteSheetGenerator->QuickRender(v2f(0,0));
+	FirstSpriteSheetGenerator->QuickRenderSansImage(v2f(0,ScreenCenter.y));
+	FirstSpriteSheetGenerator->QuickRender(v2f(0,ScreenCenter.y));
 	FirstSpriteSheetGenerator->EndRender();
 };
 

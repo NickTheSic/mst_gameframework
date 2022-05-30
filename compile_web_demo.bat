@@ -1,10 +1,10 @@
 mkdir Build\WEB
 pushd Build\WEB
 
-set INCLUDE=-I../../ThirdParty/ -I../../ThirdParty/freetype -I../../MSTEngine -I../../ThirdParty/freetype/include
+set INCLUDE=-I../../ThirdParty/ -I../../ThirdParty/stb_image/ -I../../ThirdParty/freetype -I../../MSTEngine -I../../ThirdParty/freetype/include
 set MYGAME=../../Sandbox/Demo.cpp 
 
-set MSTENGINE=../../MSTEngine/main.cpp ../../MSTEngine/Core/Engine.cpp ../../MSTEngine/Core/Timer.cpp ../../MSTEngine/Core/Camera.cpp ../../MSTEngine/Renderer/BaseRenderer.cpp ../../MSTEngine/Renderer/QuadRenderer.cpp ../../MSTEngine/Renderer/TextRenderer.cpp
+set MSTENGINE=../../MSTEngine/main.cpp ../../MSTEngine/Core/Engine.cpp ../../MSTEngine/Core/Timer.cpp ../../MSTEngine/Core/Camera.cpp ../../MSTEngine/Renderer/BaseRenderer.cpp ../../MSTEngine/Renderer/QuadRenderer.cpp ../../MSTEngine/Renderer/TextRenderer.cpp ../../MSTEngine/Renderer/SpriteSheetRenderer.cpp ../../ThirdParty/stb_image/stb_image.c
 
 set FREETYPE= -L../../ThirdParty/freetype/lib -lfreetype
 

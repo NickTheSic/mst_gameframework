@@ -111,11 +111,7 @@ namespace mst
             glTexSubImage2D(GL_TEXTURE_2D, 0,
                 xoffset, 0,
                 gsd.x, gsd.y, 
-#if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
                 GL_RGBA,
-#else
-                GL_ALPHA,
-#endif
                 GL_UNSIGNED_BYTE,
                 gsd.data);
         
@@ -191,7 +187,7 @@ namespace mst
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(SpriteSheetVertexData), (void*)(offsetof(SpriteSheetVertexData, pos)));
         glEnableVertexAttribArray(0);
 
-        glVertexAttribPointer(1, 3, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(SpriteSheetVertexData), (void*)(offsetof(SpriteSheetVertexData, coords)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SpriteSheetVertexData), (void*)(offsetof(SpriteSheetVertexData, coords)));
         glEnableVertexAttribArray(1);
 #endif
     }
