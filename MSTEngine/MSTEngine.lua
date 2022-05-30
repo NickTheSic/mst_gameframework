@@ -6,6 +6,7 @@ project "MSTEngine"
 	{
 		"%{wks.location}/MSTEngine",
 		"%{wks.location}/ThirdParty",
+		"%{wks.location}/ThirdParty/stb_image",
 		"%{wks.location}/ThirdParty/freetype/include",
 	}
 

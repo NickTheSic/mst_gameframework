@@ -32,6 +32,11 @@ MyGame::~MyGame()
 	{
 		delete TextRenderer;
 	}
+
+	if (FirstSpriteSheetGenerator)
+	{
+		delete FirstSpriteSheetGenerator;
+	}
 }
 
 bool MyGame::UserStartup()
@@ -67,6 +72,10 @@ bool MyGame::UserStartup()
 	TextRenderer2->UseProgram();
 	TextRenderer2->SetUniform("u_CameraPos", MainCamera.Position);
 
+	FirstSpriteSheetGenerator = new mst::SpriteSheetGeneratorRenderer(10, {"Data/texture_01.png", "Data/texture_02.png" });
+	FirstSpriteSheetGenerator->UseProgram();
+	FirstSpriteSheetGenerator->SetUniform("u_CameraPos", MainCamera.Position);
+
 	GridSize = ScreenSize / SquareSizes;
 	for (int y = 0; y < ScreenSize.y; y += SquareSizes)
 	{
@@ -101,6 +110,12 @@ void MyGame::UserResize()
 	{
 		TextRenderer2->UseProgram();
 		TextRenderer2->SetUniform("u_WorldSize", ScreenSize);
+	}
+
+	if (FirstSpriteSheetGenerator != nullptr)
+	{
+		FirstSpriteSheetGenerator->UseProgram();
+		FirstSpriteSheetGenerator->SetUniform("u_WorldSize", ScreenSize);
 	}
 }
 
@@ -194,6 +209,11 @@ void MyGame::UserRender()
 	TextRenderer2->StartRender();
 	TextRenderer2->RenderText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(0, 5));
 	TextRenderer2->EndRender();
+
+	FirstSpriteSheetGenerator->StartRender();
+	FirstSpriteSheetGenerator->QuickRenderSansImage(v2f(0,0));
+	FirstSpriteSheetGenerator->QuickRender(v2f(0,0));
+	FirstSpriteSheetGenerator->EndRender();
 };
 
 v2i MyGame::WorldSpaceToIndex(const v2f& WorldCoord)
