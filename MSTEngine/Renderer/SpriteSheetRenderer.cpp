@@ -52,8 +52,6 @@ namespace mst
         std::vector<GeneratedSpriteSheetData> GSD;
         GSD.reserve(Paths);
 
-        dbgval(Paths);
-
         int atlasw = 0;
         int atlash = 0;
 
@@ -86,6 +84,8 @@ namespace mst
            atlash = (gsd.y > atlash)
                ? gsd.y
                : atlash;
+
+            gsd.channel = (gsd.channel == 3) ? GL_RGB : GL_RGBA;
            
            GSD.push_back(gsd);
         }
@@ -103,6 +103,8 @@ namespace mst
         {
             dbglog("Channel was not 3 or 4");
         }
+
+        SpriteSheetFormat = GSD[0].channel;
 
         DivAtlasWidth = 1.0f / (float)atlasw;
         DivAtlasHeight = 1.0f / (float)atlash;
@@ -129,7 +131,7 @@ namespace mst
             glTexSubImage2D(GL_TEXTURE_2D, 0,
                 xoffset, 0,
                 gsd.x, gsd.y, 
-                SpriteSheetFormat,
+                gsd.channel,
                 GL_UNSIGNED_BYTE,
                 gsd.data);
 

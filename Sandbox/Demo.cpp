@@ -245,12 +245,12 @@ void MyGame::UserRender()
 	//FirstSpriteSheetGenerator->QuickRenderSansImage(v2f(0,ScreenCenter.y));
 	//FirstSpriteSheetGenerator->QuickRender(v2f(0,ScreenCenter.y));
 	idx = 1;
-	//for (auto& pos : GridRectPositions)
-	//{
-		FirstSpriteSheetGenerator->RenderSpriteAtIndex(2, ScreenCenter);
-	//	idx++;
-	//	idx=idx%179;
-	//}
+	for (auto& pos : GridRectPositions)
+	{
+	FirstSpriteSheetGenerator->RenderSpriteAtIndex(idx, pos);
+		idx++;
+		idx=idx%179;
+	}
 	FirstSpriteSheetGenerator->EndRender();
 };
 
