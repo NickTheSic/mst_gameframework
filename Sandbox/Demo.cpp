@@ -68,7 +68,7 @@ bool MyGame::UserStartup()
 	TextRenderer->UseProgram();
 	TextRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 	
-	TextRenderer2 = new mst::TextRenderer(26, "Data/leadcoat.ttf");
+	TextRenderer2 = new mst::TextRenderer(50, "Data/leadcoat.ttf");
 	TextRenderer2->UseProgram();
 	TextRenderer2->SetUniform("u_CameraPos", MainCamera.Position);
 

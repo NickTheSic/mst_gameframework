@@ -74,7 +74,9 @@ namespace mst
             const char* str = FilePaths[i];
             GeneratedSpriteSheetData gsd = {};
 
-            gsd.data = stbi_load(str, &gsd.x, &gsd.y, &gsd.channel, 0);
+            // Request that all images be RGBA since emscripten/web has issues with mixing the colour types
+            gsd.data = stbi_load(str, &gsd.x, &gsd.y, &gsd.channel, 4);
+            gsd.channel = GL_RGBA; //Could check if 3 = RGB 4 = RBGA but opt for using all RGBA due to emscripten/webgl constraints
 
             if (stbi_failure_reason())
             { 
@@ -87,19 +89,8 @@ namespace mst
                ? gsd.y
                : atlash;
 
-            if (gsd.channel == 3)
-            {
-                gsd.channel = GL_RGB;
-            }
-            else if (gsd.channel == 4)
-            {
-                gsd.channel = GL_RGBA;
-            }
-            dbgval(gsd.channel);
-
             GSD.push_back(gsd);
         }
-        if (GSD.size() == 0) { return; };
 
         DivAtlasWidth = 1.0f / (float)atlasw;
         DivAtlasHeight = 1.0f / (float)atlash;
@@ -133,8 +124,8 @@ namespace mst
                 gsd.data);
 
             SpriteSheetSprite sprite;
-            sprite.bl_coord = {(xoffset*DivAtlasWidth), yoffset* DivAtlasWidth };
-            sprite.ur_coord = { (xoffset * DivAtlasWidth) + (gsd.x * DivAtlasWidth), yoffset * DivAtlasWidth +(gsd.y*DivAtlasHeight)};
+            sprite.bl_coord = {(xoffset*DivAtlasWidth), yoffset*DivAtlasWidth };
+            sprite.ur_coord = { (xoffset*DivAtlasWidth) + (gsd.x*DivAtlasWidth), (yoffset*DivAtlasWidth) +(gsd.y*DivAtlasHeight)};
             Sprites.push_back(sprite);
 
             xoffset += gsd.x;
@@ -142,7 +133,7 @@ namespace mst
             stbi_image_free(gsd.data);
         }
 
-        glGenerateMipmap(GL_TEXTURE_2D);
+        //glGenerateMipmap(GL_TEXTURE_2D);
     }
 
     void SpriteSheetGeneratorRenderer::InitShader()
