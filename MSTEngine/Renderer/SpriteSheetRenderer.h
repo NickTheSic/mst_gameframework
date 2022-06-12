@@ -27,15 +27,19 @@ namespace mst
         SpriteSheetGeneratorRenderer(unsigned int BatchCount, std::initializer_list<const char*> FilePath);
         ~SpriteSheetGeneratorRenderer();
         void Init(unsigned int BatchCount, std::initializer_list<const char*> FilePath);
-        void GenerateSpriteSheet(std::initializer_list<const char*> FilePath);
+        void Init(unsigned int BatchCount, std::vector<std::string> FilePath);
+        void Init(unsigned int BatchCount, const char* const* FilePath, int Paths);
+        void GenerateSpriteSheet(const char* const* FilePath, int Paths);
         void InitShader();
 
         void StartRender();
         void EndRender();
 
+        void RenderSpriteAtIndex(int idx, const v2f& pos);
         void QuickRender(const v2f& pos);
         void QuickRenderSansImage(const v2f& pos);
 
+        unsigned int SpriteSheetFormat;
         unsigned int SpriteSheetTexture;
         float DivAtlasWidth;
         float DivAtlasHeight;

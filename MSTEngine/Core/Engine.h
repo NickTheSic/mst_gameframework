@@ -51,7 +51,7 @@ namespace mst
 		//Implemented by use game
 		static class Engine* CreateEngine();
 
-		virtual bool UserStartup() {return false; /*Forces user to override?*/ };
+		virtual bool UserStartup() {return false; /*Forces user to override*/ };
 		virtual void UserUpdate(){};
 		virtual void UserRender(){};
 		virtual void UserResize(){};

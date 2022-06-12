@@ -72,7 +72,38 @@ bool MyGame::UserStartup()
 	TextRenderer2->UseProgram();
 	TextRenderer2->SetUniform("u_CameraPos", MainCamera.Position);
 
-	FirstSpriteSheetGenerator = new mst::SpriteSheetGeneratorRenderer(10, {"Data/texture_01.png", "Data/texture_02.png" });
+	FirstSpriteSheetGenerator = new mst::SpriteSheetGeneratorRenderer();
+	std::vector<std::string> Files;
+	Files.reserve(179);
+	for (int i = 0; i < 179; i++)
+	{
+		std::string path = "Data/kenney_platformer/tile_0";
+
+		int value = i;
+		std::vector<int> values;
+		values.reserve(3);
+		do
+		{
+			values.push_back(value%10);
+			value/=10;
+		}
+		while (value > 0);
+
+		switch (values.size())
+		{
+			case 1: values.push_back(0);
+			case 2: values.push_back(0);
+		}
+
+		for (int i = 0; i < 3; i++)
+		{
+			path.append(std::to_string(values[2-i]));
+		}
+
+		path.append(".png");
+		Files.push_back(path.c_str());
+	}
+	FirstSpriteSheetGenerator->Init(100, Files);
 	FirstSpriteSheetGenerator->UseProgram();
 	FirstSpriteSheetGenerator->SetUniform("u_CameraPos", MainCamera.Position);
 
@@ -190,7 +221,7 @@ void MyGame::UserRender()
 	int idx = 0;
 	for (auto& pos : GridRectPositions)
 	{
-		QuadRenderer->AddRect(pos, { SquareSizes, SquareSizes }, RandomColours[idx]);
+		//QuadRenderer->AddRect(pos, { SquareSizes, SquareSizes }, RandomColours[idx]);
 		idx++;
 	}
 	for (auto& pos : MousePositions)
@@ -211,8 +242,15 @@ void MyGame::UserRender()
 	TextRenderer2->EndRender();
 
 	FirstSpriteSheetGenerator->StartRender();
-	FirstSpriteSheetGenerator->QuickRenderSansImage(v2f(0,ScreenCenter.y));
-	FirstSpriteSheetGenerator->QuickRender(v2f(0,ScreenCenter.y));
+	//FirstSpriteSheetGenerator->QuickRenderSansImage(v2f(0,ScreenCenter.y));
+	//FirstSpriteSheetGenerator->QuickRender(v2f(0,ScreenCenter.y));
+	idx = 1;
+	//for (auto& pos : GridRectPositions)
+	//{
+		FirstSpriteSheetGenerator->RenderSpriteAtIndex(2, ScreenCenter);
+	//	idx++;
+	//	idx=idx%179;
+	//}
 	FirstSpriteSheetGenerator->EndRender();
 };
 
