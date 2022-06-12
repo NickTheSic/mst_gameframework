@@ -52,6 +52,8 @@ namespace mst
         std::vector<GeneratedSpriteSheetData> GSD;
         GSD.reserve(Paths);
 
+        Sprites.reserve(Paths);
+
         int atlasw = 0;
         int atlash = 0;
 
@@ -85,26 +87,19 @@ namespace mst
                ? gsd.y
                : atlash;
 
-            gsd.channel = (gsd.channel == 3) ? GL_RGB : GL_RGBA;
-           
-           GSD.push_back(gsd);
-        }
+            if (gsd.channel == 3)
+            {
+                gsd.channel = GL_RGB;
+            }
+            else if (gsd.channel == 4)
+            {
+                gsd.channel = GL_RGBA;
+            }
+            dbgval(gsd.channel);
 
+            GSD.push_back(gsd);
+        }
         if (GSD.size() == 0) { return; };
-        if (GSD[0].channel == 3)
-        {
-            SpriteSheetFormat = GL_RGB;
-        }
-        else if (GSD[0].channel == 4)
-        {
-            SpriteSheetFormat = GL_RGBA;
-        }
-        else
-        {
-            dbglog("Channel was not 3 or 4");
-        }
-
-        SpriteSheetFormat = GSD[0].channel;
 
         DivAtlasWidth = 1.0f / (float)atlasw;
         DivAtlasHeight = 1.0f / (float)atlash;
@@ -112,7 +107,7 @@ namespace mst
         glTexImage2D(
             GL_TEXTURE_2D,
             0,
-            SpriteSheetFormat,
+            GL_RGBA,
             atlasw,
             atlash,
             0,
@@ -126,19 +121,28 @@ namespace mst
         );
         
         int xoffset = 0;
+        int yoffset = 0; 
         for (auto& gsd : GSD)
         {        
-            glTexSubImage2D(GL_TEXTURE_2D, 0,
-                xoffset, 0,
+            glTexSubImage2D(
+                GL_TEXTURE_2D, 0,
+                xoffset, yoffset,
                 gsd.x, gsd.y, 
                 gsd.channel,
                 GL_UNSIGNED_BYTE,
                 gsd.data);
 
+            SpriteSheetSprite sprite;
+            sprite.bl_coord = {(xoffset*DivAtlasWidth), yoffset* DivAtlasWidth };
+            sprite.ur_coord = { (xoffset * DivAtlasWidth) + (gsd.x * DivAtlasWidth), yoffset * DivAtlasWidth +(gsd.y*DivAtlasHeight)};
+            Sprites.push_back(sprite);
+
             xoffset += gsd.x;
 
             stbi_image_free(gsd.data);
         }
+
+        glGenerateMipmap(GL_TEXTURE_2D);
     }
 
     void SpriteSheetGeneratorRenderer::InitShader()
@@ -274,10 +278,12 @@ namespace mst
 
         float atlas_offset = 18 * idx * DivAtlasWidth;
 
-        vertices[0].coords = v2f(atlas_offset, 0.0f);
-        vertices[1].coords = v2f(atlas_offset + DivAtlasWidth, 0.0f);
-        vertices[2].coords = v2f(atlas_offset + DivAtlasWidth, 1.0f);
-        vertices[3].coords = v2f(atlas_offset, 1.0f);
+        SpriteSheetSprite sprite = Sprites[idx];
+
+        vertices[0].coords = {sprite.bl_coord.x, sprite.bl_coord.y};
+        vertices[1].coords = {sprite.ur_coord.x, sprite.bl_coord.y};
+        vertices[2].coords = {sprite.ur_coord.x, sprite.ur_coord.y};
+        vertices[3].coords = {sprite.bl_coord.x, sprite.ur_coord.y};
 
         glBufferSubData(GL_ARRAY_BUFFER,
             vertexCount * sizeof(SpriteSheetVertexData),

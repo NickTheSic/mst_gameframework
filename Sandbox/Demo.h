@@ -28,4 +28,6 @@ public:
 	v2i GridSize;
 
 	v2f* MoveableGridPiece = nullptr;
+
+	int SpritesheetIndex = 0;
 };

@@ -50,7 +50,7 @@ bool MyGame::UserStartup()
 
 	//glEnable(GL_DEPTH);
 
-	glClearColor(1.f,0.f,0.f,1.f);
+	glClearColor(.1f,0.1f,0.1f,1.f);
 	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -183,6 +183,7 @@ void MyGame::UserUpdate()
 
 	if (IsMouseButtonPressed(0))
 	{
+		SpritesheetIndex++;
 		MousePositions.push_back(GetMouseToScreen());
 
 		v2i Coord = WorldSpaceToIndex(GetMouseToScreen());
@@ -239,10 +240,11 @@ void MyGame::UserRender()
 	
 	TextRenderer2->StartRender();
 	TextRenderer2->RenderText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(0, 5));
+	TextRenderer2->RenderText(std::to_string(SpritesheetIndex), v2f(0,ScreenCenter.y-10));
 	TextRenderer2->EndRender();
 
 	FirstSpriteSheetGenerator->StartRender();
-	FirstSpriteSheetGenerator->RenderSpriteAtIndex(1, v2f(0,0));
+	FirstSpriteSheetGenerator->RenderSpriteAtIndex(SpritesheetIndex, v2f(32,ScreenCenter.y-10));
 	FirstSpriteSheetGenerator->RenderFullSheet();
 	FirstSpriteSheetGenerator->QuickRender(ScreenCenter);
 	FirstSpriteSheetGenerator->EndRender();

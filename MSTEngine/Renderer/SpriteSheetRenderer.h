@@ -20,6 +20,12 @@ namespace mst
         v2f coords;
     };
 
+    struct SpriteSheetSprite
+    {
+        v2f bl_coord;
+        v2f ur_coord;
+    };
+
     class SpriteSheetGeneratorRenderer : public BaseRenderer
     {
     public:
@@ -40,7 +46,8 @@ namespace mst
         void QuickRender(const v2f& pos);
         void QuickRenderSansImage(const v2f& pos);
 
-        unsigned int SpriteSheetFormat;
+        std::vector<SpriteSheetSprite> Sprites;
+
         unsigned int SpriteSheetTexture;
         float DivAtlasWidth;
         float DivAtlasHeight;
