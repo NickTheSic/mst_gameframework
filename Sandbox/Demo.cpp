@@ -242,15 +242,9 @@ void MyGame::UserRender()
 	TextRenderer2->EndRender();
 
 	FirstSpriteSheetGenerator->StartRender();
-	//FirstSpriteSheetGenerator->QuickRenderSansImage(v2f(0,ScreenCenter.y));
-	//FirstSpriteSheetGenerator->QuickRender(v2f(0,ScreenCenter.y));
-	idx = 1;
-	for (auto& pos : GridRectPositions)
-	{
-	FirstSpriteSheetGenerator->RenderSpriteAtIndex(idx, pos);
-		idx++;
-		idx=idx%179;
-	}
+	FirstSpriteSheetGenerator->RenderSpriteAtIndex(1, v2f(0,0));
+	FirstSpriteSheetGenerator->RenderFullSheet();
+	FirstSpriteSheetGenerator->QuickRender(ScreenCenter);
 	FirstSpriteSheetGenerator->EndRender();
 };
 

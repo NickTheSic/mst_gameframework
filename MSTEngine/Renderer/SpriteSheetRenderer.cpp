@@ -209,6 +209,46 @@ namespace mst
         elementDrawCount = 0;
     }
 
+    void SpriteSheetGeneratorRenderer::RenderFullSheet()
+    {
+        if (vertexCount + 4 > maxVertices)
+        {
+            EndRender();
+        }
+
+        v2f size{18*179, 18};
+        v2f pos{0,0};
+
+        std::array<SpriteSheetVertexData, 4> vertices;
+
+        vertices[0].pos.x = pos.x;
+        vertices[0].pos.y = pos.y;
+
+        vertices[1].pos.x = pos.x + size.x;
+        vertices[1].pos.y = pos.y;
+
+        vertices[2].pos.x = pos.x + size.x;
+        vertices[2].pos.y = pos.y + size.y;
+
+        vertices[3].pos.x = pos.x;
+        vertices[3].pos.y = pos.y + size.y;
+
+        float atlas_offset = 0;//18 * idx * DivAtlasWidth;
+
+        vertices[0].coords = v2f(atlas_offset, 0.0f);
+        vertices[1].coords = v2f(atlas_offset + 1, 0.0f);
+        vertices[2].coords = v2f(atlas_offset + 1, 1.0f);
+        vertices[3].coords = v2f(atlas_offset, 1.0f);
+
+        glBufferSubData(GL_ARRAY_BUFFER,
+            vertexCount * sizeof(SpriteSheetVertexData),
+            4 * sizeof(SpriteSheetVertexData),
+            &vertices[0]);
+
+        elementDrawCount++;
+        vertexCount += 4;
+    }
+
     void SpriteSheetGeneratorRenderer::RenderSpriteAtIndex(int idx, const v2f& pos)
     {
         if (vertexCount + 4 > maxVertices)
@@ -274,7 +314,7 @@ namespace mst
         static float atlas_offset;
         static float quicktimer;
 
-        quicktimer+=0.1;
+        quicktimer+=0.01;
         if (quicktimer>5)
         {
             atlas_offset += 18 * DivAtlasWidth;
@@ -283,8 +323,8 @@ namespace mst
         }
 
         vertices[0].coords = v2f(atlas_offset, 0.0f);
-        vertices[1].coords = v2f(atlas_offset+DivAtlasWidth, 0.0f);
-        vertices[2].coords = v2f(atlas_offset+DivAtlasWidth, 1.0f);
+        vertices[1].coords = v2f(atlas_offset+(18*DivAtlasWidth), 0.0f);
+        vertices[2].coords = v2f(atlas_offset+(18*DivAtlasWidth), 1.0f);
         vertices[3].coords = v2f(atlas_offset, 1.0f);
 
         glBufferSubData(GL_ARRAY_BUFFER,

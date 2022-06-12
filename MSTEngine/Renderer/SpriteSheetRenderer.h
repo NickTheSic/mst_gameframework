@@ -35,6 +35,7 @@ namespace mst
         void StartRender();
         void EndRender();
 
+        void RenderFullSheet();
         void RenderSpriteAtIndex(int idx, const v2f& pos);
         void QuickRender(const v2f& pos);
         void QuickRenderSansImage(const v2f& pos);
