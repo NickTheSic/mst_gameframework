@@ -61,7 +61,6 @@ namespace mst
         glGenTextures(1, &SpriteSheetTexture);
         glBindTexture(GL_TEXTURE_2D, SpriteSheetTexture);
 
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         // set the texture wrapping/filtering options (on the currently bound texture object)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -78,11 +77,11 @@ namespace mst
             gsd.data = stbi_load(str, &gsd.x, &gsd.y, &gsd.channel, 4);
             gsd.channel = GL_RGBA; //Could check if 3 = RGB 4 = RBGA but opt for using all RGBA due to emscripten/webgl constraints
 
-            if (stbi_failure_reason())
-            { 
-                std::cout << stbi_failure_reason();
-                continue;
-            }
+            //if (stbi_failure_reason())
+            //{ 
+            //    std::cout << stbi_failure_reason();
+            //    continue;
+            //}
             
            atlasw += gsd.x;
            atlash = (gsd.y > atlash)
@@ -126,6 +125,7 @@ namespace mst
             SpriteSheetSprite sprite;
             sprite.bl_coord = {(xoffset*DivAtlasWidth), yoffset*DivAtlasWidth };
             sprite.ur_coord = { (xoffset*DivAtlasWidth) + (gsd.x*DivAtlasWidth), (yoffset*DivAtlasWidth) +(gsd.y*DivAtlasHeight)};
+            sprite.size = {gsd.x, gsd.y};
             Sprites.push_back(sprite);
 
             xoffset += gsd.x;
@@ -251,7 +251,9 @@ namespace mst
             EndRender();
         }
 
-        v2f size = {18, 18};
+        SpriteSheetSprite sprite = Sprites[idx];
+
+        v2f size = { sprite.size };
 
         std::array<SpriteSheetVertexData, 4> vertices;
 
@@ -268,8 +270,6 @@ namespace mst
         vertices[3].pos.y = pos.y + size.y;
 
         float atlas_offset = 18 * idx * DivAtlasWidth;
-
-        SpriteSheetSprite sprite = Sprites[idx];
 
         vertices[0].coords = {sprite.bl_coord.x, sprite.bl_coord.y};
         vertices[1].coords = {sprite.ur_coord.x, sprite.bl_coord.y};
@@ -308,21 +308,23 @@ namespace mst
         vertices[3].pos.x = pos.x;
         vertices[3].pos.y = pos.y + size.y;
 
-        static float atlas_offset;
         static float quicktimer;
+        static int idx;
 
         quicktimer+=0.01;
         if (quicktimer>5)
         {
-            atlas_offset += 18 * DivAtlasWidth;
-            if (atlas_offset > 1.0f) { atlas_offset -= 1.0f; }
+            idx++;
+            if (idx >= Sprites.size()) { idx = 0; }
             quicktimer = 0;
         }
 
-        vertices[0].coords = v2f(atlas_offset, 0.0f);
-        vertices[1].coords = v2f(atlas_offset+(18*DivAtlasWidth), 0.0f);
-        vertices[2].coords = v2f(atlas_offset+(18*DivAtlasWidth), 1.0f);
-        vertices[3].coords = v2f(atlas_offset, 1.0f);
+        SpriteSheetSprite sprite = Sprites[idx];
+
+        vertices[0].coords = { sprite.bl_coord.x, sprite.bl_coord.y };
+        vertices[1].coords = { sprite.ur_coord.x, sprite.bl_coord.y };
+        vertices[2].coords = { sprite.ur_coord.x, sprite.ur_coord.y };
+        vertices[3].coords = { sprite.bl_coord.x, sprite.ur_coord.y };
 
         glBufferSubData(GL_ARRAY_BUFFER,
             vertexCount * sizeof(SpriteSheetVertexData),

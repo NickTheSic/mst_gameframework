@@ -19,8 +19,6 @@ namespace mst
         ~QuadRenderer();
         void Init(unsigned int BatchCount);
 
-        void InitColourShader();
-
         // adds a rect where pos = lower left and size = top right
         void AddRect(const v2f& pos, const v2f& size, const Color& c = Color(255, 255, 255));
         void AddCenteredQuad(const v2f& pos, const v2f& size, const Color& c = Color(255,255,255));

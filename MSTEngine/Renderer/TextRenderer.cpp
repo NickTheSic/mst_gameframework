@@ -23,7 +23,7 @@ namespace mst
     void TextRenderer::Init(unsigned int BatchCount, const char* FilePath)
     {
         InitBaseBufferObjects(BatchCount, sizeof(GlyphVertexData));
-        InitShader();
+        shaderProgram = Shader::GetShader(Shader::Type::FONT);
         InitFontSheet(FilePath);
 
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, pos)));
@@ -113,12 +113,6 @@ namespace mst
 #endif
         );
         
-        // set texture options
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        
         int xoffset = 0;
         for (unsigned char c = 32; c < 128; c++)
         {
@@ -156,55 +150,6 @@ namespace mst
         
         FT_Done_Face(face);
         FT_Done_FreeType(ft);
-    }
-
-    void TextRenderer::InitShader()
-    {
-        const char* vertexShaderSource =
-#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
-            "#version 300 es                                                 \n"
-            "precision mediump float;                                        \n"
-#else
-            "#version 330 core                                               \n"
-#endif
-            "layout (location = 0) in vec2 aPos;                             \n"
-            "layout (location = 1) in vec3 aColour;                          \n"
-            "layout (location = 2) in vec2 size;                             \n"
-            "layout (location = 3) in vec2 InCoords;                         \n"
-            "out vec2 TexCoords;                                             \n"
-            "out vec3 oColour;                                               \n"
-            "uniform vec2 u_WorldSize;                                       \n"
-            "uniform vec2 u_CameraPos;                                       \n"
-            "void main()                                                     \n"
-            "{                                                               \n"
-            "   vec2 pos = aPos;                                             \n"
-            "   pos -= u_CameraPos;                                          \n"
-            "   pos /= u_WorldSize * 0.5;                                    \n"
-            "   gl_Position = vec4(pos, 0, 1.0);                             \n"
-            "   TexCoords = InCoords;                                        \n"
-            "   oColour = aColour;                                           \n"
-            "}                                                               \0";
-
-        const char* fragmentShaderSource =
-#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
-            "#version 300 es                                                 \n"
-            "precision mediump float;                                        \n"
-#else
-            "#version 330 core                                               \n"
-#endif
-            "out vec4 FragColor;                                             \n"
-            "in vec3 oColour;                                                \n"
-            "in vec2 TexCoords;                                              \n"
-            "uniform sampler2D text;                                         \n"
-            "void main(){                                                    \n"
-#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
-            "FragColor = vec4(oColour, texture(text, TexCoords).a);          \n"
-#else
-            "FragColor = vec4(oColour, texture(text, TexCoords).r);          \n"
-#endif
-            "}                                                               \0";
-
-        CompileShaderProgram(vertexShaderSource, fragmentShaderSource);
     }
 
     void TextRenderer::StartRender()
@@ -245,7 +190,9 @@ namespace mst
         {
             if (vertexCount >= maxVertices)
             {
-                std::cout << "Early EndRender in font Rendering" << std::endl;
+            #if SLOW_CODE
+                dbglog("Early EndRender in RenderText");
+            #endif
                 EndRender();
             }
 
@@ -291,10 +238,7 @@ namespace mst
         {
             if (vertexCount >= maxVertices)
             {
-                static bool doonce;
-                if (doonce){
-                    std::cout << "Early EndRender in font Rendering" << std::endl;
-                }
+                doonce(dbglog("Early EndRender in font Rendering"));
                 EndRender();
             }
 
@@ -331,9 +275,6 @@ namespace mst
 
             elementDrawCount++;
             vertexCount += 4;
-
-            //// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            //pos.x -= (ch.advance * scale); // bitshift by 6 to get value in pixels (2^6 = 64)
         }
     }
 }

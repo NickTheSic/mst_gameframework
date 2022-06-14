@@ -32,7 +32,6 @@ namespace mst
         ~TextRenderer();
         void Init(unsigned int BatchCount, const char* FilePath);
         void InitFontSheet(const char* FilePath);
-        void InitShader();
 
         void StartRender();
         void EndRender();

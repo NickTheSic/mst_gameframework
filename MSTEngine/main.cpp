@@ -1,5 +1,6 @@
 #define MST_GL_IMPLEMENTATION
 #include "Core/Engine.h"
+#include "mstDebug.h"
 #include <iostream>
 
 #if defined PLATFORM_WEB | __EMSCRIPTEN__

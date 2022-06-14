@@ -4,6 +4,8 @@
 #include <map>
 #include <string>
 
+#include "Shader.h"
+
 namespace mst
 { 
 	class BaseRenderer

@@ -18,53 +18,14 @@ namespace mst
     void QuadRenderer::Init(unsigned int BatchCount)
     {
         InitBaseBufferObjects(BatchCount, sizeof(VertexData));
-        InitColourShader();
+
+        shaderProgram = Shader::GetShader(Shader::Type::QUAD);
 
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)(offsetof(VertexData, pos)));
         glEnableVertexAttribArray(0);
 
         glVertexAttribPointer(1, 3, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VertexData), (void*)(offsetof(VertexData, color)));
         glEnableVertexAttribArray(1);
-    }
-
-    void QuadRenderer::InitColourShader()
-    {
-        const char* vertexShaderSource =
-#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
-            "#version 300 es                                              \n"
-            "precision mediump float;                                     \n"
-#else
-            "#version 330 core                                            \n"
-#endif
-            "layout (location = 0) in vec2 aPos;                          \n"
-            "layout (location = 1) in vec3 aColour;                       \n"
-            "uniform vec2 u_WorldSize;                                    \n"
-            "uniform vec2 u_CameraPos;                                    \n"
-            "uniform float u_CameraZoom;                                  \n"
-            "out vec3 oColour;                                            \n"
-            "void main()                                                  \n"
-            "{                                                            \n"
-            "   oColour = aColour;                                        \n"
-            "   vec2 pos = aPos;                                          \n"
-            "   pos -= u_CameraPos;                                       \n"
-            "   pos /= u_WorldSize * 0.5;                                 \n"
-            "   gl_Position = vec4(pos, 0, 1.0);                          \n"
-            "}                                                            \0";
-
-        const char* fragmentShaderSource =
-#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
-            "#version 300 es                                              \n"
-            "precision mediump float;                                     \n"
-#else
-            "#version 330 core                                            \n"
-#endif
-            "out vec4 FragColor;                                          \n"
-            "in vec3 oColour;                                             \n"
-            "void main(){                                                 \n"
-            "FragColor = vec4(oColour, 1.0);                              \n"
-            "}                                                            \0";
-
-        CompileShaderProgram(vertexShaderSource, fragmentShaderSource);
     }
 
     void QuadRenderer::AddRect(const v2f& pos, const v2f& size, const Color& c)

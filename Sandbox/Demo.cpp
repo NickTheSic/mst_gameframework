@@ -1,5 +1,7 @@
 #include "Demo.h"
 
+#include "Renderer/Shader.h"
+
 #include <iostream>
 #define dbgval(val) std::cout << #val << ": " << val << std::endl;
 #define dbglog(msg) std::cout << msg << std::endl;
@@ -33,6 +35,11 @@ MyGame::~MyGame()
 		delete TextRenderer;
 	}
 
+	if (TextRenderer2)
+	{
+		delete TextRenderer2;
+	}
+
 	if (FirstSpriteSheetGenerator)
 	{
 		delete FirstSpriteSheetGenerator;
@@ -50,6 +57,8 @@ bool MyGame::UserStartup()
 
 	//glEnable(GL_DEPTH);
 
+	Shader::GetShader(Shader::Type::QUAD);
+
 	glClearColor(.1f,0.1f,0.1f,1.f);
 	
 	glEnable(GL_BLEND);
@@ -64,11 +73,11 @@ bool MyGame::UserStartup()
 	QuadRenderer->SetUniform("u_CameraZoo", MainCamera.CurrentZoom);
 	
 	TextRenderer = new mst::TextRenderer();
-	TextRenderer->Init(100, "Data/caviardreamsbold.ttf");
+	TextRenderer->Init(200, "Data/caviardreamsbold.ttf");
 	TextRenderer->UseProgram();
 	TextRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 	
-	TextRenderer2 = new mst::TextRenderer(50, "Data/leadcoat.ttf");
+	TextRenderer2 = new mst::TextRenderer(100, "Data/leadcoat.ttf");
 	TextRenderer2->UseProgram();
 	TextRenderer2->SetUniform("u_CameraPos", MainCamera.Position);
 
@@ -206,6 +215,9 @@ void MyGame::UserUpdate()
 	{
 		QuadRenderer->UseProgram();
 		QuadRenderer->SetUniform("u_CameraPos", MainCamera.Position);
+
+		FirstSpriteSheetGenerator->UseProgram();
+		FirstSpriteSheetGenerator->SetUniform("u_CameraPos", MainCamera.Position);
 	}
 	if (MainCamera.Zoom(MouseScroll * GetDeltaTime()))
 	{
@@ -222,7 +234,7 @@ void MyGame::UserRender()
 	int idx = 0;
 	for (auto& pos : GridRectPositions)
 	{
-		//QuadRenderer->AddRect(pos, { SquareSizes, SquareSizes }, RandomColours[idx]);
+		QuadRenderer->AddRect(pos, { SquareSizes, SquareSizes }, RandomColours[idx]);
 		idx++;
 	}
 	for (auto& pos : MousePositions)
@@ -233,7 +245,8 @@ void MyGame::UserRender()
 	QuadRenderer->EndRender();
 	
 	TextRenderer->StartRender();
-	TextRenderer->RenderText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(30,45));
+	TextRenderer->RenderText("1234567890!@#$%^&*()_+-={}[];:,.<> ABCDEFGHI", v2f(0,55));
+	TextRenderer->RenderText("JKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz", v2f(0,30));
 	TextRenderer->RenderTextFromRight("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(ScreenSize.x, 100));
 	TextRenderer->RenderText(GetFPSString(), v2f(0, ScreenSize.y-30));
 	TextRenderer->EndRender();

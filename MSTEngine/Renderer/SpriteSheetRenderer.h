@@ -24,6 +24,7 @@ namespace mst
     {
         v2f bl_coord;
         v2f ur_coord;
+        v2f size;
     };
 
     class SpriteSheetGeneratorRenderer : public BaseRenderer
