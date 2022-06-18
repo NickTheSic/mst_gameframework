@@ -126,10 +126,7 @@ namespace mst
 
             for (int i = 0; i < face->glyph->bitmap.width * face->glyph->bitmap.rows; i++)
             {
-                Buffer[i] = (face->glyph->bitmap.buffer[i] << 24) | 
-                            (face->glyph->bitmap.buffer[i] << 16) |
-                            (face->glyph->bitmap.buffer[i] <<  8) |
-                            (face->glyph->bitmap.buffer[i] <<  0);
+                Buffer[i] = 0x00ffffff | (face->glyph->bitmap.buffer[i] << 24);
             }
         
             glTexSubImage2D(GL_TEXTURE_2D, 0,
