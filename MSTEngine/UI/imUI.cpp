@@ -67,8 +67,8 @@ namespace ui
 
 	void InitUI()
 	{
-		state.TextRenderer.Init(1000, FONT_FILE_PATH, 10);
-		state.QuadRenderer.Init(1000);
+		state.TextRenderer.Init(500, FONT_FILE_PATH, 10);
+		state.QuadRenderer.Init(500);
 	}
 
 	void AddText(const char* Text, v2f&& Position, const Color& Colour)

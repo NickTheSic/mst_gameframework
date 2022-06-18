@@ -61,7 +61,7 @@ namespace mst
         
         int atlasw = 0;
         int atlash = 0;
-        for (unsigned char c = 32; c < 128; c++)
+        for (unsigned char c = 33; c < 128; c++)
         {
             if (FT_Load_Char(face, c, FT_LOAD_RENDER))
             {
@@ -69,9 +69,9 @@ namespace mst
                 continue;
             }
         
-            atlasw += face->glyph->bitmap.width;
-            atlash = (face->glyph->bitmap.rows > atlash)
-                ? face->glyph->bitmap.rows
+            atlasw += face->glyph->bitmap.width*4;
+            atlash = (face->glyph->bitmap.rows*4 > atlash)
+                ? face->glyph->bitmap.rows*4
                 : atlash;
         }
         
@@ -93,7 +93,7 @@ namespace mst
             GL_TEXTURE_2D,
             0,
 #if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
-            GL_RED,
+            GL_RGBA,
 #else
             GL_ALPHA,
 #endif
@@ -101,7 +101,7 @@ namespace mst
             atlash,
             0,
 #if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
-            GL_RED,
+            GL_RGBA,
 #else
             GL_ALPHA,
 #endif
@@ -114,24 +114,34 @@ namespace mst
         );
         
         int xoffset = 0;
-        for (unsigned char c = 32; c < 128; c++)
+        for (unsigned char c = 33; c < 128; c++)
         {
             if (FT_Load_Char(face, c, FT_LOAD_RENDER))
             {
                 std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
                 continue;
             }
+
+            unsigned int* Buffer = new unsigned int[face->glyph->bitmap.width * face->glyph->bitmap.rows];
+
+            for (int i = 0; i < face->glyph->bitmap.width * face->glyph->bitmap.rows; i++)
+            {
+                Buffer[i] = (face->glyph->bitmap.buffer[i] << 24) | 
+                            (face->glyph->bitmap.buffer[i] << 16) |
+                            (face->glyph->bitmap.buffer[i] <<  8) |
+                            (face->glyph->bitmap.buffer[i] <<  0);
+            }
         
             glTexSubImage2D(GL_TEXTURE_2D, 0,
                 xoffset, 0,
                 face->glyph->bitmap.width, face->glyph->bitmap.rows,
 #if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
-                GL_RED,
+                GL_RGBA,
 #else
                 GL_ALPHA,
 #endif
                 GL_UNSIGNED_BYTE, 
-                face->glyph->bitmap.buffer);
+                Buffer);//face->glyph->bitmap.buffer);
         
             float tx = (float)xoffset * DivAtlasWidth;
             // now store character for later use
@@ -142,8 +152,10 @@ namespace mst
                 static_cast<unsigned int>(face->glyph->advance.x >> 6)
             };
             Glyphs.push_back(std::move(glyph));
+
+            delete[] Buffer;
         
-            xoffset += face->glyph->bitmap.width;
+            xoffset += face->glyph->bitmap.width*4;
         }
         
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -202,7 +214,7 @@ namespace mst
                 continue;
             }
 
-            const GlyphData& ch = Glyphs[*c - 32];
+            const GlyphData& ch = Glyphs[*c - 33];
 
             float xpos = pos.x + ch.bearing.x * scale;
             float ypos = pos.y - (ch.size.y - ch.bearing.y) * scale;
@@ -248,7 +260,7 @@ namespace mst
                 continue;
             }
 
-            const int idx = String[c] - 32;
+            const int idx = String[c] - 33;
             const GlyphData& ch = Glyphs[idx];
 
             // Reverse by the size of the character first

@@ -70,13 +70,13 @@ bool MyGame::UserStartup()
 
 	ui::InitUI();
 
-	QuadRenderer = new mst::QuadRenderer(1000);
+	QuadRenderer = new mst::QuadRenderer(500);
 	QuadRenderer->UseProgram();
 	QuadRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 	QuadRenderer->SetUniform("u_CameraZoo", MainCamera.CurrentZoom);
 	
 	TextRenderer = new mst::TextRenderer();
-	TextRenderer->Init(200, "Data/caviardreamsbold.ttf", 30);
+	TextRenderer->Init(100, "Data/caviardreamsbold.ttf", 30);
 	TextRenderer->UseProgram();
 	TextRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 	
@@ -86,8 +86,8 @@ bool MyGame::UserStartup()
 
 	FirstSpriteSheetGenerator = new mst::SpriteSheetGeneratorRenderer();
 	std::vector<std::string> Files;
-	Files.reserve(179);
-	for (int i = 0; i < 179; i++)
+	Files.reserve(100);
+	for (int i = 0; i < 100; i++)
 	{
 		std::string path = "Data/kenney_platformer/tile_0";
 
@@ -225,36 +225,35 @@ void MyGame::UserUpdate()
 		QuadRenderer->SetUniform("u_CameraZoom", MainCamera.CurrentZoom);
 	}
 
-
-	//if (ui::AddButton("Test", v2f{ ScreenCenter.x + 40.f, ScreenCenter.y + 80 }, { 0,0,0 }))
-	//{
-	//	dbglog("Test Button Pressed");
-	//}
-	//
-	//if (ui::AddButton("When", v2f{ ScreenCenter.x + 60.f, ScreenCenter.y + 120 }, { 255,0,0 }))
-	//{
-	//	dbglog("When Button Pressed");
-	//}
-	//
-	//if (ui::AddButton("Myst", v2f{ ScreenCenter.x + 10.f, ScreenCenter.y + 140 }, { 0,255,0 }))
-	//{
-	//	dbglog("Myst Button Pressed");
-	//}
-	//
-	//if (ui::AddButton("Whomst", v2f{ ScreenCenter.x + 40.f, ScreenCenter.y + 160 }, { 0,0,255 }))
-	//{
-	//	dbglog("Whomst Button Pressed");
-	//}
-	//
-	//if (ui::AddButton("whimst", v2f{ ScreenCenter.x, ScreenCenter.y + 170 }, { 100,0,100 }))
-	//{
-	//	dbglog("whimst Button Pressed");
-	//}
-	//
-	//if (ui::AddButton("Cornts", v2f{ ScreenCenter.x + 80.f, ScreenCenter.y + 110 }, { 175,50,175 }))
-	//{
-	//	dbglog("Cornts Button Pressed");
-	//}
+	if (ui::AddButton("Test", v2f{ ScreenCenter.x + 40.f, ScreenCenter.y + 80 }, { 0,0,0 }))
+	{
+		dbglog("Test Button Pressed");
+	}
+	
+	if (ui::AddButton("When", v2f{ ScreenCenter.x + 60.f, ScreenCenter.y + 120 }, { 255,0,0 }))
+	{
+		dbglog("When Button Pressed");
+	}
+	
+	if (ui::AddButton("Myst", v2f{ ScreenCenter.x + 10.f, ScreenCenter.y + 140 }, { 0,255,0 }))
+	{
+		dbglog("Myst Button Pressed");
+	}
+	
+	if (ui::AddButton("Whomst", v2f{ ScreenCenter.x + 40.f, ScreenCenter.y + 160 }, { 0,0,255 }))
+	{
+		dbglog("Whomst Button Pressed");
+	}
+	
+	if (ui::AddButton("whimst", v2f{ ScreenCenter.x, ScreenCenter.y + 170 }, { 100,0,100 }))
+	{
+		dbglog("whimst Button Pressed");
+	}
+	
+	if (ui::AddButton("Cornts", v2f{ ScreenCenter.x + 80.f, ScreenCenter.y + 110 }, { 175,50,175 }))
+	{
+		dbglog("Cornts Button Pressed");
+	}
 
 }
 
@@ -266,11 +265,7 @@ void MyGame::UserRender()
 	int idx = 0;
 	for (auto& pos : GridRectPositions)
 	{
-		//QuadRenderer->AddRect(pos, { SquareSizes, SquareSizes }, RandomColours[idx]);
-		if (ui::AddButton("b", pos, RandomColours[idx]))
-		{
-			dbgval(pos);
-		}
+		QuadRenderer->AddRect(pos, { SquareSizes, SquareSizes }, RandomColours[idx]);
 		idx++;
 	}
 	for (auto& pos : MousePositions)

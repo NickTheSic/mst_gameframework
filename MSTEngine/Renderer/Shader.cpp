@@ -147,11 +147,7 @@ namespace Shader
 					"in vec2 TexCoords;\n"
 					"uniform sampler2D text;\n"
 					"void main(){\n"
-#if defined PLATFORM_WEB || defined __EMSCRIPTEN__
-					"FragColor = vec4(oColour, texture(text, TexCoords).a);\n"
-#else
-					"FragColor = vec4(oColour, texture(text, TexCoords).r);\n"
-#endif
+					"FragColor = vec4(oColour*texture(text, TexCoords).rgb, texture(text, TexCoords).a);\n"
 					"}\0"
 				);
 			} break;
