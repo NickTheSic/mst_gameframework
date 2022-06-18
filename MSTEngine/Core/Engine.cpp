@@ -16,6 +16,8 @@
 
 namespace mst 
 {
+	Engine* Engine::s_Engine;
+
 	void Engine::SwapBuffers()
 	{
 		#ifdef _WIN64

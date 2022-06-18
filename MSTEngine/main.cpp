@@ -27,9 +27,9 @@ extern "C"
 			#if !defined PLATFORM_WEB || !defined __EMSCRIPTEN__
 			while(!Engine->ShouldExit())
 			{
+				Engine->PollEvents();
 				Engine->CoreUpdate();
 				Engine->SwapBuffers();
-				Engine->PollEvents();
 			} 
 			#else
 			emscripten_set_main_loop_arg(em_run, Engine, 0, 1);

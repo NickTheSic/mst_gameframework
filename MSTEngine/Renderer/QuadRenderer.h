@@ -15,6 +15,7 @@ namespace mst
     class QuadRenderer : public BaseRenderer
     {
     public:
+        QuadRenderer();
         QuadRenderer(unsigned int BatchCount);
         ~QuadRenderer();
         void Init(unsigned int BatchCount);

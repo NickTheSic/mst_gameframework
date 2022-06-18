@@ -11,7 +11,7 @@ namespace mst
 {
     TextRenderer::TextRenderer(unsigned int BatchCount, const char* FilePath)
     {
-        Init(BatchCount, FilePath);
+        Init(BatchCount, FilePath, 28);
     }
 
     TextRenderer::~TextRenderer()
@@ -20,11 +20,11 @@ namespace mst
         FreeGraphicsMemory();
     }
 
-    void TextRenderer::Init(unsigned int BatchCount, const char* FilePath)
+    void TextRenderer::Init(unsigned int BatchCount, const char* FilePath, int Fontsize)
     {
         InitBaseBufferObjects(BatchCount, sizeof(GlyphVertexData));
         shaderProgram = Shader::GetShader(Shader::Type::FONT);
-        InitFontSheet(FilePath);
+        InitFontSheet(FilePath, Fontsize);
 
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(GlyphVertexData), (void*)(offsetof(GlyphVertexData, pos)));
         glEnableVertexAttribArray(0);
@@ -39,7 +39,7 @@ namespace mst
         glEnableVertexAttribArray(3);
     }
 
-    void TextRenderer::InitFontSheet(const char* FilePath)
+    void TextRenderer::InitFontSheet(const char* FilePath, int FontSize)
     {
         FT_Library ft;
         if (FT_Init_FreeType(&ft))
@@ -57,7 +57,7 @@ namespace mst
             return;
         }
         
-        FT_Set_Pixel_Sizes(face, 0, 30);
+        FT_Set_Pixel_Sizes(face, 0, FontSize);
         
         int atlasw = 0;
         int atlash = 0;
@@ -191,7 +191,7 @@ namespace mst
             if (vertexCount >= maxVertices)
             {
             #if SLOW_CODE
-                dbglog("Early EndRender in RenderText");
+                doonce(dbglog("Early EndRender in RenderText"));
             #endif
                 EndRender();
             }

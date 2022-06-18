@@ -5,6 +5,11 @@
 
 namespace mst
 {
+    QuadRenderer::QuadRenderer()
+    {
+        // Must call Init Manually
+    }
+
     QuadRenderer::QuadRenderer(unsigned int BatchCount)
     {
         Init(BatchCount);

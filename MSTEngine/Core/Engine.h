@@ -35,6 +35,8 @@ namespace mst
 
 	class Engine
 	{
+	static Engine* s_Engine;
+
 	public:
 		Engine() : Engine(800,600){}
 		Engine(int width, int height)
@@ -45,8 +47,12 @@ namespace mst
 			InitialScreenSize.y = height;
 			ScreenCenter.x = width * 0.5f;
 			ScreenCenter.y = height * 0.5f;
+
+			s_Engine = this;
 		}
 		virtual ~Engine() = default;
+
+		static Engine* Get(){return s_Engine;}
 
 		//Implemented by use game
 		static class Engine* CreateEngine();

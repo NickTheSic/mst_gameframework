@@ -4,7 +4,13 @@
 #include FT_FREETYPE_H  
 
 #include "mstgl.h"
+#include "mstglm.h"
 #include "mstDebug.h"
+#include "Renderer/QuadRenderer.h"
+#include "Renderer/TextRenderer.h"
+#include "Renderer/SpriteSheetRenderer.h"
+#include "Core/Engine.h"
+#include "Utils.h"
 
 namespace ui
 {	
@@ -14,7 +20,7 @@ namespace ui
 	constexpr int CUSTOM_TEXTURES = 0;
 	constexpr int TEXTURE_ARRAY_START_OFFSET = START_CHARACTER - CUSTOM_TEXTURES;
 	constexpr int MAX_TEXUTURES = (LAST_CHARCTER - TEXTURE_ARRAY_START_OFFSET);
-	constexpr const char* FONT_FILE_PATH = "Data/caviardreams.ttf";
+	constexpr const char* FONT_FILE_PATH = "Data/caviardreamsbold.ttf";
 	constexpr int FONT_SIZE = 16;
 
 	struct Texture
@@ -31,141 +37,113 @@ namespace ui
 		int advance;
 	};
 
-	struct State
+	struct TextRenderData
 	{
-		~State();
+		v2f Pos;
+		Color Colour;
+		std::string Text;
+	};
 
-		v2f Coordinates[MAX_VERTICES];
-		v2f Vertices[MAX_VERTICES];
-		RGBA Colours[MAX_VERTICES];
+	struct ButtonRenderData
+	{
+		v2f bl;
+		v2f ur;
 
-		Texture Textures[126];
+		Color col;
+	};
 
-		unsigned int vao, vbo, vert_count;
-		unsigned int UITexture;
+	struct RenderState
+	{
+		mst::TextRenderer TextRenderer;
+		mst::QuadRenderer QuadRenderer;
+		//mst::SpriteSheetGeneratorRenderer SpriteSheetRenderer;
+
+		std::vector<TextRenderData> AddedText;
+		std::vector<ButtonRenderData> AddedButtons;
 	};
 
 	// Global State
-	State state;
+	RenderState state;
 
-	void Init()
+	void InitUI()
 	{
-		glGenVertexArrays(1, &state.vao);
-		glGenBuffers(1, &state.vbo);
-		glGenTextures(1, &state.UITexture);
+		state.TextRenderer.Init(1000, FONT_FILE_PATH, 10);
+		state.QuadRenderer.Init(1000);
+	}
 
-		unsigned int SheetWidth = 0;
-		unsigned int SheetHeight = 0;
+	void AddText(const char* Text, v2f&& Position, const Color& Colour)
+	{
+		AddText(Text, Position, Colour);
+	}
 
-		// Init Font Sheet;
-		FT_Library ft;
-		if (FT_Init_FreeType(&ft))
-		{
-			dbglog("ERROR::FREETYPE: Could not init FreeType Library");
-			dbgbreak("ERROR::FREETYPE: Could not init FreeType Library");
-			return;
-		}
+	void AddText(const char* Text, v2f& Position, const Color& Colour)
+	{
+		TextRenderData trd;
+		trd.Text = Text;
+		trd.Pos = Position;
+		trd.Colour = Colour;
+		state.AddedText.push_back(std::move(trd));
+	}
 
-		FT_Face face;
-		if (FT_New_Face(ft, FONT_FILE_PATH, 0, &face))
-		{
-			dbglog("ERROR::FREETYPE: Failed to load font");
-			dbgbreak("ERROR::FREETYPE: Failed to load font")
-			return;
-		}
+	bool AddButton(const char* Label, const v2f& Position, const Color& Colour)
+	{
+		bool IsClicked = false;
 
-		FT_Set_Pixel_Sizes(face, 0, FONT_SIZE);
+		const int StringLength = (int)strlen(Label);
+		const float TextSize = (int)16 * (StringLength);
 
-		for (unsigned char c = START_CHARACTER; c < LAST_CHARCTER; c++)
-		{
-			if (!FT_Load_Char(face, c, FT_LOAD_RENDER))
+		ButtonRenderData brd;
+		brd.bl = Position;
+		brd.ur = v2i{TextSize, 20};
+
+		v2f TextPos = Position + v2f{ 2,2 };
+		AddText(Label, TextPos, {255,255,255});
+
+		mst::Engine* Engine = mst::Engine::Get();
+
+		if (Utils::IsPointInRect(Engine->GetMousePosition(), brd.bl, brd.ur))
+		{ 
+			if ((Colour.r+Colour.b+Colour.g) > 254)
+				brd.col = Color{Colour.r*0.75, Colour.g*0.75, Colour.b*0.75};
+			else
+				brd.col = Color{ Colour.r + 75, Colour.g + 75, Colour.b + 75 };
+
+			if (Engine->IsMouseButtonReleased(0))
 			{
-				dbglog("Failed to Load character:" << c);
-				continue;
+				IsClicked = true;
 			}
-
-			SheetWidth += face->glyph->face->glyph->bitmap.width;
-			SheetHeight = (face->glyph->bitmap.rows > SheetHeight)
-				? face->glyph->bitmap.rows
-				: SheetHeight;
+		}
+		else
+		{
+			brd.col = Colour;
 		}
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, state.UITexture);
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
+		state.AddedButtons.push_back(std::move(brd));
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		glTexImage2D(
-			GL_TEXTURE_2D,
-			0,
-#if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
-			GL_RED,
-#else
-			GL_ALPHA,
-#endif
-			SheetWidth,
-			SheetHeight,
-			0,
-#if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
-			GL_RED,
-#else
-			GL_ALPHA,
-#endif
-			GL_UNSIGNED_BYTE,
-			new unsigned char[SheetWidth * SheetHeight]
-		);
-
-
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+		return IsClicked;
 	}
 
-	void RenderText(const char* Text, v2f& startPos, float textScale)
+	void Present()
 	{
+		//Render quads first
+		state.QuadRenderer.StartRender();
+		for (auto& button : state.AddedButtons)
+		{
+			state.QuadRenderer.AddRect(button.bl, button.ur, button.col);
+		}
+		state.QuadRenderer.EndRender();
 
+		//Render images on top of quads
+
+		//Render text above all
+		state.TextRenderer.StartRender();
+		for (auto& Text : state.AddedText)
+		{
+			state.TextRenderer.RenderText(Text.Text, {Text.Pos.x, Text.Pos.y});
+		}
+		state.TextRenderer.EndRender();
+
+		state.AddedButtons.clear();
+		state.AddedText.clear();
 	}
-
-	// State
-	// 
-	// Text Renderer \
-	//				   -> turn into 1?
-	// Quad Renderer /	(May need images)
-	//
-	// Scrollable/Expandable
-	// 
-	// DropDownArrow/Header:
-	//		- Clickable
-	//		- Lable
-	//		- On/Off
-	// 
-	// Button:
-	//		- Clickable
-	//		- Says Text
-	//		- Quad / Image
-	// 
-	// Checkbox:
-	//		- Clickable
-	//		- On / Off
-	// 
-	// Text
-	// EditableText
-	// 
-	// Init()
-	// Begin()
-	// 
-	// Text()
-	// Button()
-	// Checkbox()
-	// 
-	// End()
-
-	State::~State()
-	{
-		glDeleteBuffers(1, &vbo);
-		glDeleteVertexArrays(1, &vao);
-	}
-
 }

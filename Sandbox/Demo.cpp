@@ -2,6 +2,9 @@
 
 #include "Renderer/Shader.h"
 
+#include "UI/imUI.h"
+#include "Utils.h"
+
 #include <iostream>
 #define dbgval(val) std::cout << #val << ": " << val << std::endl;
 #define dbglog(msg) std::cout << msg << std::endl;
@@ -57,8 +60,6 @@ bool MyGame::UserStartup()
 
 	//glEnable(GL_DEPTH);
 
-	Shader::GetShader(Shader::Type::QUAD);
-
 	glClearColor(.1f,0.1f,0.1f,1.f);
 	
 	glEnable(GL_BLEND);
@@ -67,19 +68,21 @@ bool MyGame::UserStartup()
 
 	MainCamera.Position = ScreenSize / 2;
 
+	ui::InitUI();
+
 	QuadRenderer = new mst::QuadRenderer(1000);
 	QuadRenderer->UseProgram();
 	QuadRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 	QuadRenderer->SetUniform("u_CameraZoo", MainCamera.CurrentZoom);
 	
 	TextRenderer = new mst::TextRenderer();
-	TextRenderer->Init(200, "Data/caviardreamsbold.ttf");
+	TextRenderer->Init(200, "Data/caviardreamsbold.ttf", 30);
 	TextRenderer->UseProgram();
 	TextRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 	
 	TextRenderer2 = new mst::TextRenderer(100, "Data/leadcoat.ttf");
 	TextRenderer2->UseProgram();
-	TextRenderer2->SetUniform("u_CameraPos", MainCamera.Position);
+	//TextRenderer2->SetUniform("u_CameraPos", MainCamera.Position);
 
 	FirstSpriteSheetGenerator = new mst::SpriteSheetGeneratorRenderer();
 	std::vector<std::string> Files;
@@ -146,12 +149,6 @@ void MyGame::UserResize()
 		TextRenderer->SetUniform("u_WorldSize", ScreenSize);
 	}
 
-	if (TextRenderer2 != nullptr)
-	{
-		TextRenderer2->UseProgram();
-		TextRenderer2->SetUniform("u_WorldSize", ScreenSize);
-	}
-
 	if (FirstSpriteSheetGenerator != nullptr)
 	{
 		FirstSpriteSheetGenerator->UseProgram();
@@ -193,12 +190,15 @@ void MyGame::UserUpdate()
 	if (IsMouseButtonPressed(0))
 	{
 		SpritesheetIndex++;
-		MousePositions.push_back(GetMouseToScreen());
 
-		v2i Coord = WorldSpaceToIndex(GetMouseToScreen());
-		int idx = (Coord.y * GridSize.x) + Coord.x;
-		if (idx > 0 && idx < GridSize.x * GridSize.y)
-			MoveableGridPiece = &GridRectPositions[idx];
+		for (int i = 0; i < GridRectPositions.size(); i++)
+		{
+			if (Utils::IsPointInRect(GetMousePosition(), GridRectPositions[i], { SquareSizes,SquareSizes}))
+			{
+				MoveableGridPiece = &GridRectPositions[i];
+				break;
+			}
+		}
 	}
 
 	if (IsMouseButtonReleased(0))
@@ -224,6 +224,38 @@ void MyGame::UserUpdate()
 		QuadRenderer->UseProgram();
 		QuadRenderer->SetUniform("u_CameraZoom", MainCamera.CurrentZoom);
 	}
+
+
+	//if (ui::AddButton("Test", v2f{ ScreenCenter.x + 40.f, ScreenCenter.y + 80 }, { 0,0,0 }))
+	//{
+	//	dbglog("Test Button Pressed");
+	//}
+	//
+	//if (ui::AddButton("When", v2f{ ScreenCenter.x + 60.f, ScreenCenter.y + 120 }, { 255,0,0 }))
+	//{
+	//	dbglog("When Button Pressed");
+	//}
+	//
+	//if (ui::AddButton("Myst", v2f{ ScreenCenter.x + 10.f, ScreenCenter.y + 140 }, { 0,255,0 }))
+	//{
+	//	dbglog("Myst Button Pressed");
+	//}
+	//
+	//if (ui::AddButton("Whomst", v2f{ ScreenCenter.x + 40.f, ScreenCenter.y + 160 }, { 0,0,255 }))
+	//{
+	//	dbglog("Whomst Button Pressed");
+	//}
+	//
+	//if (ui::AddButton("whimst", v2f{ ScreenCenter.x, ScreenCenter.y + 170 }, { 100,0,100 }))
+	//{
+	//	dbglog("whimst Button Pressed");
+	//}
+	//
+	//if (ui::AddButton("Cornts", v2f{ ScreenCenter.x + 80.f, ScreenCenter.y + 110 }, { 175,50,175 }))
+	//{
+	//	dbglog("Cornts Button Pressed");
+	//}
+
 }
 
 void MyGame::UserRender()
@@ -234,7 +266,11 @@ void MyGame::UserRender()
 	int idx = 0;
 	for (auto& pos : GridRectPositions)
 	{
-		QuadRenderer->AddRect(pos, { SquareSizes, SquareSizes }, RandomColours[idx]);
+		//QuadRenderer->AddRect(pos, { SquareSizes, SquareSizes }, RandomColours[idx]);
+		if (ui::AddButton("b", pos, RandomColours[idx]))
+		{
+			dbgval(pos);
+		}
 		idx++;
 	}
 	for (auto& pos : MousePositions)
@@ -248,19 +284,17 @@ void MyGame::UserRender()
 	TextRenderer->RenderText("1234567890!@#$%^&*()_+-={}[];:,.<> ABCDEFGHI", v2f(0,55));
 	TextRenderer->RenderText("JKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz", v2f(0,30));
 	TextRenderer->RenderTextFromRight("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(ScreenSize.x, 100));
-	TextRenderer->RenderText(GetFPSString(), v2f(0, ScreenSize.y-30));
 	TextRenderer->EndRender();
-	
-	TextRenderer2->StartRender();
-	TextRenderer2->RenderText("ABCDEFGHIJKLMNOPQRSTUVWXYZ", v2f(0, 5));
-	TextRenderer2->RenderText(std::to_string(SpritesheetIndex), v2f(0,ScreenCenter.y-10));
-	TextRenderer2->EndRender();
 
 	FirstSpriteSheetGenerator->StartRender();
 	FirstSpriteSheetGenerator->RenderSpriteAtIndex(SpritesheetIndex, v2f(32,ScreenCenter.y-10));
 	FirstSpriteSheetGenerator->RenderFullSheet();
 	FirstSpriteSheetGenerator->QuickRender(ScreenCenter);
 	FirstSpriteSheetGenerator->EndRender();
+
+	ui::AddText(GetFPSString().c_str(), v2f(0, ScreenSize.y - 30), Color{255,255,255});
+	ui::Present();
+
 };
 
 v2i MyGame::WorldSpaceToIndex(const v2f& WorldCoord)

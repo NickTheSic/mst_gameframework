@@ -30,8 +30,8 @@ namespace mst
         TextRenderer() = default;
         TextRenderer(unsigned int BatchCount, const char* FilePath);
         ~TextRenderer();
-        void Init(unsigned int BatchCount, const char* FilePath);
-        void InitFontSheet(const char* FilePath);
+        void Init(unsigned int BatchCount, const char* FilePath, int Fontsize = 16);
+        void InitFontSheet(const char* FilePath, int Fontsize);
 
         void StartRender();
         void EndRender();
