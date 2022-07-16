@@ -96,6 +96,8 @@ namespace mst
 		v2f GetMouseToScreen();
 		v2f GetMousePosition();
 
+		v2f GetScreenCenter();
+
 		std::string GetFPSString();
 
 		float GetRandomFloat(float min = 0.0f, float max = 1.0f);

@@ -18,6 +18,7 @@ namespace mst
     {
         v2f pos;
         v2f coords;
+        Color color;
     };
 
     struct SpriteSheetSprite
@@ -43,7 +44,8 @@ namespace mst
         void EndRender();
 
         void RenderFullSheet();
-        void RenderSpriteAtIndex(int idx, const v2f& pos);
+        void RenderSpriteAtIndex(int idx, const v2f& pos, const Color& Color = {255,255,255});
+        void RenderScaledSpriteAtIndexCenter(int idx, const v2f& pos, float Scale = 1.0f, const Color& Color = { 255,255,255 });
         void QuickRender(const v2f& pos);
         void QuickRenderSansImage(const v2f& pos);
 

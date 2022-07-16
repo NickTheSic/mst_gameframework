@@ -45,6 +45,9 @@ namespace mst
 
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SpriteSheetVertexData), (void*)(offsetof(SpriteSheetVertexData, coords)));
         glEnableVertexAttribArray(1);
+
+        glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(SpriteSheetVertexData), (void*)(offsetof(SpriteSheetVertexData, color)));
+        glEnableVertexAttribArray(2);
     }
 
     void SpriteSheetGeneratorRenderer::GenerateSpriteSheet(const char* const* FilePaths, int Paths)
@@ -77,11 +80,11 @@ namespace mst
             gsd.data = stbi_load(str, &gsd.x, &gsd.y, &gsd.channel, 4);
             gsd.channel = GL_RGBA; //Could check if 3 = RGB 4 = RBGA but opt for using all RGBA due to emscripten/webgl constraints
 
-            //if (stbi_failure_reason())
-            //{ 
-            //    std::cout << stbi_failure_reason();
-            //    continue;
-            //}
+            if (stbi_failure_reason())
+            { 
+                std::cout << stbi_failure_reason();
+                continue;
+            }
             
            atlasw += gsd.x;
            atlash = (gsd.y > atlash)
@@ -147,6 +150,8 @@ namespace mst
 #endif
             "layout (location = 0) in vec2 aPos;                             \n"
             "layout (location = 1) in vec2 InCoords;                         \n"
+            "layout (location = 2) in vec3 InColour;                         \n"
+            "out vec4 SpriteColour;                                          \n"
             "out vec2 TexCoords;                                             \n"
             "uniform vec2 u_WorldSize;                                       \n"
             "uniform vec2 u_CameraPos;                                       \n"
@@ -157,6 +162,7 @@ namespace mst
             "   pos /= u_WorldSize * 0.5;                                    \n"
             "   gl_Position = vec4(pos, 0, 1.0);                             \n"
             "   TexCoords = InCoords;                                        \n"
+            "   SpriteColour = vec4(InColour, 1.0);                          \n"
             "}                                                               \0";
 
         const char* fragmentShaderSource =
@@ -168,9 +174,10 @@ namespace mst
 #endif
             "out vec4 FragColor;                                             \n"
             "in vec2 TexCoords;                                              \n"
+            "in vec4 SpriteColour;                                           \n"
             "uniform sampler2D text;                                         \n"
             "void main(){                                                    \n"
-            "FragColor = vec4(texture(text, TexCoords));                     \n"
+            "FragColor = texture(text, TexCoords)*SpriteColour;              \n"
             "}                                                               \0";
 
         CompileShaderProgram(vertexShaderSource, fragmentShaderSource);
@@ -193,6 +200,9 @@ namespace mst
 
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SpriteSheetVertexData), (void*)(offsetof(SpriteSheetVertexData, coords)));
         glEnableVertexAttribArray(1);
+
+        glVertexAttribPointer(2, 4, GL_BYTE, GL_TRUE, sizeof(SpriteSheetVertexData), (void*)(offsetof(SpriteSheetVertexData, color)));
+        glEnableVertexAttribArray(2);
 #endif
     }
 
@@ -211,7 +221,7 @@ namespace mst
             EndRender();
         }
 
-        v2f size{18*179, 18};
+        v2f size{64*7, 64};
         v2f pos{0,0};
 
         std::array<SpriteSheetVertexData, 4> vertices;
@@ -235,6 +245,11 @@ namespace mst
         vertices[2].coords = v2f(atlas_offset + 1, 1.0f);
         vertices[3].coords = v2f(atlas_offset, 1.0f);
 
+        vertices[0].color = {255,255,255};
+        vertices[1].color = {255,255,255};
+        vertices[2].color = {255,255,255};
+        vertices[3].color = {255,255,255};
+
         glBufferSubData(GL_ARRAY_BUFFER,
             vertexCount * sizeof(SpriteSheetVertexData),
             4 * sizeof(SpriteSheetVertexData),
@@ -244,14 +259,14 @@ namespace mst
         vertexCount += 4;
     }
 
-    void SpriteSheetGeneratorRenderer::RenderSpriteAtIndex(int idx, const v2f& pos)
+    void SpriteSheetGeneratorRenderer::RenderSpriteAtIndex(int idx, const v2f& pos, const Color& col)
     {
         if (vertexCount + 4 > maxVertices)
         {
             EndRender();
         }
 
-        SpriteSheetSprite sprite = Sprites[idx];
+        const SpriteSheetSprite &sprite = Sprites[idx];
 
         v2f size = { sprite.size };
 
@@ -269,12 +284,56 @@ namespace mst
         vertices[3].pos.x = pos.x;
         vertices[3].pos.y = pos.y + size.y;
 
-        float atlas_offset = 18 * idx * DivAtlasWidth;
-
         vertices[0].coords = {sprite.bl_coord.x, sprite.bl_coord.y};
         vertices[1].coords = {sprite.ur_coord.x, sprite.bl_coord.y};
         vertices[2].coords = {sprite.ur_coord.x, sprite.ur_coord.y};
         vertices[3].coords = {sprite.bl_coord.x, sprite.ur_coord.y};
+
+        vertices[0].color = col;
+        vertices[1].color = col;
+        vertices[2].color = col;
+        vertices[3].color = col;
+
+        glBufferSubData(GL_ARRAY_BUFFER,
+            vertexCount * sizeof(SpriteSheetVertexData),
+            4 * sizeof(SpriteSheetVertexData),
+            &vertices[0]);
+
+        elementDrawCount++;
+        vertexCount += 4;
+    }
+
+    void SpriteSheetGeneratorRenderer::RenderScaledSpriteAtIndexCenter(int idx, const v2f& pos, float Scale, const Color& Color)
+    {
+        if (vertexCount + 4 > maxVertices)
+        {
+            EndRender();
+        }
+
+        const SpriteSheetSprite& sprite = Sprites[idx];
+
+        v2f size = (sprite.size / 2.f) * Scale;
+
+        std::array<SpriteSheetVertexData, 4> vertices;
+
+        vertices[0].pos.x = pos.x - size.x;
+        vertices[0].pos.y = pos.y - size.y;
+        vertices[1].pos.x = pos.x + size.x;
+        vertices[1].pos.y = pos.y - size.y;
+        vertices[2].pos.x = pos.x + size.x;
+        vertices[2].pos.y = pos.y + size.y;
+        vertices[3].pos.x = pos.x - size.x;
+        vertices[3].pos.y = pos.y + size.y;
+
+        vertices[0].coords = { sprite.bl_coord.x, sprite.bl_coord.y };
+        vertices[1].coords = { sprite.ur_coord.x, sprite.bl_coord.y };
+        vertices[2].coords = { sprite.ur_coord.x, sprite.ur_coord.y };
+        vertices[3].coords = { sprite.bl_coord.x, sprite.ur_coord.y };
+
+        vertices[0].color = Color;
+        vertices[1].color = Color;
+        vertices[2].color = Color;
+        vertices[3].color = Color;
 
         glBufferSubData(GL_ARRAY_BUFFER,
             vertexCount * sizeof(SpriteSheetVertexData),

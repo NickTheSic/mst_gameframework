@@ -36,6 +36,7 @@ include "MSTEngine/MSTEngine.lua"
 include "Sandbox"
 include "Pong"
 include "Snake"
+include "gmtkDice"
 
 group "Config"
 include "ProjectConfig.lua"

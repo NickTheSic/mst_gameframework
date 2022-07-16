@@ -170,7 +170,7 @@ void MyGame::UserUpdate()
 
 	float speed = 80;
 
-	if (IsKeyDown(mst::Key::W))
+	if (IsKeyPressed(mst::Key::W))
 	{
 	    cameraMove.y -= speed * GetDeltaTime();
 	}

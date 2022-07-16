@@ -92,19 +92,11 @@ namespace mst
         glTexImage2D(
             GL_TEXTURE_2D,
             0,
-#if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
             GL_RGBA,
-#else
-            GL_ALPHA,
-#endif
             atlasw,
             atlash,
             0,
-#if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
             GL_RGBA,
-#else
-            GL_ALPHA,
-#endif
             GL_UNSIGNED_BYTE,
 #if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
             0
@@ -132,11 +124,7 @@ namespace mst
             glTexSubImage2D(GL_TEXTURE_2D, 0,
                 xoffset, 0,
                 face->glyph->bitmap.width, face->glyph->bitmap.rows,
-#if !defined __EMSCRIPTEN__ || !defined PLATFORM_WEB
                 GL_RGBA,
-#else
-                GL_ALPHA,
-#endif
                 GL_UNSIGNED_BYTE, 
                 Buffer);//face->glyph->bitmap.buffer);
         

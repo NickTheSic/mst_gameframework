@@ -34,6 +34,11 @@ namespace mst
 		return min + (((float)rand() / float(RAND_MAX)) * (max - min));
 	}
 
+	v2f Engine::GetScreenCenter()
+	{
+		return ScreenCenter;
+	}
+
 	v2f Engine::GetMouseToScreen()
 	{
 		v2f mousePos = v2f(CurrMousePos) + MouseMoveDelta;
@@ -58,7 +63,6 @@ namespace mst
 
 	bool Engine::IsKeyDown(Key key)
 	{
-		//dbglog(key << " Is down: " << KeyStates[(unsigned int)key].Held);
 		return KeyStates[(unsigned int)key].Held;
 	}
 
@@ -108,9 +112,9 @@ namespace mst
 	#ifdef _WIN64
 		#ifdef UNICODE
 		#ifdef __MINGW32__
-			wchar_t* buffer = new wchar_t[s.length() + 1];
-			mbstowcs(buffer, s.c_str(), s.length());
-			buffer[s.length()] = L'\0';
+			wchar_t* buffer = new wchar_t[title.length() + 1];
+			mbstowcs(buffer, title.c_str(), title.length());
+			buffer[title.length()] = L'\0';
 		#else
 			int count = MultiByteToWideChar(CP_UTF8, 0, title.c_str(), -1, NULL, 0);
 			wchar_t* buffer = new wchar_t[count];
@@ -381,13 +385,9 @@ namespace mst
 		} break;
 	
 		case WM_KEYDOWN:
-		{
-			UserEngine->HandleKey((mst::Key)wParam, true);
-		} break;
-	
 		case WM_KEYUP:
-		{
-			UserEngine->HandleKey((mst::Key)wParam, false);
+		{	
+			UserEngine->HandleKey((mst::Key)wParam, msg == WM_KEYDOWN);
 		} break;
 	
 		case WM_MOUSEMOVE:
