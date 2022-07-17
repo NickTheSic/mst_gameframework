@@ -201,7 +201,7 @@ namespace mst
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SpriteSheetVertexData), (void*)(offsetof(SpriteSheetVertexData, coords)));
         glEnableVertexAttribArray(1);
 
-        glVertexAttribPointer(2, 4, GL_BYTE, GL_TRUE, sizeof(SpriteSheetVertexData), (void*)(offsetof(SpriteSheetVertexData, color)));
+        glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(SpriteSheetVertexData), (void*)(offsetof(SpriteSheetVertexData, color)));
         glEnableVertexAttribArray(2);
 #endif
     }

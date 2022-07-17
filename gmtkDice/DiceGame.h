@@ -70,26 +70,25 @@ public:
 
 	#ifndef PLATFORM_WEB
 	void EditorUpdate();
-
+	int HoveredSquare = -1;
 	bool EditorMode = false;
 	#endif
 
 	void GameUpdate();
-
 	void ResetLevel();
-
 	void SetLevel(int level);
 
 	Grid LoadedGrid = {};
 	int LevelMax;
 	int LevelCurrent;
+	int CurrentMoves = 0;
 
 	Dice Die = {};
 
+	bool OnTitleScreen = true;
 	bool CompletedCurrentLevel = false;
-
-	int HoveredSquare = -1;
 
 	mst::TextRenderer* TextRenderer = nullptr;
 	mst::SpriteSheetGeneratorRenderer* SpriteRenderer = nullptr;
+	mst::SpriteSheetGeneratorRenderer* TitleScreenRenderer = nullptr;
 };

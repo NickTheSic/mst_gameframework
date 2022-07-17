@@ -25,7 +25,7 @@ static int GetSavedGrids()
 		count++;
 	}
 	#else
-	count = 2;
+	count = 4;
 	#endif
 	return count;
 }
@@ -62,6 +62,11 @@ MyGame::~MyGame()
 	{
 		delete SpriteRenderer;
 	}
+
+	if (TitleScreenRenderer)
+	{
+		delete TitleScreenRenderer;
+	}
 }
 
 bool MyGame::UserStartup()
@@ -78,7 +83,7 @@ bool MyGame::UserStartup()
 	LevelCurrent = 0;
 	
 	TextRenderer = new mst::TextRenderer();
-	TextRenderer->Init(20, "Data/caviardreamsbold.ttf");
+	TextRenderer->Init(100, "Data/caviardreamsbold.ttf");
 	TextRenderer->UseProgram();
 	TextRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 
@@ -94,6 +99,11 @@ bool MyGame::UserStartup()
 				 #endif
 	SpriteRenderer->UseProgram();
 	SpriteRenderer->SetUniform("u_CameraPos", MainCamera.Position);
+
+	TitleScreenRenderer = new mst::SpriteSheetGeneratorRenderer(2,
+				{"Data/gmtk_jam.png", "Data/roll_of_the_dice.png"});
+	TitleScreenRenderer->UseProgram();
+	TitleScreenRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 
 	UserResize();
 
@@ -133,10 +143,25 @@ void MyGame::UserResize()
 		SpriteRenderer->UseProgram();
 		SpriteRenderer->SetUniform("u_WorldSize", ScreenSize);
 	}
+
+	if (TitleScreenRenderer != nullptr)
+	{
+		TitleScreenRenderer->UseProgram();
+		TitleScreenRenderer->SetUniform("u_WorldSize", ScreenSize);
+	}
 }
 
 void MyGame::UserUpdate()
 {
+	if (OnTitleScreen)
+	{
+		if (IsKeyPressed(mst::Key::SPACE))
+		{
+			OnTitleScreen = false;
+		}
+		return;
+	}
+
 #ifndef PLATFORM_WEB
 	if (IsKeyPressed(mst::Key::ESCAPE))
 	{
@@ -175,6 +200,23 @@ void MyGame::UserRender()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	if (OnTitleScreen)
+	{
+		TitleScreenRenderer->StartRender();
+		TitleScreenRenderer->RenderScaledSpriteAtIndexCenter(1, {ScreenCenter.x, ScreenCenter.y + 100}, 0.1);
+		TitleScreenRenderer->RenderScaledSpriteAtIndexCenter(0, {50,50}, 0.05);
+		TitleScreenRenderer->EndRender();
+
+		TextRenderer->StartRender();
+		TextRenderer->RenderText("Press Space to Start the Game!", {180, 100});
+
+		TextRenderer->RenderTextFromRight("Controls:", {ScreenSize.x-50, 300});
+		TextRenderer->RenderTextFromRight("Move: W/A/S/D", { ScreenSize.x-50, 270 });
+
+		TextRenderer->EndRender();
+		return;
+	}
+
 	SpriteRenderer->StartRender();
 
 	for (int i = 0; i < LoadedGrid.Count; i++)
@@ -202,11 +244,20 @@ void MyGame::UserRender()
 	TextRenderer->StartRender();
 	std::string CurrLevel = "Level: " + std::to_string(LevelCurrent);
 	TextRenderer->RenderText(CurrLevel, v2f{0, ScreenSize.y-60});
+	std::string CurrMoves = "Moves: " + std::to_string(CurrentMoves);
+	TextRenderer->RenderText(CurrMoves, v2f{ 0, ScreenSize.y - 80 });
 
 	if (CompletedCurrentLevel)
 	{
-		TextRenderer->RenderText("Level Complete!", v2f(ScreenCenter.x-200,ScreenCenter.y), 2);
-		TextRenderer->RenderText("Press Space To Continue", v2f(ScreenCenter.x-200, ScreenCenter.y-30),1);
+		if (LevelCurrent != GridSaveCount-1)
+		{ 
+			TextRenderer->RenderText("Level Complete!", v2f(ScreenCenter.x-200,ScreenCenter.y), 2);
+			TextRenderer->RenderText("Press Space To Continue", v2f(ScreenCenter.x-200, ScreenCenter.y-30),1);
+		}
+		else
+		{
+			TextRenderer->RenderText("Game Complete!", v2f(ScreenCenter.x - 200, ScreenCenter.y), 2);
+		}
 	}
 
 	#ifndef PLATFORM_WEB
@@ -306,6 +357,13 @@ void MyGame::EditorUpdate()
 
 void MyGame::GameUpdate()
 {
+	if (IsKeyDown(mst::Key::R))
+	{
+		CompletedCurrentLevel = false;
+		ResetLevel();
+		return;
+	}
+
 	if (CompletedCurrentLevel)
 	{
 		if (IsKeyPressed(mst::Key::SPACE))
@@ -316,15 +374,10 @@ void MyGame::GameUpdate()
 			{	
 				LevelCurrent = 0;
 				dbglog("Complete");
+				OnTitleScreen = true;
 			}
 			SetLevel(LevelCurrent);
 		}
-		return;
-	}
-
-	if (IsKeyDown(mst::Key::R))
-	{
-		ResetLevel();
 		return;
 	}
 
@@ -400,6 +453,7 @@ void MyGame::GameUpdate()
 
 	if (MovedThisFrame)
 	{
+		CurrentMoves++;
 		if (Die.CurrentGridSpace != LoadedGrid.GoalSpace)
 		{
 			return;
@@ -534,6 +588,7 @@ void LoadGrid(Grid& InGrid, int LevelIndex)
 void MyGame::SetLevel(int level)
 {
 	CompletedCurrentLevel = false;
+	CurrentMoves = 0;
 
 	LoadGrid(LoadedGrid, level);
 
