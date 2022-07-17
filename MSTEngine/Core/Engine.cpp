@@ -39,6 +39,16 @@ namespace mst
 		return ScreenCenter;
 	}
 
+	v2f Engine::GetScreenSize()
+	{
+		return ScreenSize;
+	}
+
+	Camera& Engine::GetMainCamera()
+	{
+		return MainCamera;
+	}
+
 	v2f Engine::GetMouseToScreen()
 	{
 		v2f mousePos = v2f(CurrMousePos) + MouseMoveDelta;

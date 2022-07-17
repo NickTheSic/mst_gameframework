@@ -4,7 +4,7 @@ pushd Build\Diceyweb
 set INCLUDE=-I../../ThirdParty/ -I../../ThirdParty/stb_image/ -I../../ThirdParty/freetype -I../../MSTEngine -I../../ThirdParty/freetype/include
 set MYGAME=../../gmtkDice/DiceGame.cpp 
 
-set MSTENGINE=../../MSTEngine/main.cpp ../../MSTEngine/Renderer/Shader.cpp ../../MSTEngine/Utils.cpp ../../MSTEngine/Core/Engine.cpp ../../MSTEngine/Core/Timer.cpp ../../MSTEngine/Core/Camera.cpp ../../MSTEngine/Renderer/BaseRenderer.cpp ../../MSTEngine/Renderer/QuadRenderer.cpp ../../MSTEngine/Renderer/TextRenderer.cpp ../../MSTEngine/Renderer/SpriteSheetRenderer.cpp ../../ThirdParty/stb_image/stb_image.c
+set MSTENGINE=../../MSTEngine/main.cpp ../../MSTEngine/Renderer/Shader.cpp ../../MSTEngine/Utils.cpp ../../MSTEngine/Core/Engine.cpp ../../MSTEngine/Core/Timer.cpp ../../MSTEngine/Core/Camera.cpp ../../MSTEngine/UI/imUI.cpp ../../MSTEngine/Renderer/BaseRenderer.cpp ../../MSTEngine/Renderer/QuadRenderer.cpp ../../MSTEngine/Renderer/TextRenderer.cpp ../../MSTEngine/Renderer/SpriteSheetRenderer.cpp ../../ThirdParty/stb_image/stb_image.c
 
 set FREETYPE= -L../../ThirdParty/freetype/lib -lfreetype
 

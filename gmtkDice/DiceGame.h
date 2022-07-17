@@ -79,7 +79,7 @@ public:
 	void SetLevel(int level);
 
 	Grid LoadedGrid = {};
-	int LevelMax;
+	int LevelReached;
 	int LevelCurrent;
 	int CurrentMoves = 0;
 

@@ -1,10 +1,12 @@
 #include "DiceGame.h"
 #include <iostream>
 #include <fstream>
+#include <Utils.h>
+#include <UI/imUI.h>
+
 #ifndef PLATFORM_WEB
 #include <filesystem>
 #endif
-#include <Utils.h>
 
 #define dbgval(val) std::cout << #val << ": " << val << std::endl;
 #define dbglog(msg) std::cout << msg << std::endl;
@@ -25,7 +27,7 @@ static int GetSavedGrids()
 		count++;
 	}
 	#else
-	count = 4;
+	count = 18;
 	#endif
 	return count;
 }
@@ -47,6 +49,8 @@ mst::Engine* mst::Engine::CreateEngine()
 	MyGame* g = new MyGame(600, 600);
 
 	GridSaveCount = GetSavedGrids();
+
+	g->LevelReached = GridSaveCount;
 
 	return g;
 }
@@ -106,6 +110,8 @@ bool MyGame::UserStartup()
 	TitleScreenRenderer->SetUniform("u_CameraPos", MainCamera.Position);
 
 	UserResize();
+
+	ui::InitUI();
 
 	if (GridSaveCount > 0)
 	{
@@ -203,17 +209,38 @@ void MyGame::UserRender()
 	if (OnTitleScreen)
 	{
 		TitleScreenRenderer->StartRender();
-		TitleScreenRenderer->RenderScaledSpriteAtIndexCenter(1, {ScreenCenter.x, ScreenCenter.y + 100}, 0.1);
+		TitleScreenRenderer->RenderScaledSpriteAtIndexCenter(1, {ScreenCenter.x, ScreenCenter.y + 160}, 0.1);
 		TitleScreenRenderer->RenderScaledSpriteAtIndexCenter(0, {50,50}, 0.05);
 		TitleScreenRenderer->EndRender();
 
 		TextRenderer->StartRender();
+
+		TextRenderer->RenderText("A Sokoban Game", { 170, ScreenCenter.y+20 }, 2);
+
 		TextRenderer->RenderText("Press Space to Start the Game!", {180, 100});
 
-		TextRenderer->RenderTextFromRight("Controls:", {ScreenSize.x-50, 300});
-		TextRenderer->RenderTextFromRight("Move: W/A/S/D", { ScreenSize.x-50, 270 });
+		TextRenderer->RenderTextFromRight("Controls:", {ScreenSize.x-170, 220});
+		TextRenderer->RenderTextFromRight("Move: W/A/S/D", { ScreenSize.x-170, 190 });
+		TextRenderer->RenderTextFromRight("Reset: R", { ScreenSize.x - 170, 160 });
 
 		TextRenderer->EndRender();
+
+		
+		v2f initialPos = {ScreenSize.x - 80, ScreenSize.y - 30};
+
+		for (int i = 0; i < LevelReached; i++)
+		{ 
+			std::string label = "Level: " + std::to_string(i);
+			if (ui::AddButton(label.c_str(), initialPos, {60,120,100}))
+			{
+				SetLevel(i);
+				OnTitleScreen = false;
+			}
+			initialPos.y -= 18;
+		}
+
+		ui::Present();
+
 		return;
 	}
 
@@ -221,10 +248,12 @@ void MyGame::UserRender()
 
 	for (int i = 0; i < LoadedGrid.Count; i++)
 	{
-		if (i != HoveredSquare)
-			SpriteRenderer->RenderSpriteAtIndex(LoadedGrid.Pieces[i], LoadedGrid.GetWorldCoordAtIndex(i), { 80,120,200 });
+		#ifndef PLATFORM_WEB
+		if (i == HoveredSquare)
+			SpriteRenderer->RenderSpriteAtIndex(LoadedGrid.Pieces[i], LoadedGrid.GetWorldCoordAtIndex(i), { 100,150,100 });
 		else
-			SpriteRenderer->RenderSpriteAtIndex(LoadedGrid.Pieces[i], LoadedGrid.GetWorldCoordAtIndex(i), { 100,150,100});
+		#endif
+			SpriteRenderer->RenderSpriteAtIndex(LoadedGrid.Pieces[i], LoadedGrid.GetWorldCoordAtIndex(i), { 80, 120, 200 });
 	}
 
 	// Render Die;
@@ -243,16 +272,16 @@ void MyGame::UserRender()
 
 	TextRenderer->StartRender();
 	std::string CurrLevel = "Level: " + std::to_string(LevelCurrent);
-	TextRenderer->RenderText(CurrLevel, v2f{0, ScreenSize.y-60});
+	TextRenderer->RenderText(CurrLevel, v2f{10, ScreenSize.y - 60 });
 	std::string CurrMoves = "Moves: " + std::to_string(CurrentMoves);
-	TextRenderer->RenderText(CurrMoves, v2f{ 0, ScreenSize.y - 80 });
+	TextRenderer->RenderText(CurrMoves, v2f{10, ScreenSize.y - 80 });
 
 	if (CompletedCurrentLevel)
 	{
 		if (LevelCurrent != GridSaveCount-1)
 		{ 
-			TextRenderer->RenderText("Level Complete!", v2f(ScreenCenter.x-200,ScreenCenter.y), 2);
-			TextRenderer->RenderText("Press Space To Continue", v2f(ScreenCenter.x-200, ScreenCenter.y-30),1);
+			TextRenderer->RenderText("Level Complete!", v2f(ScreenCenter.x-200,ScreenCenter.y+200), 2);
+			TextRenderer->RenderText("Press Space To Continue", v2f(ScreenCenter.x-200, ScreenCenter.y+170),1);
 		}
 		else
 		{
@@ -364,6 +393,27 @@ void MyGame::GameUpdate()
 		return;
 	}
 
+	if (IsKeyDown(mst::Key::Q))
+	{
+		OnTitleScreen = true;
+		return;
+	}
+
+	if (IsKeyDown(mst::Key::Y))
+	{
+		CompletedCurrentLevel = false;
+		Die.Reset();
+		for (int i = 0; i < LoadedGrid.Count; i++)
+		{
+			if (LoadedGrid[i] == PLAYER_START)
+			{
+				Die.CurrentGridSpace = i;
+				break;
+			}
+		}
+		return;
+	}
+
 	if (CompletedCurrentLevel)
 	{
 		if (IsKeyPressed(mst::Key::SPACE))
@@ -373,7 +423,6 @@ void MyGame::GameUpdate()
 			if (LevelCurrent >= GridSaveCount)
 			{	
 				LevelCurrent = 0;
-				dbglog("Complete");
 				OnTitleScreen = true;
 			}
 			SetLevel(LevelCurrent);
@@ -589,6 +638,12 @@ void MyGame::SetLevel(int level)
 {
 	CompletedCurrentLevel = false;
 	CurrentMoves = 0;
+	LevelCurrent = level;
+
+	if (level > LevelReached)
+	{
+		LevelReached = level;
+	}
 
 	LoadGrid(LoadedGrid, level);
 

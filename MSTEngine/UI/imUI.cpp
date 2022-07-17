@@ -67,8 +67,14 @@ namespace ui
 
 	void InitUI()
 	{
-		state.TextRenderer.Init(500, FONT_FILE_PATH, 10);
-		state.QuadRenderer.Init(500);
+		state.TextRenderer.Init(100, FONT_FILE_PATH, 10);
+		state.TextRenderer.UseProgram();
+		state.TextRenderer.SetUniform("u_CameraPos", mst::Engine::Get()->GetMainCamera().Position);
+
+		state.QuadRenderer.Init(100);
+		state.QuadRenderer.UseProgram();
+		state.QuadRenderer.SetUniform("u_CameraPos", mst::Engine::Get()->GetMainCamera().Position);
+		state.QuadRenderer.SetUniform("u_WorldSize", mst::Engine::Get()->GetScreenSize());
 	}
 
 	void AddText(const char* Text, v2f&& Position, const Color& Colour)
@@ -90,11 +96,11 @@ namespace ui
 		bool IsClicked = false;
 
 		const int StringLength = (int)strlen(Label);
-		const float TextSize = (int)16 * (StringLength);
+		const float TextSize = 7 * (StringLength);
 
 		ButtonRenderData brd;
 		brd.bl = Position;
-		brd.ur = v2i{TextSize, 20};
+		brd.ur = v2i{TextSize, 16};
 
 		v2f TextPos = Position + v2f{ 2,2 };
 		AddText(Label, TextPos, {255,255,255});

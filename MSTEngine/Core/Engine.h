@@ -97,6 +97,9 @@ namespace mst
 		v2f GetMousePosition();
 
 		v2f GetScreenCenter();
+		v2f GetScreenSize();
+
+		Camera& GetMainCamera();
 
 		std::string GetFPSString();
 
