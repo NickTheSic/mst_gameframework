@@ -8,6 +8,7 @@ project "MSTEngine"
 		"%{wks.location}/ThirdParty",
 		"%{wks.location}/ThirdParty/stb_image",
 		"%{wks.location}/ThirdParty/freetype/include",
+		"C:/Program Files (x86)/OpenAL 1.1 SDK/include",
 	}
 
 	dependson
@@ -25,7 +26,8 @@ project "MSTEngine"
     
 	libdirs
 	{
-		("%{wks.location}/Build/".. outputdir.."/libs/")
+		("%{wks.location}/Build/".. outputdir.."/libs/"),
+		"C:/Program Files (x86)/OpenAL 1.1 SDK/libs/Win64",
 	}
 
 	links
@@ -34,4 +36,5 @@ project "MSTEngine"
 		"opengl32",
 		"stb_image",
 		"freetype",
+		"OpenAL32"
 	}

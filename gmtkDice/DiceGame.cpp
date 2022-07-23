@@ -19,15 +19,13 @@ static int GetSavedGrids()
 {
 	int count = 0;
 	#ifndef PLATFORM_WEB
-	namespace fs = std::filesystem;
-
-	for (const auto& entry : fs::directory_iterator(GridPath))
+	for (const auto& entry : std::filesystem::directory_iterator(GridPath))
 	{
 		dbgval(entry);
 		count++;
 	}
 	#else
-	count = 18;
+	count = 21;
 	#endif
 	return count;
 }
@@ -47,6 +45,8 @@ std::ostream& operator<<(std::ostream& os, const v2f& v)
 mst::Engine* mst::Engine::CreateEngine()
 {
 	MyGame* g = new MyGame(600, 600);
+
+	//AudioPlayer::Get();
 
 	GridSaveCount = GetSavedGrids();
 
@@ -222,6 +222,7 @@ void MyGame::UserRender()
 		TextRenderer->RenderTextFromRight("Controls:", {ScreenSize.x-170, 220});
 		TextRenderer->RenderTextFromRight("Move: W/A/S/D", { ScreenSize.x-170, 190 });
 		TextRenderer->RenderTextFromRight("Reset: R", { ScreenSize.x - 170, 160 });
+		TextRenderer->RenderTextFromRight("Menu: Q", { ScreenSize.x - 170, 130 });
 
 		TextRenderer->EndRender();
 
