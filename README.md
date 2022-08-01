@@ -1,5 +1,5 @@
 # mst_gameframework
-An open GL game framework.  
+An open GL game framework.  I used this to create my GMTK 2022 Jam entry https://nickthesic.itch.io/dicey-sokoban
 
 # About
 Inspired by One Lone Coders Pixel Engine, I liked the header only aspect of it.
