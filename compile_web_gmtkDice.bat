@@ -8,10 +8,10 @@ set MSTENGINE=../../MSTEngine/main.cpp ../../MSTEngine/Renderer/Shader.cpp ../..
 
 set FREETYPE= -L../../ThirdParty/freetype/lib -lfreetype
 
-set FLAGS= -O2 -s ALLOW_MEMORY_GROWTH=1 -DPLATFORM_WEB -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2
+set FLAGS= -O2 -s ALLOW_MEMORY_GROWTH=1 -DPLATFORM_WEB -s MAX_WEBGL_VERSION=2 -s MIN_WEBGL_VERSION=2 -sUSE_FREETYPE=1
 echo -s FULL_ES2 -s FULL_ES3 -lopenal
 
-call em++ -std=c++17 %INCLUDE% %FREETYPE% %FLAGS% %MSTENGINE% %MYGAME% -o index.html --shell-file ../../MinimalShell.html --preload-file Data
+call em++ -std=c++17 %INCLUDE% %FLAGS% %MSTENGINE% %MYGAME% -o index.html --shell-file ../../MinimalShell.html --preload-file Data
 
 popd
 

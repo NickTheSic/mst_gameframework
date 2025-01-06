@@ -519,8 +519,23 @@ namespace mst
 		return EM_FALSE;
 	}
 
+	EM_JS(bool, verify_site, (), {
+		if (document.location.host == 'html-classic.itch.zone' || document.location.host == 'localhost:6931') {
+			return true;
+		}
+
+		alert('This game can only be played at: https://nickthesic.itch.io');
+		throw 'Please Visit https://nickthesic.itch.io';
+		return false;
+		});
+
 	bool Engine::CreateViewWindow(int w, int h)
 	{
+		if (!verify_site())
+		{
+			return false;
+		}
+
 		EmscriptenWebGLContextAttributes attr;
 		emscripten_webgl_init_context_attributes(&attr);
 

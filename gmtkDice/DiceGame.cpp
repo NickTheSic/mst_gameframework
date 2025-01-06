@@ -216,6 +216,7 @@ void MyGame::UserRender()
 		TextRenderer->StartRender();
 
 		TextRenderer->RenderText("A Sokoban Game", { 170, ScreenCenter.y+20 }, 2);
+		TextRenderer->RenderText("By: NickTheSic", { 205, ScreenCenter.y }, 1.2f);
 
 		TextRenderer->RenderText("Press Space to Start the Game!", {180, 100});
 
